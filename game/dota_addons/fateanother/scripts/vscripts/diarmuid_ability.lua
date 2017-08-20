@@ -205,30 +205,34 @@ function OnBuidheStart(keys)
 		ParticleManager:ReleaseParticleIndex( dagon_particle )
 	end)
 
-	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and caster:FindAbilityByName("diarmuid_gae_dearg"):IsCooldownReady() and caster:GetMana() >= 550 then
+	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and not caster.IsADoubleSpearStrike and caster:GetMana() >= 275  then
+	-- and caster:FindAbilityByName("diarmuid_gae_dearg"):IsCooldownReady() and caster:GetMana() >= 550 then
 		--print("Double spear activated")
 		local dearg = caster:FindAbilityByName("diarmuid_gae_dearg")
 		local minDamage = dearg:GetLevelSpecialValueFor("min_damage", dearg:GetLevel()-1)
 		local maxDamage = dearg:GetLevelSpecialValueFor("max_damage", dearg:GetLevel()-1)
-		keys.MinDamage = minDamage
-		keys.MaxDamage = maxDamage
+		keys.MinDamage = minDamage * 0.5
+		keys.MaxDamage = maxDamage * 0.5
+
 		Timers:CreateTimer(0.033, function()
-			caster:FindAbilityByName("diarmuid_gae_dearg"):StartCooldown(32)
-			local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
-			doublestrike:StartCooldown(55)
-			if doublestrike:GetToggleState() == true then
-				doublestrike:ToggleAbility()
-			end
-			caster:SetMana(caster:GetMana() - 550)
-			Timers:CreateTimer(55.2, function()
+			--caster:FindAbilityByName("diarmuid_gae_dearg"):StartCooldown(32)
+			--local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
+			--doublestrike:StartCooldown(55)
+			--if doublestrike:GetToggleState() == true then
+			--	doublestrike:ToggleAbility()
+			--end
+			caster.IsADoubleSpearStrike = true
+			caster:SetMana(caster:GetMana() - 275)
+			--[[Timers:CreateTimer(55.2, function()
 				if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
 					doublestrike:ToggleAbility()
 				end
-			end)
+			end)]]
 			OnDeargStart(keys)
 		end)
 		--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
 	end
+	caster.IsADoubleSpearStrike = false
 end
 
 function OnBuidheOwnerDeath(keys)
@@ -291,28 +295,33 @@ function OnDeargStart(keys)
 		ParticleManager:ReleaseParticleIndex( dagon_particle )
 	end)
 
-	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and caster:FindAbilityByName("diarmuid_gae_buidhe"):IsCooldownReady() and caster:GetMana() >= 550 then
+	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and not caster.IsADoubleSpearStrike and caster:GetMana() >= 275 then
+		--caster:FindAbilityByName("diarmuid_gae_buidhe"):IsCooldownReady() and 
 		--print("Double spear activated")
 		local buidhe = caster:FindAbilityByName("diarmuid_gae_buidhe")
 		keys.Damage = buidhe:GetLevelSpecialValueFor("damage", buidhe:GetLevel()-1)
+		keys.Damage = keys.Damage * 0.5
 		keys.ability = buidhe
+		caster.IsADoubleSpearStrike = true
 		Timers:CreateTimer(0.033, function()
-			caster:FindAbilityByName("diarmuid_gae_buidhe"):StartCooldown(32)
+			--[[caster:FindAbilityByName("diarmuid_gae_buidhe"):StartCooldown(32)
 			local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
 			doublestrike:StartCooldown(55)
 			if doublestrike:GetToggleState() == true then
 				doublestrike:ToggleAbility()
-			end
-			caster:SetMana(caster:GetMana() - 550)
-			Timers:CreateTimer(55.2, function()
+			end]]
+			caster:SetMana(caster:GetMana() - 275)
+			--[[Timers:CreateTimer(55.2, function()
 				if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
 					doublestrike:ToggleAbility()
 				end
-			end)
+			end)]]
 			OnBuidheStart(keys)
 		end)
 		--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
 	end
+
+	caster.IsADoubleSpearStrike = false
 end
 
 function PlayGaeEffect(target)
@@ -411,6 +420,7 @@ function OnDoubleSpearAcquired(keys)
     local hero = caster:GetPlayerOwner():GetAssignedHero()
     hero.IsDoubleSpearAcquired = true
     hero.IsDoubleSpearReady = true
+    hero.IsADoubleSpearStrike = false
     hero:SwapAbilities("fate_empty1", "diarmuid_double_spear_strike", false, true) 
 	hero:FindAbilityByName("diarmuid_double_spear_strike"):ToggleAbility()
     -- Set master 1's mana 
