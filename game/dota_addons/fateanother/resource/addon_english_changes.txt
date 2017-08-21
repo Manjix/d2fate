@@ -69,10 +69,10 @@
     //====================================
     "DOTA_Tooltip_Ability_saber_caliburn"                   "Caliburn"
     "DOTA_Tooltip_ability_saber_caliburn_description"       "Strikes enemy with Caliburn, dealing damage and slowing it. Nearby enemies also take a portion of damage."
-    "DOTA_Tooltip_ability_saber_caliburn_Lore"      ""
-    "DOTA_Tooltip_ability_saber_caliburn_damage"        "TARGET DAMAGE:"
+    "DOTA_Tooltip_ability_saber_caliburn_Lore"              ""
+    "DOTA_Tooltip_ability_saber_caliburn_damage"            "TARGET DAMAGE:"
     "DOTA_Tooltip_ability_saber_caliburn_aoe_damage_percent_tooltip"    "%AOE DAMAGE:"
-    "DOTA_Tooltip_ability_saber_caliburn_slow_amount"   "%SLOW AMOUNT:"
+    "DOTA_Tooltip_ability_saber_caliburn_slow_amount"       "%SLOW AMOUNT:"
     "DOTA_Tooltip_ability_lancelot_caliburn_slow_duration"  "SLOW DURATION:"
 
     "DOTA_Tooltip_Ability_lancelot_caliburn"                    "Caliburn"

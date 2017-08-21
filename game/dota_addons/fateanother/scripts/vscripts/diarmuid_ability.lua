@@ -150,24 +150,29 @@ function OnBuidheStart(keys)
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
 
 	if caster.IsRoseBloomAcquired then 
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_mark_of_mortality", {})
+		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_mark_of_mortality", {})		
 	end
 
-	if target:GetMaxHealth() < (currentStack + nStacks) * unitReduction then
-		target:Execute(keys.ability, caster)
-	end
+	-- Initialize the target's current health
+	local health_difference = target:GetHealth()
+	-- Poke him with yellow spear
+	DoDamage(caster, target, keys.Damage, DAMAGE_TYPE_PHYSICAL, 0, keys.ability, false)
+	-- Check how much damage he took
+	health_difference = health_difference - target:GetHealth()
+	-- Give him 1 stack for every 10 damage
+	local new_stacks = math.floor(health_difference / unitReduction)
 
-	local MR = 0
-	if target:IsHero() then MR = target:GetMagicalArmorValue() end
-	DoDamage(caster, target, keys.Damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+	if target:GetMaxHealth() < (currentStack + new_stacks) * unitReduction then
+		target:Execute(keys.ability, caster) -- Kill that guy if there would be more reduction than his max hp
+	else
+		-- Remove the current stacks and then give him the new number of stacks
+		if target:GetHealth() > 0 and target:IsAlive() and caster:IsAlive() then
+			target:RemoveModifierByName("modifier_gae_buidhe") 
+			keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_gae_buidhe", {}) 
+			target:SetModifierStackCount("modifier_gae_buidhe", keys.ability, currentStack + new_stacks)
 
-	if target:GetHealth() > 0 and target:IsAlive() and caster:IsAlive() then
-
-		target:RemoveModifierByName("modifier_gae_buidhe") 
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_gae_buidhe", {}) 
-		target:SetModifierStackCount("modifier_gae_buidhe", keys.ability, currentStack + nStacks)
-		if target:IsRealHero() then target:CalculateStatBonus() end
-
+			if target:IsRealHero() then target:CalculateStatBonus() end
+		end
 	end
 
 	currentStack = target:GetModifierStackCount("modifier_gae_buidhe", keys.ability) --refresh currentstack after debuff
@@ -195,6 +200,7 @@ function OnBuidheStart(keys)
 	target:EmitSound("Hero_Lion.Impale")
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_diarmuid_gae_buidhe_anim", {})
 	PlayGaeEffect(target)
+
 	-- Add dagon particle
 	local dagon_particle = ParticleManager:CreateParticle("particles/custom/diarmuid/diarmuid_gae_buidhe.vpcf",  PATTACH_ABSORIGIN_FOLLOW, keys.caster)
 	ParticleManager:SetParticleControlEnt(dagon_particle, 1, keys.target, PATTACH_POINT_FOLLOW, "attach_hitloc", keys.target:GetAbsOrigin(), false)
@@ -205,7 +211,7 @@ function OnBuidheStart(keys)
 		ParticleManager:ReleaseParticleIndex( dagon_particle )
 	end)
 
-	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and not caster.IsADoubleSpearStrike and caster:GetMana() >= 275  then
+	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and (not caster.IsADoubleSpearStrike) and caster:GetMana() >= 300  then
 	-- and caster:FindAbilityByName("diarmuid_gae_dearg"):IsCooldownReady() and caster:GetMana() >= 550 then
 		--print("Double spear activated")
 		local dearg = caster:FindAbilityByName("diarmuid_gae_dearg")
@@ -214,7 +220,7 @@ function OnBuidheStart(keys)
 		keys.MinDamage = minDamage * 0.5
 		keys.MaxDamage = maxDamage * 0.5
 
-		Timers:CreateTimer(0.033, function()
+		Timers:CreateTimer(0.1, function()
 			--caster:FindAbilityByName("diarmuid_gae_dearg"):StartCooldown(32)
 			--local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
 			--doublestrike:StartCooldown(55)
@@ -222,14 +228,14 @@ function OnBuidheStart(keys)
 			--	doublestrike:ToggleAbility()
 			--end
 			caster.IsADoubleSpearStrike = true
-			caster:SetMana(caster:GetMana() - 275)
+			caster:SetMana(caster:GetMana() - 300)
 			--[[Timers:CreateTimer(55.2, function()
 				if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
 					doublestrike:ToggleAbility()
 				end
 			end)]]
 			OnDeargStart(keys)
-		end)
+		end)		
 		--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
 	end
 	caster.IsADoubleSpearStrike = false
@@ -257,7 +263,7 @@ function OnDeargStart(keys)
 	ApplyStrongDispel(target)
 
 	local damage = 0
-	local maxDamageDist = 100
+	local maxDamageDist = 150
 	local minDamageDist = 650
 	if caster.IsRoseBloomAcquired then 
 		maxDamageDist = 300
@@ -273,12 +279,18 @@ function OnDeargStart(keys)
 		damage = keys.MinDamage
 	end
 	DoDamage(caster, target, damage, DAMAGE_TYPE_PURE, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, keys.ability, false)
-	--print("Gae Dearg dealt " .. damage .. " damage to target")
+
+	if caster.IsRoseBloomAcquired then
+		target:AddNewModifier(caster, target, "modifier_silence", {duration=2.5})
+	end
+
 	if target:HasModifier("modifier_mark_of_mortality") then
-		local detonateDamage = target:GetMaxHealth() * caster:FindAbilityByName("diarmuid_gae_dearg"):GetSpecialValueFor("mortality_pct")/100
+		target:AddNewModifier(caster, target, "revoked", 2)
+
+		--[[local detonateDamage = target:GetMaxHealth() * caster:FindAbilityByName("diarmuid_gae_dearg"):GetSpecialValueFor("mortality_pct")/100
 		DoDamage(caster, target, detonateDamage, DAMAGE_TYPE_PURE, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, keys.ability, false)
 		print("Detonate")
-		target:RemoveModifierByName("modifier_mark_of_mortality")
+		target:RemoveModifierByName("modifier_mark_of_mortality")]]
 	end
 
 	EmitGlobalSound("ZL.Gae_Dearg")
@@ -295,7 +307,7 @@ function OnDeargStart(keys)
 		ParticleManager:ReleaseParticleIndex( dagon_particle )
 	end)
 
-	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and not caster.IsADoubleSpearStrike and caster:GetMana() >= 275 then
+	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and (not caster.IsADoubleSpearStrike) and caster:GetMana() >= 200 then
 		--caster:FindAbilityByName("diarmuid_gae_buidhe"):IsCooldownReady() and 
 		--print("Double spear activated")
 		local buidhe = caster:FindAbilityByName("diarmuid_gae_buidhe")
@@ -303,14 +315,15 @@ function OnDeargStart(keys)
 		keys.Damage = keys.Damage * 0.5
 		keys.ability = buidhe
 		caster.IsADoubleSpearStrike = true
-		Timers:CreateTimer(0.033, function()
+
+		Timers:CreateTimer(0.1, function()
 			--[[caster:FindAbilityByName("diarmuid_gae_buidhe"):StartCooldown(32)
 			local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
 			doublestrike:StartCooldown(55)
 			if doublestrike:GetToggleState() == true then
 				doublestrike:ToggleAbility()
 			end]]
-			caster:SetMana(caster:GetMana() - 275)
+			caster:SetMana(caster:GetMana() - 200)
 			--[[Timers:CreateTimer(55.2, function()
 				if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
 					doublestrike:ToggleAbility()

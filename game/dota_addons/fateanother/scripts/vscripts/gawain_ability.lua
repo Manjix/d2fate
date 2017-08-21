@@ -13,6 +13,10 @@ function OnIRStart(keys)
 	GawainCheckCombo(caster, keys.ability)
 	GenerateArtificialSun(caster, target:GetAbsOrigin())
 
+	if caster.IsSunlightAcquired then
+		caster.BonusSolarRayDamage = 0
+	end
+
 	if target:GetTeamNumber() == caster:GetTeamNumber() then
 		target:EmitSound("Hero_Omniknight.Purification")
 		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_invigorating_ray_ally", {})
@@ -38,41 +42,26 @@ function OnIRTickAlly(keys)
 	local target = keys.target
 
 	target:ApplyHeal(keys.Damage/10 * 0.5, caster)
-	--target:SetHealth(target:GetHealth() + keys.Damage/5)
 end
 
 function OnIRTickEnemy(keys)
 	local caster = keys.caster
 	local ply = caster:GetPlayerOwner()
 	local target = keys.target
-	local damage = (keys.Damage/10)
-	local dmg_type = DAMAGE_TYPE_MAGICAL
+	local damage = (keys.Damage/10)	
 	
 	if caster.IsSunlightAcquired then 
-		damage = (damage + (target:GetHealth()*0.03))
+		damage = damage + caster.BonusSolarRayDamage
+		caster.BonusSolarRayDamage = (caster.BonusSolarRayDamage*1.25) + (keys.Damage/10)
 	end
 
-	if caster.IsDawnAcquired then		
-		dmg_type = DAMAGE_TYPE_PURE
-	end
-
-	DoDamage(caster, target, damage, dmg_type, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, keys.ability, false)
+	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, keys.ability, false)
 end
 
 function OnDevoteStart(keys)
 	local caster = keys.caster
 	local ability = keys.ability
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_blade_of_the_devoted", {})
-	--[[Timers:CreateTimer(function()
-		if caster:HasModifier("modifier_blade_of_the_devoted") then
-			local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 300, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, FIND_ANY_ORDER, false) 
-			
-			for k,v in pairs(targets) do
-				keys.ability:ApplyDataDrivenModifier(keys.caster, v, "modifier_blade_of_the_devoted_ally_deniable",{})
-			end
-		end
-		return 0.1
-	end)]]
 
 	caster:EmitSound("Hero_EmberSpirit.FireRemnant.Cast")
 	local lightFx1 = ParticleManager:CreateParticle("particles/units/heroes/hero_invoker/invoker_sun_strike_beam.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster )
@@ -105,8 +94,8 @@ function OnDevoteHit(keys)
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_blade_of_the_devoted_secondary",{})
 	target:AddNewModifier(caster, caster, "modifier_stunned", {Duration = 0.25})
 
-	if caster.IsEclipseAcquired then
-		caster.BonusDevoteDamage = (keys.Damage/10)	
+	if caster.IsSunlightAcquired then
+		target:AddNewModifier(caster, caster, "modifier_BOD_burn", {Duration = keys.BurnDuration})
 	end	
 
 	target:EmitSound("Hero_Invoker.ColdSnap")
@@ -130,7 +119,7 @@ function OnDevoteConsecutiveHit(keys)
 
 	if caster.IsEclipseAcquired then
 		damage = damage + caster.BonusDevoteDamage
-		caster.BonusDevoteDamage = caster.BonusDevoteDamage + (keys.Damage/2)
+		caster.BonusDevoteDamage = caster.BonusDevoteDamage + (keys.Damage)
 	end		 
 
 	DoDamage(caster, target, damage, DAMAGE_TYPE_PHYSICAL, 0, keys.ability, false)
@@ -147,6 +136,35 @@ function OnDevoteConsecutiveHit(keys)
 		ParticleManager:ReleaseParticleIndex( flameFx1 )
 	end)
 end
+
+function OnBurnDamageTick(keys)
+	local caster = keys.caster
+	local target = keys.target
+	local damage = keys.Damage
+
+	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+end
+
+--[[function OnBladeBurnTick(keys)
+	local caster = keys.caster
+	local target = keys.target
+	local damage = keys.Damage/10
+
+	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+end
+
+function OnGalatineBurnTick(keys)
+	local caster = keys.caster
+	local target = keys.target
+	local damage = keys.Damage
+	local dmg_type = DAMAGE_TYPE_MAGICAL	
+
+	if caster.IsSunlightAcquired then
+		dmg_type = DAMAGE_TYPE_PURE
+	end
+
+	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+end]]
 
 function OnGalatineStart(keys)
 	-- Declaring a bunch of stuffs
@@ -295,22 +313,6 @@ function OnGalatineDetonate(keys)
 	end
 end
 
-function OnGalatineBurnTick(keys)
-	local caster = keys.caster
-	local target = keys.target
-	local damage = keys.Damage
-	local dmg_type = DAMAGE_TYPE_MAGICAL
-
-	if caster.IsDawnAcquired then
-		dmg_type = DAMAGE_TYPE_PURE
-	end
-
-	if caster.IsSunlightAcquired then
-		damage = damage + (target.GetHealth() * 0.03)
-	end
-
-	DoDamage(caster, target, damage, dmg_type, 0, keys.ability, false)
-end
 
 function OnEmbraceStart(keys)
 	local caster = keys.caster
