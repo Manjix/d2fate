@@ -16411,6 +16411,7 @@
 			 {
 			 	"ScriptFile"	"diarmuid_ability"
 			 	"Function"		"OnBuidheStart"
+			 	"IsDouble"		"0"
 			 	"Damage"		"%damage"
 			 	"nStacks"		"%number_stacks"
 			 	"unitReduction"	"%unit_reduction"
@@ -16576,6 +16577,7 @@
 			 	"Function"		"OnDeargStart"
 			 	"MinDamage"		"%min_damage"
 			 	"MaxDamage"		"%max_damage"
+			 	"IsDouble"		"0"
 			 	"nStacks"		"%number_stacks"	//for casting dearg with doublespear on
 			 	"unitReduction"	"%unit_reduction"	//for casting dearg with doublespear on
 			 }
@@ -16739,22 +16741,22 @@
 			"01"
 			{
 				"var_type"			"FIELD_FLOAT"
-				"max_damage_dist"			"300"
+				"max_damage_dist"	"300"
 			}
 			"02"
 			{
 				"var_type"			"FIELD_FLOAT"
-				"mortality_damage"			"20"
+				"mortality_damage"	"20"
 			}
 			"03"
 			{
 				"var_type"			"FIELD_FLOAT"
-				"silence_duration"	"2.5"
+				"silence_duration"	"2.0"
 			}
 			"04"
 			{
 				"var_type"			"FIELD_FLOAT"
-				"revoke_duration"	"2.0"
+				"revoke_duration"	"1.5"
 			}
 		}
 		
@@ -16783,7 +16785,7 @@
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"17"
+		"AbilityManaCost"				"15"
 
 		"precache"
 		{
@@ -21352,14 +21354,14 @@
 		{
 			"modifier_gawain_revive"
 			{
-				"Passive"	"1"
-				"IsHidden"	"1"
+				"Passive"				"1"
+				"IsHidden"				"1"
 				"OnTakeDamage"
 				{
 					"RunScript"
 					{
 						"ScriptFile"	"gawain_ability"
-						"Function"	"OnFairyDamageTaken"
+						"Function"		"OnFairyDamageTaken"
 						"DamageTaken"	"%attack_damage"
 					}
 				}
@@ -21368,6 +21370,14 @@
 			{
 				"IsDebuff"	"1"
 				"Attributes"		"MODIFIER_ATTRIBUTE_PERMANENT | MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE"
+			}
+			"modifier_gawain_revive_regen"
+			{
+				"Duration"			"3"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"     		"100"
+				}
 			}
 
 		}
@@ -21483,7 +21493,7 @@
 				"Properties"
 				{
 					"MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"     		"20"
-					"MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS"	"30"
+					"MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS"		"30"
 				}
 			}
 
@@ -21626,7 +21636,11 @@
 						"Function"			"OnBurnDamageTick"
 						"Damage"			"%burn_damage"
 					}
-				}			
+				}	
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"-10"
+				}
 			}
 
 			"modifier_blade_of_the_devoted_ally_deniable"
@@ -21894,17 +21908,27 @@
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"total_damage"			"800 900 1000 1100 1200"
+				"total_damage"			"600 800 1000 1200 1400"
 			}
 			"03"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"radius"				"400"
+				"radius"				"500 550 600 650 700"
 			}
 			"04"
 			{
 				"var_type"				"FIELD_INTEGER"
 				"duration"				"8"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"30 40 50 60 70"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_regen"			"30 40 50 60 70"
 			}
 		}
 		
@@ -21942,7 +21966,7 @@
 		
 		"Modifiers"
 		{
-			"modifier_suns_embrace_ally"
+			"modifier_suns_embrace_standard"
 			{
 				"StatusEffectName"     	"particles/status_fx/status_effect_guardian_angel.vpcf"
 				"StatusEffectPriority" 	"10"
@@ -21996,11 +22020,16 @@
 					}
 				}
 			}
-			"modifier_suns_embrace_enemy"
+			"modifier_suns_embrace_sunlight"
 			{
-				"StatusEffectName"     "particles/status_fx/status_effect_guardian_angel.vpcf"
-				"StatusEffectPriority" "10"
-
+				"StatusEffectName"     	"particles/status_fx/status_effect_guardian_angel.vpcf"
+				"StatusEffectPriority" 	"10"
+				"Duration"				"%duration"
+				"ThinkInterval" 		"0.5"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
+				}
 				"OnCreated"
 				{
 					"AttachEffect"
@@ -22029,16 +22058,78 @@
 						}
 					}
 				}
-
-				"IsDebuff"				"1"
-				"Duration"				"%duration"
-				"ThinkInterval" 		"0.5"
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceEnd"
+					}
+				}
 				"OnIntervalThink"
 				{
 					"RunScript"
 					{
 						"ScriptFile"			"gawain_ability"
-						"Function"				"OnEmbraceTickEnemy"
+						"Function"				"OnEmbraceTickAlly"
+						"Damage"				"%total_damage"
+						"Radius"				"%radius"
+					}
+				}
+			}
+			"modifier_suns_embrace_eclipse"
+			{
+				"StatusEffectName"     	"particles/status_fx/status_effect_guardian_angel.vpcf"
+				"StatusEffectPriority" 	"10"
+				"Duration"				"%duration"
+				"ThinkInterval" 		"0.5"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE"		"%bonus_damage"
+				}
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_halo_buff.vpcf"
+						"EffectAttachType"	"follow_overhead"
+						"Target"			"TARGET"
+					}
+
+				 	"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_ally.vpcf"
+						"EffectAttachType"	"follow_origin"
+						"EffectRadius"		"%radius"
+						"Target"			"TARGET"
+					}
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+				}
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"gawain_ability"
+						"Function"			"OnEmbraceEnd"
+					}
+				}
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceTickAlly"
+						"Damage"				"%total_damage"
 						"Radius"				"%radius"
 					}
 				}
@@ -22059,6 +22150,7 @@
 						"Damage"				"%total_damage"
 					}
 				}
+
 			}
 			"modifier_suns_embrace_sunlight_bonus"
 			{
@@ -30602,8 +30694,8 @@
 			}
 			"revoked"
 			{
-				"TextureName"	"custom/revoked"
-				"IsDebuff"		"1"
+				"TextureName"			"custom/revoked"
+				"IsDebuff"				"1"
 				"EffectName"			"particles/units/heroes/hero_bounty_hunter/bounty_hunter_track_shield_mark.vpcf"
 				"EffectAttachType"		"follow_overhead"
 			}

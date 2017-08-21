@@ -123,6 +123,8 @@ end
 function OnGaeCastStart(keys)
 	local caster = keys.caster
 	local particleName
+	caster.IsADoubleSpearStrike = false
+
 	if keys.ability == caster:FindAbilityByName("diarmuid_gae_buidhe") then
 		caster:EmitSound("ZL.Buidhe_Cast")
 		particleName = "particles/custom/diarmuid/diarmuid_gae_cast.vpcf"
@@ -146,6 +148,10 @@ function OnBuidheStart(keys)
 	local nStacks = keys.nStacks
 	local unitReduction = keys.unitReduction
 	local currentStack = target:GetModifierStackCount("modifier_gae_buidhe", keys.ability)
+
+	if keys.IsDouble == 0 then
+		caster.IsADoubleSpearStrike = false
+	end
 
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
 
@@ -209,37 +215,44 @@ function OnBuidheStart(keys)
 	Timers:CreateTimer( 2.0, function()
 		ParticleManager:DestroyParticle( dagon_particle, false )
 		ParticleManager:ReleaseParticleIndex( dagon_particle )
-	end)
+	end)	
 
-	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and (not caster.IsADoubleSpearStrike) and caster:GetMana() >= 300  then
-	-- and caster:FindAbilityByName("diarmuid_gae_dearg"):IsCooldownReady() and caster:GetMana() >= 550 then
-		--print("Double spear activated")
-		local dearg = caster:FindAbilityByName("diarmuid_gae_dearg")
-		local minDamage = dearg:GetLevelSpecialValueFor("min_damage", dearg:GetLevel()-1)
-		local maxDamage = dearg:GetLevelSpecialValueFor("max_damage", dearg:GetLevel()-1)
-		keys.MinDamage = minDamage * 0.5
-		keys.MaxDamage = maxDamage * 0.5
+	if caster.IsDoubleSpearAcquired then
+		local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
+		caster.IsDoubleSpearReady = doublestrike:GetToggleState()
 
-		Timers:CreateTimer(0.1, function()
-			--caster:FindAbilityByName("diarmuid_gae_dearg"):StartCooldown(32)
-			--local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
-			--doublestrike:StartCooldown(55)
-			--if doublestrike:GetToggleState() == true then
-			--	doublestrike:ToggleAbility()
-			--end
+		if caster.IsDoubleSpearReady and (not caster.IsADoubleSpearStrike) and caster:GetMana() >= 300 then
+			local dearg = caster:FindAbilityByName("diarmuid_gae_dearg")
+			local minDamage = dearg:GetLevelSpecialValueFor("min_damage", dearg:GetLevel()-1)
+			local maxDamage = dearg:GetLevelSpecialValueFor("max_damage", dearg:GetLevel()-1)
+			keys.MinDamage = minDamage * 0.5
+			keys.MaxDamage = maxDamage * 0.5
+			keys.IsDouble = 1		
 			caster.IsADoubleSpearStrike = true
-			caster:SetMana(caster:GetMana() - 300)
-			--[[Timers:CreateTimer(55.2, function()
-				if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
-					doublestrike:ToggleAbility()
-				end
-			end)]]
-			OnDeargStart(keys)
-		end)		
-		--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
-	end
-	caster.IsADoubleSpearStrike = false
+
+			Timers:CreateTimer(0.1, function()
+				
+				caster:SetMana(caster:GetMana() - 300)			
+				OnDeargStart(keys)
+			end)
+		end
+	end	
 end
+
+--[[Timers:CreateTimer(55.2, function()
+	if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
+		doublestrike:ToggleAbility()
+	end
+end)]]
+--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
+--caster:FindAbilityByName("diarmuid_gae_dearg"):StartCooldown(32)
+--local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
+--doublestrike:StartCooldown(55)
+--if doublestrike:GetToggleState() == true then
+--	doublestrike:ToggleAbility()
+--end
+-- and caster:FindAbilityByName("diarmuid_gae_dearg"):IsCooldownReady() and caster:GetMana() >= 550 then
+--print("Double spear activated")
 
 function OnBuidheOwnerDeath(keys)
 	local caster = keys.caster
@@ -258,6 +271,11 @@ function OnDeargStart(keys)
 	local caster = keys.caster
 	local target = keys.target
 	local ply = caster:GetPlayerOwner()
+
+	if keys.IsDouble == 0 then
+		caster.IsADoubleSpearStrike = false
+	end
+
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
 
 	ApplyStrongDispel(target)
@@ -285,12 +303,8 @@ function OnDeargStart(keys)
 	end
 
 	if target:HasModifier("modifier_mark_of_mortality") then
-		target:AddNewModifier(caster, target, "revoked", 2)
-
-		--[[local detonateDamage = target:GetMaxHealth() * caster:FindAbilityByName("diarmuid_gae_dearg"):GetSpecialValueFor("mortality_pct")/100
-		DoDamage(caster, target, detonateDamage, DAMAGE_TYPE_PURE, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, keys.ability, false)
-		print("Detonate")
-		target:RemoveModifierByName("modifier_mark_of_mortality")]]
+		giveUnitDataDrivenModifier(caster, target, "revoked", 1.5)
+		target:RemoveModifierByName("modifier_mark_of_mortality")	
 	end
 
 	EmitGlobalSound("ZL.Gae_Dearg")
@@ -307,35 +321,40 @@ function OnDeargStart(keys)
 		ParticleManager:ReleaseParticleIndex( dagon_particle )
 	end)
 
-	if caster.IsDoubleSpearAcquired and caster.IsDoubleSpearReady and (not caster.IsADoubleSpearStrike) and caster:GetMana() >= 200 then
-		--caster:FindAbilityByName("diarmuid_gae_buidhe"):IsCooldownReady() and 
-		--print("Double spear activated")
-		local buidhe = caster:FindAbilityByName("diarmuid_gae_buidhe")
-		keys.Damage = buidhe:GetLevelSpecialValueFor("damage", buidhe:GetLevel()-1)
-		keys.Damage = keys.Damage * 0.5
-		keys.ability = buidhe
-		caster.IsADoubleSpearStrike = true
+	if caster.IsDoubleSpearAcquired then
+		local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
+		caster.IsDoubleSpearReady = doublestrike:GetToggleState()
 
-		Timers:CreateTimer(0.1, function()
-			--[[caster:FindAbilityByName("diarmuid_gae_buidhe"):StartCooldown(32)
+		if caster.IsDoubleSpearReady and (not caster.IsADoubleSpearStrike) and caster:GetMana() >= 200 then
+			local buidhe = caster:FindAbilityByName("diarmuid_gae_buidhe")
+			keys.Damage = buidhe:GetLevelSpecialValueFor("damage", buidhe:GetLevel()-1)
+			keys.Damage = keys.Damage * 0.5
+			keys.ability = buidhe
+			keys.IsDouble = 1
+			caster.IsADoubleSpearStrike = true
+
+			Timers:CreateTimer(0.1, function()
+				caster:SetMana(caster:GetMana() - 200)
+				OnBuidheStart(keys)
+			end)		
+		end
+	end
+end
+--[[local detonateDamage = target:GetMaxHealth() * caster:FindAbilityByName("diarmuid_gae_dearg"):GetSpecialValueFor("mortality_pct")/100
+		DoDamage(caster, target, detonateDamage, DAMAGE_TYPE_PURE, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, keys.ability, false)
+		print("Detonate")]]
+--[[caster:FindAbilityByName("diarmuid_gae_buidhe"):StartCooldown(32)
 			local doublestrike = caster:FindAbilityByName("diarmuid_double_spear_strike")
 			doublestrike:StartCooldown(55)
 			if doublestrike:GetToggleState() == true then
 				doublestrike:ToggleAbility()
 			end]]
-			caster:SetMana(caster:GetMana() - 200)
-			--[[Timers:CreateTimer(55.2, function()
+--[[Timers:CreateTimer(55.2, function()
 				if doublestrike:IsCooldownReady() and not doublestrike:GetToggleState() then 
 					doublestrike:ToggleAbility()
 				end
 			end)]]
-			OnBuidheStart(keys)
-		end)
-		--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
-	end
-
-	caster.IsADoubleSpearStrike = false
-end
+			--caster:CastAbilityOnTarget(target, caster:FindAbilityByName("diarmuid_gae_dearg"), caster:GetPlayerID())
 
 function PlayGaeEffect(target)
 	local culling_kill_particle = ParticleManager:CreateParticle("particles/units/heroes/hero_axe/axe_culling_blade_kill.vpcf", PATTACH_CUSTOMORIGIN, target)

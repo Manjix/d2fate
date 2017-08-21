@@ -96,6 +96,8 @@ function OnDevoteHit(keys)
 
 	if caster.IsSunlightAcquired then
 		target:AddNewModifier(caster, caster, "modifier_BOD_burn", {Duration = keys.BurnDuration})
+	elseif caster.IsEclipseAcquired then
+		caster.BonusDevoteDamage = 0
 	end	
 
 	target:EmitSound("Hero_Invoker.ColdSnap")
@@ -144,27 +146,6 @@ function OnBurnDamageTick(keys)
 
 	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
 end
-
---[[function OnBladeBurnTick(keys)
-	local caster = keys.caster
-	local target = keys.target
-	local damage = keys.Damage/10
-
-	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-end
-
-function OnGalatineBurnTick(keys)
-	local caster = keys.caster
-	local target = keys.target
-	local damage = keys.Damage
-	local dmg_type = DAMAGE_TYPE_MAGICAL	
-
-	if caster.IsSunlightAcquired then
-		dmg_type = DAMAGE_TYPE_PURE
-	end
-
-	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-end]]
 
 function OnGalatineStart(keys)
 	-- Declaring a bunch of stuffs
@@ -239,21 +220,6 @@ function OnGalatineStart(keys)
 			if caster:GetAbilityByIndex(5):GetAbilityName() == "gawain_excalibur_galatine_detonate" then
 				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_detonate", true, false)
 			end
-			-- When ball blew up at allies, we heal them
-			--[[local targets = FindUnitsInRadius(caster:GetTeam(), galatineDummy:GetAbsOrigin(), nil, galatineAOE, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
-			for k,v in pairs(targets) do
-				v:ApplyHeal(keys.Damage * 33/100, caster)
-				-- Apply HoT if Gawain is a Sunbro
-				if caster.IsSunlightAcquired then
-					local healTimer = 1
-					Timers:CreateTimer(1.0, function()
-						if healTimer > 3 then return end
-						v:ApplyHeal(keys.Damage * 11/100, caster)
-						healTimer = healTimer + 1
-						return 1.0
-					end)
-				end
-			end]]
 
 			-- Explosion on enemies
 			local targets = FindUnitsInRadius(caster:GetTeam(), galatineDummy:GetAbsOrigin(), nil, galatineAOE, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
@@ -271,10 +237,10 @@ function OnGalatineStart(keys)
 					-- Blow up for more damage if they're near center
 					local distFromCenter = (galatineDummy:GetAbsOrigin() - v:GetAbsOrigin()):Length2D()
 					local multiplier = 0
-					if distFromCenter < 100 then 
+					if distFromCenter < 200 then 
 						multiplier = 1.25
 					else
-						multiplier = 1.25 - (distFromCenter-100)/400 * 0.25
+						multiplier = 1.25 - (distFromCenter-200)/galatineAOE * 0.25
 					end
 					DoDamage(caster, v, keys.Damage * multiplier , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
 				end
@@ -321,29 +287,13 @@ function OnEmbraceStart(keys)
 
 	GenerateArtificialSun(caster, target:GetAbsOrigin())
 
-	--if target:GetTeamNumber() == caster:GetTeamNumber() then
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_suns_embrace_ally",{})
-
-	-- process team effect
-	local healthDiff = target:GetMaxHealth() - target:GetHealth()
-	local targetMR = target:GetMagicalArmorValue()
-	local targetActualMR = targetMR + (1-targetMR)*targetMR -- calculates actual MR of target after application of Sun's Embrace
-	--print(targetActualMR)
-	local healAmount = healthDiff * targetActualMR  
-	target:ApplyHeal(healAmount, caster)
-
-	--[[if caster.IsSunlightAcquired then
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_suns_embrace_sunlight_bonus",{})
-	end]]
-	--[[else
-		-- process enemy effect
-		--DoDamage(caster, target, keys.Damage, DAMAGE_TYPE_PHYSICAL, 0, keys.ability, false)
-		if IsSpellBlocked(keys.target) then return end
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_suns_embrace_enemy",{})
-		if caster.IsEclipseAcquired then
-			target:AddNewModifier(caster, caster, "modifier_stunned", {Duration = 1.5})
-		end
-	end]]
+	if caster.IsSunlightAcquired then
+		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_suns_embrace_sunlight",{})		
+	elseif caster.IsEclipseAcquired then
+		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_suns_embrace_eclipse",{})
+	else
+		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_suns_embrace_standard",{})
+	end
 
 	target:EmitSound("Hero_EmberSpirit.FlameGuard.Cast")
 	target:EmitSound("Hero_EmberSpirit.FlameGuard.Loop")
@@ -581,9 +531,10 @@ function OnFairyDamageTaken(keys)
 	local currentHealth = caster:GetHealth()
 
 	if currentHealth == 0 and keys.ability:IsCooldownReady() and IsRevivePossible(caster) then
-		caster:SetHealth(500)
+		caster:SetHealth(300)
 		keys.ability:StartCooldown(60) 
 		ability:ApplyDataDrivenModifier(caster, caster, "modifier_gawain_blessing_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
+		ability:ApplyDataDrivenModifier(caster, caster, "modifier_gawain_revive_regen", {duration = 3})
 		local particle = ParticleManager:CreateParticle("particles/items_fx/aegis_respawn.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 		ParticleManager:SetParticleControl(particle, 3, caster:GetAbsOrigin())
 		Timers:CreateTimer( 3.0, function()
