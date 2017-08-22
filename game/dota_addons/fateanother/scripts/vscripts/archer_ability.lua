@@ -65,8 +65,7 @@ function FarSightVision(keys)
 	--visiondummy:EmitSound("Hero_KeeperOfTheLight.BlindingLight") 
 	Timers:CreateTimer(0.033, function()
 		EmitSoundOnLocationWithCaster(targetLoc, "Hero_KeeperOfTheLight.BlindingLight", visiondummy)
-	end)
-		
+	end)		
 end
 
 function FarSightEnd(dummy)
@@ -76,41 +75,118 @@ end
 
 function KBStart(keys)
 	local caster = keys.caster
-	local target = keys.target
+	local target = keys.Target
 	local ability = keys.ability
-	local ply = caster:GetPlayerOwner()
 
-	local info = {
-		Target = target, -- chainTarget
-		Source = caster, -- chainSource
-		Ability = ability,
-		EffectName = "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf",
-		vSpawnOrigin = caster:GetAbsOrigin(),
-		iMoveSpeed = 1000
-	}
-	ProjectileManager:CreateTrackingProjectile(info) 
-	
-	--[[if caster.IsOveredgeAcquired then
-		GrantOveredgeStack(caster)
+	local ply = caster:GetPlayerOwner()
+	local forward = ( keys.target_points[1] - caster:GetOrigin() ):Normalized()
+	local origin = keys.caster:GetOrigin()
+	local target_destination = keys.target_points[1]
+
+	local forwardVec = caster:GetForwardVector()
+	local leftVec = Vector(-forwardVec.y, forwardVec.x, 0)
+	local rightVec = Vector(forwardVec.y, -forwardVec.x, 0)
+
+	-- Defaults the crossing point to 600 range in front of where Emiya is facing
+	if (math.abs(target_destination.x - origin.x) < 0.01) and (math.abs(target_destination.y - origin.y) < 0.01) then
+		target_destination = caster:GetForwardVector() * 600 + origin
 	end
 
-	if caster:HasModifier("modifier_ubw_death_checker") then
-		--print("UBW up")
-		keys.ability:EndCooldown()
-		keys.ability:StartCooldown(3.0)
-		caster:GiveMana(ability:GetManaCost(1))
-	end	
+	local lsword_origin = origin + leftVec * 75		-- Set left sword spawn location 75 distance to his left
+	lsword_origin.z = origin.z
+	local left_forward = (Vector(target_destination.x, target_destination.y, 0) - lsword_origin):Normalized()
+	left_forward.z = origin.z
+	local rsword_origin = origin + rightVec * 75	-- and the right sword 75 to his right
+	rsword_origin.z = origin.z
+	local right_forward = (Vector(target_destination.x, target_destination.y, 0) - rsword_origin):Normalized()	
+	right_forward.z = origin.z
 
-	if caster.IsProjectionImproved and caster:HasModifier("modifier_ubw_death_checker") then
-		local barrage = caster:FindAbilityByName("archer_5th_sword_barrage")
-		local barrageCD = barrage:GetCooldownTimeRemaining()
-		if barrageCD > 1 then
-			barrage:EndCooldown()
-			barrage:StartCooldown(barrageCD-1)
-		else
-			barrage:EndCooldown()
-		end
-	end]]
+	local lsword ={Ability = keys.ability,
+		EffectName = keys.EffectName,
+		iMoveSpeed = 650,
+		vSpawnOrigin = lsword_origin,
+		fDistance = 650,
+		Source = caster,
+		fStartRadius = 125,
+        fEndRadius = 125,
+		bHasFrontialCone = false,
+		bReplaceExisting = false,
+		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
+		iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
+		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
+		fExpireTime = GameRules:GetGameTime() + 1,
+		bDeleteOnHit = false,
+		vVelocity = left_forward * 900,
+	}	
+	--[[Ability = args.ability,
+        	EffectName = args.EffectName,
+        	vSpawnOrigin = caster:GetAbsOrigin(),
+        	fDistance = 2000,
+        	fStartRadius = 64,
+        	fEndRadius = 64,
+        	Source = caster,
+        	bHasFrontalCone = false,
+        	bReplaceExisting = false,
+        	iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
+        	iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
+        	iUnitTargetType = DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
+        	fExpireTime = GameRules:GetGameTime() + 10.0,
+		bDeleteOnHit = true,
+		vVelocity = caster:GetForwardVector() * 1800,]]
+
+	local rsword = {Ability = keys.ability,
+		EffectName = keys.EffectName,
+		iMoveSpeed = 650,
+		vSpawnOrigin = rsword_origin,
+		fDistance = 650,
+		Source = caster,
+		fStartRadius = 125,
+        fEndRadius = 125,
+		bHasFrontialCone = false,
+		bReplaceExisting = false,
+		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
+		iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
+		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
+		fExpireTime = GameRules:GetGameTime() + 1,
+		bDeleteOnHit = false,
+		vVelocity = right_forward * 900,
+	}
+
+	-- I have nfi wtf am I doing
+	-- Based this code off Salter's Vortigen coz I can't calculate vectors for whatever reason
+	-- Creates swords to shoot it toward the left and right at an angle
+	
+	-- Fire the projectile left and right swords	
+	Timers:CreateTimer(0.05, function()
+		local lprojectile = ProjectileManager:CreateLinearProjectile( lsword )		
+		
+		local fxIndex1 = ParticleManager:CreateParticle( "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf", PATTACH_CUSTOMORIGIN, caster )
+		ParticleManager:SetParticleControl( fxIndex1, 0, lsword_origin )
+		ParticleManager:SetParticleControl( fxIndex1, 1, lsword.vVelocity )
+		ParticleManager:SetParticleControl( fxIndex1, 2, left_forward )
+
+		Timers:CreateTimer(1, function()
+			ParticleManager:DestroyParticle( fxIndex1, false )
+			ParticleManager:ReleaseParticleIndex( fxIndex1 )
+			return nil
+		end)
+	end)
+
+	-- Right Sword
+	Timers:CreateTimer(0.25, function()
+		local rprojectile = ProjectileManager:CreateLinearProjectile( rsword )	
+		
+		local fxIndex2 = ParticleManager:CreateParticle( "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf", PATTACH_CUSTOMORIGIN, caster )
+		ParticleManager:SetParticleControl( fxIndex2, 0, rsword_origin )
+		ParticleManager:SetParticleControl( fxIndex2, 1, rsword.vVelocity )
+		ParticleManager:SetParticleControl( fxIndex2, 2, right_forward)
+		
+		Timers:CreateTimer(1, function()
+			ParticleManager:DestroyParticle( fxIndex2, false )
+			ParticleManager:ReleaseParticleIndex( fxIndex2 )
+			return nil
+		end)
+	end)		
 end
 
 function KBHit(keys)
@@ -118,32 +194,12 @@ function KBHit(keys)
 	local target = keys.target
 	local ply = caster:GetPlayerOwner()
 	local ability = keys.ability
-	local KBCount = 0
+	--local KBCount = 0
 
-	if caster.IsProjectionImproved then keys.DamagePerTick = keys.DamagePerTick + caster:GetIntellect() end
+	--if caster.IsProjectionImproved then keys.DamagePerTick = keys.DamagePerTick + caster:GetIntellect() end
 
-	Timers:CreateTimer(function() 
-		if KBCount == 4 then return end
-		DoDamage(keys.caster, keys.target, keys.DamagePerTick , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-		if caster:FindAbilityByName("archer_5th_overedge"):IsCooldownReady() == false then
-			local overedgeCD = caster:FindAbilityByName("archer_5th_overedge"):GetCooldownTimeRemaining()
-			caster:FindAbilityByName("archer_5th_overedge"):EndCooldown()
-			caster:FindAbilityByName("archer_5th_overedge"):StartCooldown(overedgeCD-1)
-			caster:RemoveModifierByName("modifier_overedge_cooldown")
-			caster:FindAbilityByName("archer_5th_overedge"):ApplyDataDrivenModifier(caster, caster, "modifier_overedge_cooldown", {duration = overedgeCD-1})
-		end
-		local KBHitFx = ParticleManager:CreateParticle("particles/econ/courier/courier_mechjaw/mechjaw_death_sparks.vpcf", PATTACH_CUSTOMORIGIN, caster)
-		ParticleManager:SetParticleControl(KBHitFx, 0, target:GetAbsOrigin()) 
-		-- Destroy particle after delay
-		Timers:CreateTimer( 2, function()
-			ParticleManager:DestroyParticle( KBHitFx, false )
-			ParticleManager:ReleaseParticleIndex( KBHitFx )
-		end)
-
-		caster:EmitSound("Hero_Juggernaut.OmniSlash.Damage")
-		KBCount = KBCount + 1
-		return 0.25
-	end)
+	DoDamage(keys.caster, keys.target, keys.Damage , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+	caster:EmitSound("Hero_Juggernaut.OmniSlash.Damage")
 end
 
 function OnBPCast(keys)
@@ -1109,7 +1165,7 @@ function OnHruntStart(keys)
 		Ability = keys.ability,
 		EffectName = "particles/custom/archer/archer_hrunting_orb.vpcf",
 		vSpawnOrigin = caster:GetAbsOrigin(),
-		iMoveSpeed = 3000,
+		iMoveSpeed = 4000,
 		iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_1,
 		bDodgeable = true
 	}

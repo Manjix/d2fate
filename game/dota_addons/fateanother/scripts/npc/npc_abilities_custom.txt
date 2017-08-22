@@ -4651,7 +4651,7 @@
 		"MaxLevel"						"5"
 		"RequiredLevel"					"1"
 		"LevelsBetweenUpgrades"			"1"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT_TARGET"
 		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
 		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_CREEP"
 		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
@@ -4669,26 +4669,21 @@
 		}
 		
 		"AbilityCastPoint"				"0.1"
-		"AbilityCastRange"				"500"
+		"AbilityCastRange"				"600"
 		"AbilityCooldown"				"8"
 		"AbilityManaCost"				"100"
 		
 		"AbilitySpecial"
-		{
+		{			
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bounce_number"				"4"
+				"damage"				"170 200 230 260 290"
 			}
 			"02"
 			{
-				"var_type"				"FIELD_INTEGER"
-				"damage_per_tick"				"90 105 120 135 150"
-			}
-			"03"
-			{
 				"var_type"				"FIELD_FLOAT"
-				"ubw_cooldown"				"3.0"
+				"att_bns"				"10 15 20 25 30"
 			}
 		}
 		
@@ -4698,6 +4693,9 @@
 			{
 				"ScriptFile"	"archer_ability"
 				"Function"		"KBStart"
+				"Target"		"POINT"
+				"EffectName"	"particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf"
+				"Damage"		"%damage"
 			}
 			"FireSound"
 			{
@@ -4711,7 +4709,7 @@
 			{
 				"ScriptFile"	"archer_ability"
 				"Function"		"KBHit"
-				"DamagePerTick"	"%damage_per_tick"
+				"Damage"		"%damage"
 			}
 		}
 
@@ -4737,10 +4735,10 @@
 		"AnimationPlaybackRate" 		"1.0"
 		"AOERadius"						"%radius"
 		
-		"AbilityCastPoint"				"0.5"
-		"AbilityChannelTime"			"2.0"		
-		"AbilityCastRange"				"3000"
-		"AbilityCastRangeBuffer"		"1500"
+		"AbilityCastPoint"				"0.25"
+		"AbilityChannelTime"			"1.0"		
+		"AbilityCastRange"				"2000"
+		"AbilityCastRangeBuffer"		"500"
 		"AbilityCooldown"				"20"
 		"AbilityManaCost"				"200"
 		
@@ -4757,12 +4755,12 @@
 			"01"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"cast_delay"			"2.5"
+				"cast_delay"			"1.25"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"target_damage"			"175 225 275 325 375"
+				"target_damage"			"125 175 225 275 325"
 			}
 
 			"03"
@@ -4778,17 +4776,17 @@
 			"05"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"stun_duration"			"1.0 1.3 1.6 1.9 2.2"
+				"stun_duration"			"1.0 1.0 1.5 1.5 2.0"
 			}
 			"06"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"range"					"3000"
+				"range"					"2000"
 			}
 			"07"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"total_damage"			"350 450 550 650 750"
+				"total_damage"			"300 400 500 600 700"
 			}
 		}
 
@@ -5743,8 +5741,8 @@
 			"particle"					"particles/econ/events/ti4/teleport_end_ti4.vpcf"
 			"particle"					"particles/custom/archer/archer_hrunting_orb.vpcf"
 			"particle"					"particles/custom/archer/archer_hrunting_area.vpcf"
-			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
-			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_mirana.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_mirana.vsndevts"
 		}
 		
 		"AbilityCastPoint"				"0.5"
@@ -5772,13 +5770,13 @@
 		{
 			"RunScript"
 			{
-				"ScriptFile"	"archer_ability"
-				"Function"		"OnHruntCast"
+				"ScriptFile"		"archer_ability"
+				"Function"			"OnHruntCast"
 			}
 			"FireSound"
 			{
-				"EffectName"	"Hero_Invoker.EMP.Charge"
-				"Target"		"CASTER"
+				"EffectName"		"Hero_Invoker.EMP.Charge"
+				"Target"			"CASTER"
 			}
 		}
 		
