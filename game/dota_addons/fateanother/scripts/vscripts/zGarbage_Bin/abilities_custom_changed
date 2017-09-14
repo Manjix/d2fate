@@ -1,0 +1,354 @@
+	//=====================================
+	// Archer : Sword Barrage - Confine
+	//=====================================
+	"archer_5th_sword_barrage_confine"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"25"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE"
+		"AbilityTextureName"			"custom/archer_5th_sword_barrage_confine"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_3"
+		"AnimationPlaybackRate" 		"2.0"
+		"AbilityCastPoint"				"0.2"
+		"AbilityCastRange"				"800"
+		"AbilityCooldown"				"19"
+		"AbilityManaCost"				"200"
+		
+		"precache"
+		{
+			"particle"				"particles/units/heroes/hero_dazzle/dazzle_weave_circle_trace.vpcf"
+			"particle"				"particles/custom/archer/ubw/confine_ring_trail.vpcf"
+			"particle"				"models/items/wraith_king/kings_spite_weapon/kings_spite_weapon.vmdl"
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"300 375 450 525 600"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"trap_duration"			"1.5 1.75 2.0 2.25 2.5"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"150"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"delay"					"0.5"
+			}
+		}
+
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"archer_ability"
+				"Function"			"OnUBWBarrageConfineStart"
+				"Target"			"POINT"
+				"Damage"			"%damage"
+				"Radius"			"%radius"
+				"Delay"				"%delay"
+				"TrapDuration"		"%trap_duration"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_sword_barrage_confine"
+			{
+				"IsDebuff"					"true"
+				"Duration"					"%duration"
+				"EffectName"				"particles/units/heroes/hero_dazzle/dazzle_weave_circle_trace.vpcf"	
+				"EffectAttachType"			"follow_origin"
+				"Properties"
+				{
+				}
+			}
+		}
+	}
+
+	//=================================================================================================================
+	// Archer : Kanshou Bakuya Overedge
+	//=================================================================================================================
+	"archer_5th_overedge"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_CREEP"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/archer_5th_overedge"
+		"AOERadius"						"%radius"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_4"
+		"AnimationPlaybackRate" 		"3.0"	
+		"precache"
+		{
+			"particle"					"particles/custom/archer/archer_overedge_slash.vpcf"
+			"particle"					"particles/units/heroes/hero_centaur/centaur_warstomp.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_phantom_lancer.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_centaur.vsndevts"
+		}
+		
+		// Casting
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"525"
+		"AbilityCastPoint"				"0.30"
+
+		// Time		
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCooldown"				"23"
+
+		// Cost
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityManaCost"				"400"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"radius"			"275"
+			}
+			"02"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"damage"			"450 575 700 825 950"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"archer_ability"
+				"Function"			"OnOveredgeStart"
+				"Target"			"POINT"
+				"Radius"			"%radius"
+				"Damage"			"%damage"
+			}
+		}
+
+		"Modifiers"
+		{			
+			"modifier_overedge_anim"
+			{
+				"OverrideAnimation"		"ACT_DOTA_ATTACK"
+				"Duration"				"0.6"
+			}			
+		}
+	}
+
+	//========================================
+	// Emiya : Hunter of the Red Plains
+	//========================================
+	"emiya_hunter_of_the_red_plains"
+	{
+		"BaseClass"						"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityTextureName"			"custom/lancelot_knight_of_honor"
+		"MaxLevel"						"1"
+		"RequiredLevel"					"25"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityCooldown"				"10"
+		"precache"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/emiya/hunter_of_the_red_plains"
+				"Function"			"OnWeaponSwitch"
+			}
+		}
+		
+		"Modifiers"
+		{
+			"modifier_hunter_of_the_red_plains_melee"
+			{
+				"IsHidden"				"1"
+				"IsPurgable"			"0"
+	
+				"EffectName"			"particles/units/heroes/hero_troll_warlord/troll_warlord_berserk_buff.vpcf"
+				"EffectAttachType"		"follow_origin"		
+
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT"	"%bonus_move_speed"
+				    "MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"		"%bonus_armor"
+				    "MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE"		"%bonus_damage"
+				}
+			}
+		}		
+	}
+
+
+	// Rewrite of the Troll Warlord Berserkers Rage ability
+	// Author: Pizzalol
+	// Date: 14.03.2015.
+	// NOTE: --------------------------------------------- THIS ABILITY REQUIRES troll_warlord_whirling_axes_ranged_datadriven AND troll_warlord_whirling_axes_melee_datadriven TO WORK CORRECTLY ---------------------------------
+	"troll_warlord_berserkers_rage_datadriven"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_TOGGLE | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityDamageType"				"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"troll_warlord_berserkers_rage"
+	
+		// Precache
+		//-------------------------------------------------------------------------------------------------------------
+		"precache"
+		{
+			//"soundfile"			"soundevents/game_sounds_heroes/game_sounds_troll_warlord.vsndevts"
+			//"particle"			"particles/units/heroes/hero_troll_warlord/troll_warlord_berserk_buff.vpcf"
+		}
+		
+		// Casting
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastPoint"				"0.2 0.2 0.2 0.2 0.2"
+	
+		// Special
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"15"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_move_speed"		"10 20 30 40"
+			}
+			"03"
+			{	
+				"var_type"				"FIELD_INTEGER"
+				"bonus_range"			"-372"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"base_attack_time"		"1.55"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_hp"				"100"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_armor"			"3"
+			}
+			"07"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bash_chance"			"10"
+			}
+			"08"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"bash_duration"			"0.8 1.2 1.6 2.0"
+			}
+			"09"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bash_damage"			"20 30 40 50"
+			}
+		}
+	
+		"OnToggleOn"
+		{
+			"FireSound"
+			{
+				"EffectName"			"Hero_TrollWarlord.BerserkersRage.Toggle"
+				"Target" 				"CASTER"
+			}
+	
+			"RunScript"
+			{
+				"ScriptFile"			"heroes/hero_troll_warlord/berserkers_rage.lua"
+				"Function"				"BerserkersRageAttackCapability"
+			}
+	
+			"ApplyModifier"
+			{
+				"ModifierName"			"modifier_berserkers_rage_datadriven"
+				"Target" 				"CASTER"
+			}
+	
+			"RunScript"
+			{
+				"ScriptFile"			"heroes/hero_troll_warlord/berserkers_rage.lua"
+				"Function"				"SwapAbilities"
+				"main_ability_name"		"troll_warlord_whirling_axes_ranged_datadriven"
+				"sub_ability_name"		"troll_warlord_whirling_axes_melee_datadriven"
+			}
+		}
+	
+		"OnToggleOff"
+		{
+			"FireSound"
+			{
+				"EffectName"			"Hero_TrollWarlord.BerserkersRage.Toggle"
+				"Target" 				"CASTER"
+			}
+	
+			"RunScript"
+			{
+				"ScriptFile"			"heroes/hero_troll_warlord/berserkers_rage.lua"
+				"Function"				"BerserkersRageAttackCapability"
+			}
+	
+			"RemoveModifier"
+			{
+				"ModifierName"			"modifier_berserkers_rage_datadriven"
+				"Target" 				"CASTER"
+			}
+	
+			"RunScript"
+			{
+				"ScriptFile"			"heroes/hero_troll_warlord/berserkers_rage.lua"
+				"Function"				"SwapAbilities"
+				"main_ability_name"		"troll_warlord_whirling_axes_melee_datadriven"
+				"sub_ability_name"		"troll_warlord_whirling_axes_ranged_datadriven"
+			}
+		}
+	
+		"Modifiers"
+		{
+			"modifier_hunter_of_the_red_plains_melee"
+			{
+				"IsHidden"				"1"
+				"IsPurgable"			"0"
+	
+				"EffectName"			"particles/units/heroes/hero_troll_warlord/troll_warlord_berserk_buff.vpcf"
+				"EffectAttachType"		"follow_origin"		
+
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_CONSTANT"	"%bonus_move_speed"
+				    "MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"		"%bonus_armor"
+				    "MODIFIER_PROPERTY_BASEATTACK_BONUSDAMAGE"		"%bonus_damage"
+				}
+			}
+		}
+	}
+
+	

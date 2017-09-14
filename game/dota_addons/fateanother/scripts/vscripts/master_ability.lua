@@ -146,13 +146,13 @@ NeroAttribute = {
 }
 
 GawainAttribute = {
-	"gawain_attribute_dawnbringer",
 	"gawain_attribute_blessing_of_fairy",
-	"gawain_attribute_divine_meltdown",
-	"gawain_attribute_sunlight",
-	"gawain_attribute_eclipse",
-	"gawain_supernova",
-	attrCount = 5
+	"gawain_attribute_res_sov",
+	"gawain_attribute_saint_num",
+	"gawain_attribute_belt",
+	"gawain_excalibur_galatine_combo",
+	--"gawain_supernova",
+	attrCount = 4
 }
 
 TamamoAttribute = {

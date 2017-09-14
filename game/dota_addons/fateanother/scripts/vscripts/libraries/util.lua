@@ -214,7 +214,8 @@ donotlevel = {
     "true_assassin_protection_from_wind",
     "avenger_overdrive",
     "berserker_5th_reincarnation",
-    "archer_5th_overedge"
+    "archer_5th_rho_aias",
+    "gawain_saint"
 }
 
 CannotReset = {
@@ -227,7 +228,7 @@ CannotReset = {
     "saber_alter_max_mana_burst",
     "rider_5th_bellerophon_2",
     "archer_5th_hrunting",
-    "archer_5th_overedge",
+    "archer_5th_rho_aias",
     "archer_5th_arrow_rain",
     "berserker_5th_madmans_roar",
     "false_assassin_quickdraw",
@@ -563,7 +564,9 @@ function PlayBGM(player)
 end
 
 function LevelAllAbility(hero)
-    for i=0, 14 do
+    local x = 14
+    if hero:GetName() == "npc_dota_hero_ember_spirit" then x = 15 end
+    for i=0, x do
         local ability = hero:GetAbilityByIndex(i)
         if ability == nil then return end
         local level0 = false -- whether ability should be kept level 0 or not

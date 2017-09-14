@@ -88,27 +88,26 @@ function KBStart(keys)
 	local rightVec = Vector(forwardVec.y, -forwardVec.x, 0)
 
 	-- Defaults the crossing point to 600 range in front of where Emiya is facing
-	if (math.abs(target_destination.x - origin.x) < 0.01) and (math.abs(target_destination.y - origin.y) < 0.01) then
+	if (math.abs(target_destination.x - origin.x) < 500) and (math.abs(target_destination.y - origin.y) < 500) then
 		target_destination = caster:GetForwardVector() * 600 + origin
 	end
 
 	local lsword_origin = origin + leftVec * 75		-- Set left sword spawn location 75 distance to his left
-	lsword_origin.z = origin.z
+	--lsword_origin.z = origin.z
 	local left_forward = (Vector(target_destination.x, target_destination.y, 0) - lsword_origin):Normalized()
 	left_forward.z = origin.z
 	local rsword_origin = origin + rightVec * 75	-- and the right sword 75 to his right
-	rsword_origin.z = origin.z
+	--rsword_origin.z = origin.z
 	local right_forward = (Vector(target_destination.x, target_destination.y, 0) - rsword_origin):Normalized()	
 	right_forward.z = origin.z
 
 	local lsword ={Ability = keys.ability,
-		EffectName = keys.EffectName,
-		iMoveSpeed = 650,
+		iMoveSpeed = 1100,
 		vSpawnOrigin = lsword_origin,
-		fDistance = 650,
+		fDistance = 700,
 		Source = caster,
-		fStartRadius = 125,
-        fEndRadius = 125,
+		fStartRadius = 100,
+        fEndRadius = 100,
 		bHasFrontialCone = false,
 		bReplaceExisting = false,
 		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
@@ -116,32 +115,16 @@ function KBStart(keys)
 		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
 		fExpireTime = GameRules:GetGameTime() + 1,
 		bDeleteOnHit = false,
-		vVelocity = left_forward * 900,
-	}	
-	--[[Ability = args.ability,
-        	EffectName = args.EffectName,
-        	vSpawnOrigin = caster:GetAbsOrigin(),
-        	fDistance = 2000,
-        	fStartRadius = 64,
-        	fEndRadius = 64,
-        	Source = caster,
-        	bHasFrontalCone = false,
-        	bReplaceExisting = false,
-        	iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
-        	iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
-        	iUnitTargetType = DOTA_UNIT_TARGET_HERO + DOTA_UNIT_TARGET_BASIC,
-        	fExpireTime = GameRules:GetGameTime() + 10.0,
-		bDeleteOnHit = true,
-		vVelocity = caster:GetForwardVector() * 1800,]]
+		vVelocity = left_forward * 1100,
+	}		
 
-	local rsword = {Ability = keys.ability,
-		EffectName = keys.EffectName,
-		iMoveSpeed = 650,
+	local rsword = {Ability = keys.ability,		
+		iMoveSpeed = 1100,
 		vSpawnOrigin = rsword_origin,
-		fDistance = 650,
+		fDistance = 700,
 		Source = caster,
-		fStartRadius = 125,
-        fEndRadius = 125,
+		fStartRadius = 100,
+        fEndRadius = 100,
 		bHasFrontialCone = false,
 		bReplaceExisting = false,
 		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
@@ -149,44 +132,111 @@ function KBStart(keys)
 		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
 		fExpireTime = GameRules:GetGameTime() + 1,
 		bDeleteOnHit = false,
-		vVelocity = right_forward * 900,
+		vVelocity = right_forward * 1100,
 	}
 
-	-- I have nfi wtf am I doing
-	-- Based this code off Salter's Vortigen coz I can't calculate vectors for whatever reason
-	-- Creates swords to shoot it toward the left and right at an angle
+	local bonusSwords = 0
+	if caster.IsOveredgeAcquired then
+		bonusSwords = 1
+	end
 	
-	-- Fire the projectile left and right swords	
-	Timers:CreateTimer(0.05, function()
-		local lprojectile = ProjectileManager:CreateLinearProjectile( lsword )		
-		
-		local fxIndex1 = ParticleManager:CreateParticle( "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf", PATTACH_CUSTOMORIGIN, caster )
-		ParticleManager:SetParticleControl( fxIndex1, 0, lsword_origin )
-		ParticleManager:SetParticleControl( fxIndex1, 1, lsword.vVelocity )
-		ParticleManager:SetParticleControl( fxIndex1, 2, left_forward )
+	-- Fire the projectile left and right swords
+	local timeL = 0.05
+	for i = 1, 1+bonusSwords do		
+		Timers:CreateTimer(timeL, function()
+			local lprojectile = ProjectileManager:CreateLinearProjectile( lsword )		
+			local projectileDurationL = lsword.fDistance / lsword.iMoveSpeed 
+			local dmyLLoc = lsword_origin --+ left_forward * (lsword.fDistance + 50) --Vector(left_forward.x, left_forward.y, 0) * lsword.fDistance
+			local dummyL = CreateUnitByName("dummy_unit", dmyLLoc, false, caster, caster, caster:GetTeamNumber())
+			dummyL:FindAbilityByName("dummy_unit_passive"):SetLevel(1)
+			dummyL:SetForwardVector(left_forward)
 
-		Timers:CreateTimer(1, function()
-			ParticleManager:DestroyParticle( fxIndex1, false )
-			ParticleManager:ReleaseParticleIndex( fxIndex1 )
-			return nil
+			local fxIndex1 = ParticleManager:CreateParticle( "particles/custom/archer/emiya_kb_swords.vpcf", PATTACH_ABSORIGIN_FOLLOW, dummyL )
+			ParticleManager:SetParticleControl( fxIndex1, 0, dummyL:GetAbsOrigin() )
+
+			Timers:CreateTimer(function()
+				if IsValidEntity(dummyL) then
+					dmyLLoc = dmyLLoc + (lsword.iMoveSpeed * 0.05) * Vector(left_forward.x, left_forward.y, 0)
+					dummyL:SetAbsOrigin(dmyLLoc)
+					--print("still moving")
+					return 0.05
+				else
+					return nil
+				end
+			end)		
+
+			Timers:CreateTimer(projectileDurationL, function()
+				ParticleManager:DestroyParticle( fxIndex1, false )
+				ParticleManager:ReleaseParticleIndex( fxIndex1 )			
+				Timers:CreateTimer(0.05, function()
+					dummyL:RemoveSelf()
+					--print("dummy removed....")
+					return nil
+				end)
+
+				return nil
+			end)
 		end)
-	end)
+		timeL = timeL + 0.4
+		lsword.fDistance = lsword.fDistance + 50
+		lsword.fExpireTime = GameRules:GetGameTime() + 1 + timeL
+	end
 
 	-- Right Sword
-	Timers:CreateTimer(0.25, function()
-		local rprojectile = ProjectileManager:CreateLinearProjectile( rsword )	
-		
-		local fxIndex2 = ParticleManager:CreateParticle( "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf", PATTACH_CUSTOMORIGIN, caster )
-		ParticleManager:SetParticleControl( fxIndex2, 0, rsword_origin )
-		ParticleManager:SetParticleControl( fxIndex2, 1, rsword.vVelocity )
-		ParticleManager:SetParticleControl( fxIndex2, 2, right_forward)
-		
-		Timers:CreateTimer(1, function()
-			ParticleManager:DestroyParticle( fxIndex2, false )
-			ParticleManager:ReleaseParticleIndex( fxIndex2 )
-			return nil
+	local timeR = 0.25
+	for j = 1, 1+bonusSwords do		
+		Timers:CreateTimer(timeR, function()
+			local rprojectile = ProjectileManager:CreateLinearProjectile( rsword )	
+			local projectileDurationR = rsword.fDistance / rsword.iMoveSpeed 
+			local dmyRLoc = rsword_origin --+ right_forward * (rsword.fDistance + 50)
+			local dummyR = CreateUnitByName("dummy_unit", dmyRLoc, false, caster, caster, caster:GetTeamNumber())
+			dummyR:FindAbilityByName("dummy_unit_passive"):SetLevel(1)
+			dummyR:SetForwardVector(right_forward)	
+
+			local fxIndex2 = ParticleManager:CreateParticle( "particles/custom/archer/emiya_kb_swords.vpcf", PATTACH_ABSORIGIN_FOLLOW, dummyR )
+			ParticleManager:SetParticleControl( fxIndex2, 0, dummyR:GetAbsOrigin() )
+
+			Timers:CreateTimer(function()
+				if IsValidEntity(dummyR) then
+					dmyRLoc = dmyRLoc + (lsword.iMoveSpeed * 0.05) * Vector(right_forward.x, right_forward.y, 0)
+					--dummyR:GetForwardVector()					
+					dummyR:SetAbsOrigin(dmyRLoc)
+					return 0.05
+				else
+					return nil
+				end
+			end)
+			
+			Timers:CreateTimer(projectileDurationR, function()
+				ParticleManager:DestroyParticle( fxIndex2, false )
+				ParticleManager:ReleaseParticleIndex( fxIndex2 )
+
+				Timers:CreateTimer(0.05, function()
+				--print("Removing particle and dummy")
+					dummyR:RemoveSelf()
+					return nil
+				end)
+
+				return nil
+			end)
 		end)
-	end)		
+
+		timeR = timeR + 0.4
+		rsword.fDistance = rsword.fDistance + 50
+		rsword.fExpireTime = GameRules:GetGameTime() + 1 + timeR
+	end
+
+	if caster.IsOveredgeAcquired then
+		local stacks = 0
+
+		if caster:HasModifier("modifier_kanshou_byakuya_stock") then
+			stacks = caster:GetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability)
+			caster:RemoveModifierByName("modifier_kanshou_byakuya_stock") 		
+		end
+
+		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_kanshou_byakuya_stock", {duration=15.0}) 
+		caster:SetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability, stacks + 1)
+	end	
 end
 
 function KBHit(keys)
@@ -194,9 +244,14 @@ function KBHit(keys)
 	local target = keys.target
 	local ply = caster:GetPlayerOwner()
 	local ability = keys.ability
-	--local KBCount = 0
 
-	--if caster.IsProjectionImproved then keys.DamagePerTick = keys.DamagePerTick + caster:GetIntellect() end
+	local KBHitFx = ParticleManager:CreateParticle("particles/econ/courier/courier_mechjaw/mechjaw_death_sparks.vpcf", PATTACH_CUSTOMORIGIN, caster)
+	ParticleManager:SetParticleControl(KBHitFx, 0, target:GetAbsOrigin()) 
+	-- Destroy particle after delay
+	Timers:CreateTimer(0.5, function()
+		ParticleManager:DestroyParticle( KBHitFx, false )
+		ParticleManager:ReleaseParticleIndex( KBHitFx )
+	end)
 
 	DoDamage(keys.caster, keys.target, keys.Damage , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
 	caster:EmitSound("Hero_Juggernaut.OmniSlash.Damage")
@@ -403,7 +458,8 @@ function OnUBWCastStart(keys)
 		keys.ability:EndCooldown()
 		return
 	end 
-	EmitGlobalSound("Archer.UBW")
+	--EmitGlobalSound("Archer.UBW")
+	EmitGlobalSound("emiya_ubw7")
 	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", castDelay)
 	keys.ability:ApplyDataDrivenModifier(keys.caster, keys.caster, "modifier_ubw_freeze",{})
 	Timers:CreateTimer({
@@ -641,7 +697,8 @@ function EndUBW(caster)
     caster:SwapAbilities("archer_5th_clairvoyance", caster:GetAbilityByIndex(4):GetName(), true, false) 
     caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", true, false)
     caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", true, false) 
-    caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", true, false) 
+    --caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", true, false)
+    caster:SwapAbilities("emiya_chant_ubw", "archer_5th_nine_lives", true, false)  
     
     if caster:GetAbilityByIndex(4):GetName()=="archer_5th_clairvoyance" and caster:GetAbilityByIndex(7):GetName()=="archer_5th_hrunting" and caster:GetAbilityByIndex(10):GetName()=="archer_5th_sword_barrage" then
     	--print("fix for start hrunt start ubw end ubw end hrunt")
@@ -891,6 +948,7 @@ function OnUBWBarrageStart(keys)
 	local targetPoint = keys.target_points[1]
 	local radius = keys.Radius
 	local ply = caster:GetPlayerOwner()
+	
 	if caster.IsProjectionImproved then 
 		keys.Damage = keys.Damage + (caster:GetStrength() + caster:GetIntellect())*2
 	end	
@@ -901,7 +959,7 @@ function OnUBWBarrageStart(keys)
 	local forwardVec = ( targetPoint - caster:GetAbsOrigin() ):Normalized()
 	
 	Timers:CreateTimer( function()
-		if caster:HasModifier("modifier_sword_barrage") then			
+		if caster:HasModifier("modifier_sword_barrage") then
 			local swordVector = Vector(RandomFloat(-radius, radius), RandomFloat(-radius, radius), 0)
 			
 			-- Create sword particles
@@ -1005,7 +1063,7 @@ function OnUBWBarrageRetreatStart(keys)
 		FindClearSpaceForUnit(caster, caster:GetAbsOrigin(), true)
 	end)
 
-	giveUnitDataDrivenModifier(caster, caster, "pause_sealenabled", 0.5)
+	giveUnitDataDrivenModifier(caster, caster, "pause_sealenabled", 0.2)
 	caster:EmitSound("Archer.NineFinish")
 	StartAnimation(caster, {duration=0.5, activity=ACT_DOTA_ATTACK, rate=1.0})
 	rotateCounter = 1
@@ -1015,6 +1073,7 @@ function OnUBWBarrageRetreatStart(keys)
 		rotateCounter = rotateCounter + 1
 		return 0.03
 	end)
+
 	Timers:CreateTimer(function()
 		if counter > 6 then return end
 		local targetPoint = casterPos + forwardVec * interval * counter
@@ -1156,7 +1215,7 @@ function OnHruntStart(keys)
 	end
 	ability:StartCooldown(ability:GetCooldown(1))
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_hrunting_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
-	caster.HruntDamage =  250 + caster:FindAbilityByName("archer_5th_broken_phantasm"):GetLevel() * 100  + caster:GetMana()
+	caster.HruntDamage =  250 + caster:FindAbilityByName("archer_5th_broken_phantasm"):GetLevel() * 100  + (caster:GetMana() * 0.5)
 	caster:SetMana(0) 
 	
 	local info = {
@@ -1231,7 +1290,7 @@ function OnOveredgeStart(keys)
 	-- If it's, then we can't use it like that. Either cancel Overedge, or use a default one.
 	-- 2000 is a fixedNumber, just to check if dist is not valid. Over 2000 is surely wrong. (Max is close to 900)
 	if dist > 2000 then
-		dist = 500 --Default one
+		dist = 600 --Default one
 		--[[keys.ability:EndCooldown() --Cancel overedge
 		caster:GiveMana(600) 
 		return--]]
@@ -1239,7 +1298,7 @@ function OnOveredgeStart(keys)
 
 	if GridNav:IsBlocked(targetPoint) or not GridNav:IsTraversable(targetPoint) then
 		keys.ability:EndCooldown() 
-		caster:GiveMana(600) 
+		caster:GiveMana(400) 
 		SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Travel")
 		return 
 	end 
@@ -1252,7 +1311,7 @@ function OnOveredgeStart(keys)
     local archer = Physics:Unit(caster)
     caster:PreventDI()
     caster:SetPhysicsFriction(0)
-    caster:SetPhysicsVelocity(Vector(caster:GetForwardVector().x * dist, caster:GetForwardVector().y * dist, 800))
+    caster:SetPhysicsVelocity(Vector(caster:GetForwardVector().x * dist, caster:GetForwardVector().y * dist, 850))
     caster:SetNavCollisionType(PHYSICS_NAV_NOTHING)
     caster:FollowNavMesh(false)	
     caster:SetAutoUnstuck(false)
@@ -1415,8 +1474,8 @@ function OnOveredgeAcquired(keys)
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsOveredgeAcquired = true
 	hero.OveredgeCount = 0
-	hero:FindAbilityByName("archer_5th_overedge"):SetLevel(1)
-	hero:FindAbilityByName("archer_5th_overedge"):SetActivated(true)
+	--hero:FindAbilityByName("archer_5th_overedge"):SetLevel(1)
+	--hero:FindAbilityByName("archer_5th_overedge"):SetActivated(true)
 	--GrantOveredgeStack(hero)
 
 	-- Set master 1's mana 

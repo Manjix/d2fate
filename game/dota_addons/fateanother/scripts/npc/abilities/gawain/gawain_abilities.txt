@@ -1,0 +1,1723 @@
+"DOTAAbilities"
+{	
+	//=================================================================================================================
+	// Gawain : Numeral of the Saint
+	//=================================================================================================================
+	"gawain_saint"
+	{
+		"BaseClass"						"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"			"custom/gawain_attribute_sunlight"
+		"MaxLevel"						"1"
+		"RequiredLevel"					"25"
+		"LevelsBetweenUpgrades"			"1"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_stat"				"3"
+			}			
+		}
+		
+		"OnSpelLStart"
+		{
+		}
+		
+		"Modifiers"
+		{
+			"modifier_gawain_saint_bonus"
+			{
+				"Passive"			"1"
+				"IsHidden"			"1"
+				//"Aura"				"saber_alter_mana_shroud_aura_effect"
+				//"Aura_Radius"		"%Range"
+				//"Aura_Teams"		"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+				//"Aura_Types"		"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_CREEP"
+				//"Aura_Flags"  		"DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES"
+
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_stat"
+					"MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"		"%bonus_stat"
+					"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stat"
+					"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"			"%bonus_stat"
+					"MODIFIER_PROPERTY_STATS_INTELLIGENCE_BONUS"	"%bonus_stat"
+				}
+			}
+			//"saber_alter_mana_shroud_aura_effect"
+			//{
+			//	"Properties"
+			//	{
+			//		"MODIFIER_PROPERTY_MANA_REGEN_CONSTANT"		"%mana_regen_bonus"
+			//	}
+			//}
+		}
+	}
+
+	//=================================================================================================================
+	// Gawain : Blessing of Fairy
+	//=================================================================================================================
+	"gawain_blessing_of_fairy"
+	{
+		"BaseClass"						"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"			"custom/gawain_blessing_of_fairy"
+		"MaxLevel"						"1"
+		//"RequiredLevel"					"25"
+		//"LevelsBetweenUpgrades"			"1"
+		"AbilityCooldown"				"60"
+
+		"precache"
+		{
+			"particle"					"particles/items_fx/aegis_timer.vpcf"
+		}
+		
+		"OnSpellStart"
+		{
+			"ApplyModifier"
+			{
+				"ModifierName"			"modifier_gawain_revive"
+				"Target"				"CASTER"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_gawain_revive"
+			{
+				"Passive"				"1"
+				"IsHidden"				"1"
+				"OnTakeDamage"
+				{
+					"RunScript"
+					{
+						"ScriptFile"	"gawain_ability"
+						"Function"		"OnFairyDamageTaken"
+						"DamageTaken"	"%attack_damage"
+					}
+				}
+			}
+			"modifier_gawain_blessing_cooldown"
+			{
+				"IsDebuff"	"1"
+				"Attributes"			"MODIFIER_ATTRIBUTE_PERMANENT | MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE"
+			}
+			"modifier_gawain_revive_regen"
+			{
+				"Duration"				"5"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"     		"100"
+				}
+			}
+		}
+	}
+	
+
+	//=================================================================================================================
+	// Gawain : Heat
+	//=================================================================================================================
+	"gawain_heat"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityTextureName"			"custom/gawain_blade_of_the_devoted"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+		"AnimationPlaybackRate" 		"1.0"
+		
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_beam.vpcf"
+			"particle"					"particles/units/heroes/hero_phoenix/phoenix_fire_spirit_ground.vpcf"
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_sparks.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+			"particle"					"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+		}
+		
+		"AbilityCooldown"				"16"
+		"AbilityManaCost"				"100"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"20 40 60 80 100"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"bonus_attack_speed"	"30 40 50 60 70"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"6 7 8 9 10"
+			}			
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"burn_duration"			"8"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"300"
+			}
+		}
+
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"abilities/gawain/heat"
+				"Function"		"StartHeat"
+			}
+		}
+		"Modifiers"
+		{
+			"modifier_gawain_heat_radiance"
+			{
+				"EffectName"				"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+				"EffectAttachType"			"follow_origin"	
+				"Duration"					"%burn_duration"
+				"ThinkInterval"				"0.5"			
+				"OnCreated"
+				{
+					"FireSound"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"Hero_EmberSpirit.FlameGuard.Loop"
+					}
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+				}
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"abilities/gawain/heat"
+						"Function"				"StopSound"
+					}
+				}
+				"OnAttack"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"abilities/gawain/heat"
+						"Function"			"StackHeatDamage"
+						"Damage"			"%bonus_damage"
+					}
+				}
+
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"abilities/gawain/heat"
+						"Function"			"RadianceBurnEnemiesThink"
+						"Radius"			"%radius"
+						"Damage"			"%damage"
+					}
+				}
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"	"%bonus_attack_speed"
+				}
+			}
+
+			"modifier_gawain_heat_stack_damage"
+			{
+				"Duration"		"3.0"
+				"IsHidden"		"0"			
+			}					
+		}
+	}	
+
+	//=================================================================================================================
+	// Gawain : Blade of the Devoted
+	//=================================================================================================================
+	"gawain_blade_of_the_devoted"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityTextureName"			"custom/gawain_blade_of_the_devoted"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+		"AnimationPlaybackRate" 		"1.0"
+		
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_beam.vpcf"
+			"particle"					"particles/units/heroes/hero_phoenix/phoenix_fire_spirit_ground.vpcf"
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_sparks.vpcf"
+			"particle"					"particles/units/heroes/hero_doom_bringer/doom_infernal_blade_debuff.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+		}
+		
+		"AbilityCooldown"				"17 17 17 17 17"
+		"AbilityManaCost"				"200"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"400 475 550 625 700"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"bonus_speed"			"20 25 30 35 40"
+			}
+		}
+
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnDevoteStart"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_blade_of_the_devoted"
+			{
+				"Duration"					"5"
+				"OnAttackStart"
+				{
+					"ApplyModifier"
+					{
+						"ModifierName"		"modifier_blade_of_the_devoted_anim"
+						"Target"			"CASTER"
+						"Flags" 			"DOTA_UNIT_TARGET_FLAG_INVULNERABLE"
+					}
+				}
+				"OnAttackLanded"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"gawain_ability"
+						"Function"			"OnDevoteHit"
+						"Damage"			"%damage"
+					}
+				}			
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"%bonus_speed"
+				}	
+			}			
+			"modifier_blade_of_the_devoted_anim"
+			{
+				"OverrideAnimation"     "ACT_DOTA_ATTACK_EVENT"	
+				"Duration"				"0.5"
+				"IsHidden"				"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_OVERRIDE_ANIMATION_RATE"		"1.5"
+				}
+			}			
+		}
+	}
+
+	//=======================================
+	// Gawain : Sun of Galatine
+	//=======================================
+	"gawain_sun_of_galatine"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_CHANNELLED"
+		"AbilityTextureName"			"custom/gawain_suns_embrace"		
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_2"
+		"AbilityCastPoint"				"0.3"
+		"AbilityChannelTime"			"%channel_dur"
+
+		"AbilityCooldown"				"28"
+		"AbilityManaCost"				"400"
+
+		"precache"
+		{
+			"particle"					"particles/custom/gawain/gawain_meltdown.vpcf"
+			//"particle"					"particles/units/heroes/hero_phoenix/phoenix_supernova_reborn_shockwave.vpcf"
+			"particle"					"particles/custom/gawain/gawain_supernova_explosion.vpcf"
+			"particle"					"particles/custom/gawain/manjinx_gawain_e.vpcf"
+			//"particle"					"particles/econ/items/invoker/invoker_apex/invoker_sun_strike_team_blastup_immortal1.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_phoenix.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_warlock.vsndevts"
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{	
+				"var_type"			"FIELD_INTEGER"
+				"burn_damage"		"50 70 90 110 130"
+			}
+			"02"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"min_damage"		"300 350 400 450 500"
+			}
+			"03"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"max_damage"		"600 700 800 900 1000"
+			}
+			"04"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"Slow_Factor"		"25 30 35 40 45"
+			}
+			"05"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"area_of_effect"	"325"
+			}
+			"06"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"area_of_effect_2"	"600"
+			}
+			"07"
+			{
+				"var_type"			"FIELD_FLOAT"
+				"channel_dur"		"2.5"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/sun_of_galatine"
+				"Function"			"OnChannelStart"
+				"BurnDamage"		"%burn_damage"
+				"Radius"			"%area_of_effect"
+			}
+		}
+		"OnChannelFinish"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/sun_of_galatine"
+				"Function"			"OnChannelEnd"
+				"MinDamage"			"%min_damage"
+				"MaxDamage"			"%max_damage"
+				"Radius"			"%area_of_effect_2"
+			}
+		}
+		"OnChannelInterrupted"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/sun_of_galatine"
+				"Function"			"OnChannelEnd"
+				"MinDamage"			"%min_damage"
+				"MaxDamage"			"%max_damage"
+				"Radius"			"%area_of_effect_2"
+			}
+		}
+		"Modifiers"
+		{
+			"modifier_sun_of_galatine_self"
+			{
+				"Duration"			"2.0"
+			}
+			"modifier_sun_of_galatine_slow"
+			{				
+				"Duration"			"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"-%Slow_Factor"
+				}
+				
+			}
+		}
+	}
+
+	//=================================================================================================================
+	// Gawain : Excalibur Galatine
+	//=================================================================================================================
+	"gawain_excalibur_galatine"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"2"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/gawain_excalibur_galatine"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_2"
+		"AnimationPlaybackRate" 		"1.0"
+		"AOERadius"						"%radius"
+
+		
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_keeper_of_the_light/keeper_cast01.vpcf"
+			"particle"					"particles/units/heroes/hero_lina/lina_spell_light_strike_array.vpcf"
+			"particle"					"particles/custom/gawain/gawain_excalibur_galatine_orb.vpcf"
+			"particle"					"particles/units/heroes/hero_ember_spirit/ember_spirit_hit.vpcf"
+			"particle"					"particles/custom/saber_excalibur_circle.vpcf"
+			"particle"					"particles/custom/ruler/la_pucelle/la_pucelle_flame.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
+		}
+		
+		"AbilityCastPoint"				"0.15"
+		"AbilityCooldown"				"38"
+		"AbilityManaCost"				"800"
+		"AbilityCastRange"				"1500"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"cast_delay"			"1.75"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"damage"				"800 1025 1250 1475 1700"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"550"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"dot_damage"			"40 50 60 70 80"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"3"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"max_range"				"1500"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"    		"gawain_ability"
+				"Function"      		"OnGalatineStart"
+				"Target"				"POINT"
+				"Damage"				"%damage"
+				"BurnDamage"			"%dot_damage"
+				"Max_range"				"%max_range"
+				"Radius"				"%radius"
+			}
+			"ApplyModifier"
+			{
+				"ModifierName"			"modifier_excalibur_galatine_vfx"
+				"Target"				"CASTER"
+			}
+		}
+		
+		"Modifiers"
+		{		
+			"modifier_excalibur_galatine_vfx"
+			{
+				"Duration"		"1.75"
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"Target"			"TARGET"
+						"EffectName"		"particles/custom/saber_excalibur_circle.vpcf"
+						"EffectAttachType"	"follow_origin"
+						"EffectRadius"		"400"
+					}
+				}
+			}
+			"modifier_excalibur_galatine_anim"
+			{
+				"OverrideAnimation"     "ACT_DOTA_CAST_ABILITY_2"	
+				"Duration"				"1.5"
+				"IsHidden"				"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_OVERRIDE_ANIMATION_RATE"		"0.7"
+				}
+			}
+			"modifier_excalibur_galatine_burn"
+			{
+				"EffectName"			"particles/units/heroes/hero_doom_bringer/doom_infernal_blade_debuff.vpcf"
+				"EffectAttachType"		"follow_origin"			
+				"IsDebuff"				"1"
+				"Duration"				"%duration"
+				"ThinkInterval"			"0.25"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"gawain_ability"
+						"Function"			"OnBurnDamageTick"
+						"Damage"			"%dot_damage"
+					}
+				}
+			}
+		}
+	}
+
+	//=======================================
+	// Gawain : Detonate Excalibur Galatine
+	//=======================================
+	"gawain_excalibur_galatine_detonate"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"			"custom/gawain_excalibur_galatine"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"5"
+		"AbilityManaCost"				"0"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"gawain_ability"
+				"Function"				"OnGalatineDetonate"
+			}
+		}
+	}
+
+	//=================================================================================================================
+	// Gawain : Excalibur Galatine Reborn
+	//=================================================================================================================
+	"gawain_excalibur_galatine_combo"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"25"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/gawain_excalibur_galatine"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_2"
+		"AnimationPlaybackRate" 		"1.0"
+		"AOERadius"						"%radius"
+
+		
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_keeper_of_the_light/keeper_cast01.vpcf"
+			"particle"					"particles/units/heroes/hero_lina/lina_spell_light_strike_array.vpcf"
+			"particle"					"particles/custom/gawain/gawain_excalibur_galatine_orb.vpcf"
+			"particle"					"particles/units/heroes/hero_ember_spirit/ember_spirit_hit.vpcf"
+			"particle"					"particles/custom/saber_excalibur_circle.vpcf"
+			"particle"					"particles/custom/ruler/la_pucelle/la_pucelle_flame.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_lina.vsndevts"
+		}
+		
+		"AbilityCastPoint"				"0.15"
+		"AbilityCooldown"				"150"
+		"AbilityManaCost"				"800"
+		"AbilityCastRange"				"1500"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"cast_delay"			"1.75"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"damage"				"2500"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"550"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"dot_damage"			"100"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"5"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"max_range"				"1500"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"    		"abilities/gawain/excalibur_galatine_reborn"
+				"Function"      		"OnGalatineStart"
+				"Target"				"POINT"
+				"Damage"				"%damage"
+				"BurnDamage"			"%dot_damage"
+				"Max_range"				"%max_range"
+				"Radius"				"%radius"
+			}
+			"ApplyModifier"
+			{
+				"ModifierName"			"modifier_excalibur_galatine_vfx"
+				"Target"				"CASTER"
+			}
+		}
+		
+		"Modifiers"
+		{		
+			"modifier_excalibur_galatine_vfx"
+			{
+				"Duration"		"1.75"
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"Target"			"TARGET"
+						"EffectName"		"particles/custom/saber_excalibur_circle.vpcf"
+						"EffectAttachType"	"follow_origin"
+						"EffectRadius"		"400"
+					}
+				}
+			}
+			"modifier_excalibur_galatine_anim"
+			{
+				"OverrideAnimation"     "ACT_DOTA_CAST_ABILITY_2"	
+				"Duration"				"1.5"
+				"IsHidden"				"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_OVERRIDE_ANIMATION_RATE"		"0.7"
+				}
+			}
+			"modifier_excalibur_galatine_burn"
+			{
+				"EffectName"			"particles/units/heroes/hero_doom_bringer/doom_infernal_blade_debuff.vpcf"
+				"EffectAttachType"		"follow_origin"			
+				"IsDebuff"				"1"
+				"Duration"				"%duration"
+				"ThinkInterval"			"0.25"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"gawain_ability"
+						"Function"			"OnBurnDamageTick"
+						"Damage"			"%dot_damage"
+					}
+				}
+			}
+		}
+	}
+
+	//-------------------------------------------------
+	//=================================================================================================================
+	// Gawain : Solar Embodiment
+	//=================================================================================================================
+	"gawain_solar_embodiment"
+	{
+		"BaseClass"						"ability_datadriven"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+		"AbilityTextureName"			"custom/gawain_solar_embodiment"
+		"MaxLevel"						"2"
+		"RequiredLevel"					"25"
+		"LevelsBetweenUpgrades"			"1"
+
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_phoenix/phoenix_sunray_tgt_sphere.vpcf"
+			"particle"					"particles/custom/gawain/gawain_artificial_sun.vpcf"
+			"model"						"models/heroes/phoenix/phoenix_egg.vmdl"
+		}
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"sun_radius"			"666"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"9"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"defensive_bonus"		"3 6"
+			}
+		}
+		
+		"Modifiers"
+		{
+			"modifier_artificial_sun_aura"
+			{
+				"IsHidden"				"1"
+				"Aura"					"modifier_artificial_sun"
+				"Aura_Radius"			"%sun_radius"
+				"Aura_Teams"			"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+				"Aura_Types"			"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_CREEP "
+			}
+			
+			"modifier_artificial_sun"
+			{
+				"IsHidden"				"1"
+				//"Attributes"			"MODIFIER_ATTRIBUTE_MULTIPLE"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS"	"%defensive_bonus"
+					"MODIFIER_PROPERTY_EVASION_CONSTANT"			"%defensive_bonus"
+				}
+			}
+		}
+	}
+
+
+	//=======================================
+	// Gawain : Divine Meltdown
+	//=======================================
+	"gawain_divine_meltdown"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"			"custom/gawain_meltdown"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"90"
+		"AbilityManaCost"				"0"
+
+		"precache"
+		{
+			"particle"				"particles/custom/gawain/gawain_meltdown.vpcf"
+			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_doombringer.vsndevts"
+			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_warlock.vsndevts"
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnMeltdownStart"
+			}
+		}
+		"Modifiers"
+		{
+			"modifier_meltdown_cooldown"
+			{
+				"IsDebuff"	"1"
+				"Attributes"		"MODIFIER_ATTRIBUTE_PERMANENT | MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE"
+			}
+
+			"modifier_divine_meltdown"
+			{
+				"IsHidden"	"1"
+				"Duration"	"5.0"
+				"ThinkInterval"				"0.5"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"	"gawain_ability"
+						"Function"		"OnMeltdownThink"
+					}
+				}
+			}
+		}
+	}	
+
+	//=================================================================================================================
+	// Gawain : Invigorating Ray
+	//=================================================================================================================
+	"gawain_invigorating_ray"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_BOTH"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
+		"AbilityTextureName"			"custom/gawain_invigorating_ray"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_phoenix/phoenix_supernova_radiance.vpcf"
+			"particle"					"particles/items2_fx/radiance.vpcf"
+			"particle"					"particles/items2_fx/radiance_owner.vpcf"
+			"particle"					"particles/units/heroes/hero_lich/lich_frost_armor_model.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_omniknight.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_chen.vsndevts"
+		}
+		
+		// Ability stats
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"800"
+		"AbilityCastRangeBuffer"		"200"
+		"AbilityCastPoint"				"0.15"
+		"AbilityCooldown"				"15"
+		"AbilityManaCost"				"100"
+		
+		// Ability special
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"heal_amount"			"200 300 400 500 600"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"5"
+			}
+		}
+		
+		// Data driven
+		//-------------------------------------------------------------------------------------------------------------
+		"precache"						
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"gawain_ability"
+				"Function"				"OnIRStart"
+			}
+		}
+	
+		
+		"Modifiers"
+		{
+			"modifier_invigorating_ray_ally"
+			{
+				"EffectName"				"particles/units/heroes/hero_phoenix/phoenix_supernova_radiance.vpcf"
+				"EffectAttachType"			"follow_origin"
+				"Duration"					"%duration"
+				"ThinkInterval" 			"0.5"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnIRTickAlly"
+						"Damage"				"%heal_amount"
+					}
+				}
+			}
+			"modifier_invigorating_ray_enemy"
+			{
+				"EffectName"			"particles/units/heroes/hero_phoenix/phoenix_supernova_radiance.vpcf"
+				"EffectAttachType"		"follow_origin"
+				"IsDebuff"				"1"
+				"Duration"				"%duration"
+				"ThinkInterval" 		"0.5"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnIRTickEnemy"
+						"Damage"				"%heal_amount"
+					}
+				}
+			}
+			"modifier_invigorating_ray_armor_buff"
+			{
+				"EffectName"	"particles/units/heroes/hero_lich/lich_frost_armor_model.vpcf"
+				"EffectAttachType"	"follow_overhead"
+				"Duration"	"%duration"
+				"IsHidden"	"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"     		"20"
+					"MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS"		"30"
+				}
+			}
+		}
+	}
+
+	//=================================================================================================================
+	// Gawain : Sun's Embrace
+	//=================================================================================================================
+	"gawain_suns_embrace"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"2"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		//"AbilityUnitTargetTeam"		"DOTA_UNIT_TARGET_TEAM_BOTH"
+		//"AbilityUnitTargetType"		"DOTA_UNIT_TARGET_HERO"
+		"AbilityTextureName"			"custom/gawain_suns_embrace"
+		"AbilityType"					"DOTA_ABILITY_TYPE_ULTIMATE"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+		
+		// Ability stats
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"900"
+		"AbilityCastRangeBuffer"		"300"
+		"AbilityCastPoint"				"0.6"
+		"AbilityCooldown"				"24"
+		"AbilityManaCost"				"400"
+		
+		// Ability special
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"cast_delay"			"0.6"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"total_damage"			"600 800 1000 1200 1400"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"700"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"8"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"30 40 50 60 70"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_regen"			"30 40 50 60 70"
+			}
+		}
+		
+		"precache"						
+		{
+			"particle"				"particles/units/heroes/hero_omniknight/omniknight_purification.vpcf"
+			"particle"				"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_halo_buff.vpcf"
+			"particle"  			"particles/status_fx/status_effect_guardian_angel.vpcf"
+			"particle"  			"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_ally.vpcf"
+			"particle"				"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_phoenix.vsndevts"
+			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"gawain_ability"
+				"Function"				"OnEmbraceStart"
+			}
+			"FireEffect"
+			{
+				"Target"				"TARGET"
+				"EffectName"			"particles/units/heroes/hero_omniknight/omniknight_purification.vpcf"
+				"EffectAttachType"		"follow_origin"
+				"ControlPoints"
+				{
+					"00"				"0 0 0"
+					"01"				"%radius %radius %radius"
+				}
+			}
+		}
+	
+		
+		"Modifiers"
+		{
+			"modifier_suns_embrace_standard"
+			{
+				"StatusEffectName"     	"particles/status_fx/status_effect_guardian_angel.vpcf"
+				"StatusEffectPriority" 	"10"
+				"Duration"				"%duration"
+				"ThinkInterval" 		"0.5"
+
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_halo_buff.vpcf"
+						"EffectAttachType"	"follow_overhead"
+						"Target"			"TARGET"
+					}
+
+				 	"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_ally.vpcf"
+						"EffectAttachType"	"follow_origin"
+						"EffectRadius"		"%radius"
+						"Target"			"TARGET"
+					}
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+				}
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"gawain_ability"
+						"Function"			"OnEmbraceEnd"
+					}
+				}
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceTickAlly"
+						"Damage"				"%total_damage"
+						"Radius"				"%radius"
+					}
+				}
+			}
+			"modifier_suns_embrace_sunlight"
+			{
+				"StatusEffectName"     	"particles/status_fx/status_effect_guardian_angel.vpcf"
+				"StatusEffectPriority" 	"10"
+				"Duration"				"%duration"
+				"ThinkInterval" 		"0.5"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_HEALTH_REGEN_CONSTANT"		"%bonus_regen"
+				}
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_halo_buff.vpcf"
+						"EffectAttachType"	"follow_overhead"
+						"Target"			"TARGET"
+					}
+
+				 	"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_ally.vpcf"
+						"EffectAttachType"	"follow_origin"
+						"EffectRadius"		"%radius"
+						"Target"			"TARGET"
+					}
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+				}
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceEnd"
+					}
+				}
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceTickAlly"
+						"Damage"				"%total_damage"
+						"Radius"				"%radius"
+					}
+				}
+			}
+			"modifier_suns_embrace_eclipse"
+			{
+				"StatusEffectName"     	"particles/status_fx/status_effect_guardian_angel.vpcf"
+				"StatusEffectPriority" 	"10"
+				"Duration"				"%duration"
+				"ThinkInterval" 		"0.5"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"		"%bonus_damage"
+				}
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_halo_buff.vpcf"
+						"EffectAttachType"	"follow_overhead"
+						"Target"			"TARGET"
+					}
+
+				 	"AttachEffect"
+					{
+						"EffectName"		"particles/units/heroes/hero_omniknight/omniknight_guardian_angel_ally.vpcf"
+						"EffectAttachType"	"follow_origin"
+						"EffectRadius"		"%radius"
+						"Target"			"TARGET"
+					}
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+				}
+				"OnDestroy"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"gawain_ability"
+						"Function"			"OnEmbraceEnd"
+					}
+				}
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceTickAlly"
+						"Damage"				"%total_damage"
+						"Radius"				"%radius"
+					}
+				}
+			}
+			"modifier_suns_embrace_burn"
+			{
+				"EffectName"			"particles/units/heroes/hero_phoenix/phoenix_supernova_radiance.vpcf"
+				"EffectAttachType"		"follow_origin"
+				"Duration"		"0.5"
+				"IsDebuff"		"1"
+				"ThinkInterval" 		"0.25"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnEmbraceDamageTick"
+						"Damage"				"%total_damage"
+					}
+				}
+
+			}
+			"modifier_suns_embrace_sunlight_bonus"
+			{
+				"Duration"		"%duration"
+				"IsHidden"		"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MAGICAL_RESISTANCE_BONUS"	"30"
+				}
+			}		
+		}
+	}
+
+	//=================================================================================================================
+	// Gawain : Supernova
+	//=================================================================================================================
+	"gawain_supernova"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_FRIENDLY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO"
+		"AbilityTextureName"			"custom/gawain_supernova"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+
+		"precache"
+		{
+			"particle"					"particles/items_fx/black_king_bar_avatar.vpcf"
+			"particle"					"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+			"particle"					"particles/custom/gawain/gawain_supernova_explosion.vpcf"
+			"particle"					"particles/custom/screen_yellow_splash_gawain.vpcf"
+			"particle" 					"particles/units/heroes/hero_enigma/enigma_blackhole.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_enigma.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_wisp.vsndevts"
+		}
+		
+		// Ability stats
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"900"
+		"AbilityCastRangeBuffer"		"0"
+		"AbilityCastPoint"				"0.5"
+		"AbilityCooldown"				"190"
+		"AbilityManaCost"				"400"
+		
+		// Ability special
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"8"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"1000"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"1000"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"stun_duration"			"2"
+			}
+		}
+		
+		"precache"						
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"gawain_ability"
+				"Function"				"OnSupernovaStart"
+			}
+		}
+	
+		
+		"Modifiers"
+		{
+			"modifier_supernova_cooldown"
+			{
+				"IsDebuff"	"1"
+				"Attributes"			"MODIFIER_ATTRIBUTE_PERMANENT | MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE"
+			}
+	    	"modifier_supernova"
+	    	{
+	    		"Duration"						"8.0"
+				"ThinkInterval" 				"0.5"
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnSupernovaTick"
+					}
+				}
+	    		"OnCreated"
+	    		{
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/items_fx/black_king_bar_avatar.vpcf"
+						"EffectAttachType"		"follow_origin"
+					}
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+					"AttachEffect"
+					{
+						"EffectName"        	"particles/units/heroes/hero_enigma/enigma_blackhole_l.vpcf"
+						"EffectAttachType"  	"follow_origin"
+						"Target"            	"TARGET"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+	    		}
+	    		"OnDestroy"
+	    		{
+					"RunScript"
+					{
+						"ScriptFile"			"gawain_ability"
+						"Function"				"OnSupernovaEnd"
+						"Damage"				"%damage"
+					}
+	    		}
+				"States"
+				{
+					"MODIFIER_STATE_MAGIC_IMMUNE"	"MODIFIER_STATE_VALUE_ENABLED"
+				}
+	    	}
+		}
+	}
+
+	//=======================================
+	// Gawain Attribute : Blessing of Fairy
+	//=======================================
+	"gawain_attribute_blessing_of_fairy"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_blessing_of_fairy"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"12"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnFairyAcquired"
+			}
+		}
+
+		"Modifiers"
+		{
+
+		}
+	}
+	
+	//=======================================================
+	// Gawain Attribute : Resurrected Sword of Victory
+	//=======================================================
+	"gawain_attribute_res_sov"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_dawnbringer"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"15"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"gawain_ability"
+				"Function"			"OnSoVAcquired"
+			}
+		}
+	}
+
+	//=======================================================
+	// Gawain Attribute : Numeral of the Saint
+	//=======================================================
+	"gawain_attribute_saint_num"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_sunlight"	
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"17"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"gawain_ability"
+				"Function"			"OnNoSAcquired"
+			}
+		}
+	}
+
+
+
+	//=======================================
+	// Gawain Attribute : Belt of Bertilak
+	//=======================================
+	"gawain_attribute_belt"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_blade_of_the_devoted"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"12"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"gawain_ability"
+				"Function"				"OnBeltAcquired"
+			}
+		}
+	}	
+
+	//=======================================
+	// Gawain Attribute : Divine Meltdown
+	//=======================================
+	"gawain_attribute_divine_meltdown"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_divine_meltdown"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"11"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnMeltdownAcquired"
+			}
+		}
+	}
+
+	//=======================================
+	// Gawain Attribute : Sunlight
+	//=======================================
+	"gawain_attribute_sunlight"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_sunlight"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"17"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnSunlightAcquired"
+			}
+		}
+	}
+
+	//=======================================
+	// Gawain Attribute : Eclipse
+	//=======================================
+	"gawain_attribute_eclipse"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_eclipse"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"17"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnEclipseAcquired"
+			}
+		}
+	}
+	
+
+	//=======================================
+	// Gawain Attribute : Dawnbringer
+	//=======================================
+	"gawain_attribute_dawnbringer"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/gawain_attribute_blessing_of_fairy"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"12"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"gawain_ability"
+				"Function"		"OnDawnAcquired"
+			}
+		}
+
+		"Modifiers"
+		{
+
+		}
+	}
+}

@@ -1,0 +1,308 @@
+	//=================================================================================================================
+	// Gawain : Heat
+	//=================================================================================================================
+	"gawain_heat"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1 1 1 1 25"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityTextureName"			"custom/gawain_blade_of_the_devoted"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+		"AnimationPlaybackRate" 		"1.0"
+		
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_beam.vpcf"
+			"particle"					"particles/units/heroes/hero_phoenix/phoenix_fire_spirit_ground.vpcf"
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_sparks.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+			"particle"					"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+		}
+		
+		"AbilityCooldown"				"16"
+		"AbilityManaCost"				"100"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"20 40 60 80 100 120"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"attack_speed"			"20 40 60 80 100 120"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"6 7 8 9 10 11"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_attack_speed"	"20 40 60 80 100 120"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"burn_duration"			"8"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"300"
+			}
+		}
+
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"abilities/gawain/heat"
+				"Function"		"StartHeat"
+			}
+		}
+		"Modifiers"
+		{
+			"modifier_gawain_heat_radiance"
+			{
+				"EffectName"				"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+				"EffectAttachType"			"follow_origin"			
+				"IsDebuff"					"1"
+				"Duration"					"%burn_duration"
+				"ThinkInterval"				"0.5
+				"OnCreated"
+				{
+					"AttachEffect"
+					{
+						"Target"				"TARGET"
+						"EffectName"			"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+						"EffectAttachType"		"start_at_customorigin"
+						"ControlPointEntities"
+						{
+							"TARGET"			"attach_origin"
+							"TARGET"			"attach_origin"
+						}
+					}
+				}
+				"OnAttack"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"abilities/gawain/heat"
+						"Function"			"StackHeatDamage"
+						"Damage"			"%bonus_damage"
+					}
+				}
+
+				"OnIntervalThink"
+				{
+					"RunScript"
+					{
+						"ScriptFile"		"abilities/gawain/heat"
+						"Function"			"RadianceBurnEnemiesThink"
+						"Radius"			"%radius"
+						"Damage"			"%burn_damage"
+					}
+				}
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"	"%bonus_attack_speed"
+				}
+			}
+
+			"modifier_gawain_heat_stack_damage"
+			{
+				"Duration"		"3.0"
+				"IsHidden"		"0"
+				//"OnTakeDamage"
+				//{
+				//	"RunScript"
+				//	{
+				//		"ScriptFile"		"abilities/gawain/heat"
+				//		"Function"			"StackHeatDamage"
+				//		"Damage"			"%bonus_damage"
+				//	}
+				//}			
+			}					
+		}
+	}
+
+	//=================================================================================================================
+	// Gawain : Strike of Honor
+	//=================================================================================================================
+	"gawain_strike_of_honor"
+	{
+		// General
+		//-------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_NOT_LEARNABLE"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_CREEP"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/gawain_blade_of_the_devoted"
+		"AOERadius"						"%radius"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_4"
+		"AnimationPlaybackRate" 		"3.0"	
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_beam.vcpf"
+			"particle"					"particles/units/heroes/hero_centaur/centaur_warstomp.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_phantom_lancer.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_centaur.vsndevts"
+		}
+		
+		// Casting
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"500"
+		"AbilityCastPoint"				"0.80"
+
+		// Time		
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCooldown"				"60"
+
+		// Cost
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityManaCost"				"600"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"radius"			"250"
+			}
+			"02"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"charge_time"		"20"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/strike_of_honor"
+				"Function"			"OnStart"
+				"Target"			"POINT"
+				"Radius"			"%radius"
+			}
+		}
+	}
+
+	//=======================================
+	// Gawain : Sun of Galatine
+	//=======================================
+	"gawain_sun_of_galatine"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_CHANNELLED"
+		"AbilityTextureName"			"custom/gawain_meltdown"		
+		
+		"AbilityCastPoint"				"0.3"
+		"AbilityChannelTime"			"3"
+
+		"AbilityCooldown"				"28"
+		"AbilityManaCost"				"400"
+
+		"precache"
+		{
+			"particle"					"particles/custom/gawain/gawain_meltdown.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_phoenix.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_warlock.vsndevts"
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{	
+				"var_type"			"FIELD_INTEGER"
+				"burn_damage"		"70 80 90 100 110 120"
+			}
+			"02"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"min_damage"		"200 300 400 500 600 700"
+			}
+			"03"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"max_damage"		"400 600 800 1000 1200 1400"
+			}
+			"04"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"Slow_Factor"		"20 25 30 35 40"
+			}
+			"05"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"area_of_effect"	"400"
+			}
+			"06"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"area_of_effect_2"	"800"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/sun_of_galatine"
+				"Function"			"OnChannelStart"
+				"BurnDamage"		"%burn_damage"
+				"Radius"			"%area_of_effect"
+			}
+		}
+		"OnChannelFinish"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/sun_of_galatine"
+				"Function"			"OnChannelEnd"
+				"MinDamage"			"%min_damage"
+				"MaxDamage"			"%max_damage"
+				"Radius"			"%area_of_effect_2"
+			}
+		}
+		"OnChannelInterrupted"
+		{
+			"RunScript"
+			{
+				"ScriptFile"		"abilities/gawain/sun_of_galatine"
+				"Function"			"OnChannelEnd"
+				"MinDamage"			"%min_damage"
+				"MaxDamage"			"%max_damage"
+				"Radius"			"%area_of_effect_2"
+			}
+		}
+		"Modifiers"
+		{
+			"modifier_sun_of_galatine_self"
+			{
+				"Duration"			"3.0"
+			}
+			"modifier_sun_of_galatine_slow"
+			{				
+				"Duration"			"1"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"-%Slow_Factor"
+				}
+				
+			}
+		}
+	}

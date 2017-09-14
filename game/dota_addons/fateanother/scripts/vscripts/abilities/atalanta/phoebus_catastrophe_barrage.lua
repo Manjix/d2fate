@@ -86,7 +86,7 @@ function atalanta_phoebus_catastrophe_barrage:OnSpellStart()
                     Delay = 0.2,
                     DontUseArrow = true,
                     NoShock = true,
-		    DontCountArrow = true,
+                    DontCountArrow = true,
                     Slow = 0.4
                 })
             end)
