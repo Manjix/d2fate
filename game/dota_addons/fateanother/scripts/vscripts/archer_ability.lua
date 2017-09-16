@@ -101,36 +101,40 @@ function KBStart(keys)
 	local right_forward = (Vector(target_destination.x, target_destination.y, 0) - rsword_origin):Normalized()	
 	right_forward.z = origin.z
 
-	local lsword ={Ability = keys.ability,
+	local lsword ={
+		Ability = keys.ability,
+		EffectName = "",
 		iMoveSpeed = 1100,
 		vSpawnOrigin = lsword_origin,
 		fDistance = 700,
 		Source = caster,
 		fStartRadius = 100,
         fEndRadius = 100,
-		bHasFrontialCone = false,
+		bHasFrontialCone = true,
 		bReplaceExisting = false,
 		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
 		iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
 		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
-		fExpireTime = GameRules:GetGameTime() + 1,
+		fExpireTime = GameRules:GetGameTime() + 3,
 		bDeleteOnHit = false,
 		vVelocity = left_forward * 1100,
-	}		
+	}
 
-	local rsword = {Ability = keys.ability,		
+	local rsword = {
+		Ability = keys.ability,		
 		iMoveSpeed = 1100,
+		EffectName = "",
 		vSpawnOrigin = rsword_origin,
 		fDistance = 700,
 		Source = caster,
 		fStartRadius = 100,
         fEndRadius = 100,
-		bHasFrontialCone = false,
+		bHasFrontialCone = true,
 		bReplaceExisting = false,
 		iUnitTargetTeam = DOTA_UNIT_TARGET_TEAM_ENEMY,
 		iUnitTargetFlags = DOTA_UNIT_TARGET_FLAG_NONE,
 		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
-		fExpireTime = GameRules:GetGameTime() + 1,
+		fExpireTime = GameRules:GetGameTime() + 3,
 		bDeleteOnHit = false,
 		vVelocity = right_forward * 1100,
 	}
@@ -179,7 +183,7 @@ function KBStart(keys)
 		end)
 		timeL = timeL + 0.4
 		lsword.fDistance = lsword.fDistance + 50
-		lsword.fExpireTime = GameRules:GetGameTime() + 1 + timeL
+		lsword.fExpireTime = GameRules:GetGameTime() + 3 + timeL
 	end
 
 	-- Right Sword
@@ -223,7 +227,7 @@ function KBStart(keys)
 
 		timeR = timeR + 0.4
 		rsword.fDistance = rsword.fDistance + 50
-		rsword.fExpireTime = GameRules:GetGameTime() + 1 + timeR
+		rsword.fExpireTime = GameRules:GetGameTime() + 3 + timeR
 	end
 
 	if caster.IsOveredgeAcquired then
@@ -235,7 +239,11 @@ function KBStart(keys)
 		end
 
 		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_kanshou_byakuya_stock", {duration=15.0}) 
-		caster:SetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability, stacks + 1)
+		if stacks >= 4 then 
+			caster:SetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability, 4)
+		else	
+			caster:SetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability, stacks + 1)
+		end
 	end	
 end
 
@@ -441,6 +449,7 @@ end
 
 function OnUBWLevelUp(keys)
 	local caster = keys.caster
+
 	caster:FindAbilityByName("archer_5th_sword_barrage_retreat_shot"):SetLevel(keys.ability:GetLevel())
 	caster:FindAbilityByName("archer_5th_sword_barrage"):SetLevel(keys.ability:GetLevel())
 	caster:FindAbilityByName("archer_5th_sword_barrage_confine"):SetLevel(keys.ability:GetLevel())
@@ -458,6 +467,14 @@ function OnUBWCastStart(keys)
 		keys.ability:EndCooldown()
 		return
 	end 
+
+	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetOrigin(), nil, keys.Radius
+            , DOTA_UNIT_TARGET_TEAM_BOTH, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES + DOTA_UNIT_TARGET_FLAG_INVULNERABLE, FIND_ANY_ORDER, false)
+
+	for q,w in pairs(targets) do
+		giveUnitDataDrivenModifier(caster, w, "pause_sealdisabled", castDelay)
+	end
+
 	--EmitGlobalSound("Archer.UBW")
 	EmitGlobalSound("emiya_ubw7")
 	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", castDelay)
@@ -484,7 +501,6 @@ function OnUBWCastStart(keys)
 		end
 	end
 	})
-	ArcherCheckCombo(keys.caster, keys.ability)
 
 	-- DebugDrawCircle(caster:GetAbsOrigin(), Vector(255,0,0), 0.5, keys.Radius, true, 2.5)
 
@@ -534,7 +550,15 @@ function OnUBWStart(keys)
     caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
     caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", false, true) 
     caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", false, true) 
-    caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true) 
+    caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true)
+
+    if caster:GetAbilityByIndex(5):GetName() == "archer_5th_ubw" then
+    	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true) 
+    elseif caster:GetAbilityByIndex(5):GetName() == "emiya_chant_ubw" then
+    	caster:SwapAbilities("emiya_chant_ubw", "archer_5th_nine_lives", false, true) 
+    end
+
+    ArcherCheckCombo(keys.caster, keys.ability)
     -- Find eligible UBW targets
 	ubwTargets = FindUnitsInRadius(caster:GetTeam(), caster:GetOrigin(), nil, keys.Radius
             , DOTA_UNIT_TARGET_TEAM_BOTH, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES + DOTA_UNIT_TARGET_FLAG_INVULNERABLE, FIND_ANY_ORDER, false)
@@ -697,6 +721,7 @@ function EndUBW(caster)
     caster:SwapAbilities("archer_5th_clairvoyance", caster:GetAbilityByIndex(4):GetName(), true, false) 
     caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", true, false)
     caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", true, false) 
+    caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", true, false) 
     --caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", true, false)
     caster:SwapAbilities("emiya_chant_ubw", "archer_5th_nine_lives", true, false)  
     
@@ -783,15 +808,51 @@ function EndUBW(caster)
     Timers:RemoveTimer("ubw_timer")
 end
 
+--[[function GiveUBWAbilities(caster, ability)
+	caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_sword_barrage_retreat_shot", false, true) 
+	caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_sword_barrage_confine", false, true)
+	caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "emiya_gae_bolg", false, true) 
+
+	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
+	caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "archer_5th_nine_lives", false, true)
+
+	ArcherCheckCombo(caster, ability)
+
+	--[[caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", false, true) 
+	caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", false, true)
+	caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true) 
+
+	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
+	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true)
+end
+
+function ReturnNormalAbilities(caster, ability)
+	caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_kanshou_bakuya", false, true) 
+	caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_broken_phantasm", false, true)
+	caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "archer_5th_overedge", false, true) 
+
+	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
+	caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "archer_5th_nine_lives", false, true)
+
+	ArcherCheckCombo(caster, ability)
+
+	--[[caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", false, true) 
+	caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", false, true)
+	caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true) 
+
+	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
+	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true)
+end]]
+
 -- combo
 function OnRainStart(keys)
 	local caster = keys.caster
 	local ability = keys.ability
 	if not caster.IsUBWActive then return end
 
-	local rhoAiasAbility = caster:FindAbilityByName("archer_5th_rho_aias")
-	local rhoAiasCooldown = rhoAiasAbility:GetCooldown(rhoAiasAbility:GetLevel())
-	rhoAiasAbility:StartCooldown(rhoAiasCooldown)
+	local oedge = caster:FindAbilityByName("archer_5th_overedge")
+	local oedgecd = oedge:GetCooldown(oedge:GetLevel())
+	oedge:StartCooldown(oedgecd)
 
 	local ascendCount = 0
 	local descendCount = 0
@@ -1285,6 +1346,7 @@ function OnOveredgeStart(keys)
 	local targetPoint = keys.target_points[1]
 	local dist = (caster:GetAbsOrigin() - targetPoint):Length2D() * 10/6
 	local castRange = keys.castRange
+	local damage = keys.Damage
 
 	-- When you exit the ubw on the last moment, dist is going to be a pretty high number, since the targetPoint is on ubw but you are outside it
 	-- If it's, then we can't use it like that. Either cancel Overedge, or use a default one.
@@ -1323,6 +1385,13 @@ function OnOveredgeStart(keys)
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_overedge_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
 	caster:RemoveModifierByName("modifier_overedge_stack") ]]
 
+	local stacks = 0
+
+	if caster:HasModifier("modifier_kanshou_byakuya_stock") then
+		stacks = caster:GetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability)
+		caster:RemoveModifierByName("modifier_kanshou_byakuya_stock") 
+		damage = damage * (1 + 0.25 * stacks)		
+	end
 
 	Timers:CreateTimer({
 		endTime = 0.6,
@@ -1373,7 +1442,7 @@ function OnOveredgeStart(keys)
         local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetOrigin(), nil, keys.Radius
             , DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
 		for k,v in pairs(targets) do
-	         DoDamage(caster, v, 700 + 20 * caster:GetIntellect() , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+	         DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
 	    end
 	end
 	})
@@ -1382,12 +1451,14 @@ end
 
 function ArcherCheckCombo(caster, ability)
 	if caster:GetStrength() >= 19.1 and caster:GetAgility() >= 19.1 and caster:GetIntellect() >= 19.1 then
-		if ability == caster:FindAbilityByName("archer_5th_ubw") and caster:FindAbilityByName("archer_5th_rho_aias"):IsCooldownReady() and caster:FindAbilityByName("archer_5th_arrow_rain"):IsCooldownReady() then
-			caster:SwapAbilities("archer_5th_rho_aias", "archer_5th_arrow_rain", false, true) 
+		if ability == caster:FindAbilityByName("archer_5th_ubw") and caster:FindAbilityByName("archer_5th_arrow_rain"):IsCooldownReady() then
+			--and caster:FindAbilityByName("archer_5th_overedge"):IsCooldownReady() and		
+
+			caster:SwapAbilities("emiya_gae_bolg", "archer_5th_arrow_rain", false, true) 
 			Timers:CreateTimer({
 				endTime = 5,
 				callback = function()
-				caster:SwapAbilities("archer_5th_rho_aias", "archer_5th_arrow_rain", true, false) 
+				caster:SwapAbilities("emiya_gae_bolg", "archer_5th_arrow_rain", true, false) 
 			end
 			})			
 		end
@@ -1427,6 +1498,8 @@ function OnShroudOfMartinAcquired(keys)
 	hero.IsMartinAcquired = true
 	hero.ExtraARMORgained = 10
 
+	hero:FindAbilityByName("archer_5th_rho_aias"):SetLevel(1)
+
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))
@@ -1438,13 +1511,17 @@ function OnImproveProjectionAcquired(keys)
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	local ability = keys.ability
 	
-	if hero.IsProjectionImproved then
+	hero.IsProjectionImproved = true
+	hero.IsProjection2Improved = true
+	ability:StartCooldown(9999)
+
+	--[[if hero.IsProjectionImproved then
 		hero.IsProjection2Improved = true
 		ability:StartCooldown(9999)
 	else
 		hero.IsProjectionImproved = true
 		ability:EndCooldown()
-	end
+	end]]
 	
 
 	--caster:AddAbility("archer_5th_attribute_improve_projection_level2")

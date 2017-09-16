@@ -43,7 +43,7 @@
 					"MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"		"%bonus_stat"
 					"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%bonus_stat"
 					"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"			"%bonus_stat"
-					"MODIFIER_PROPERTY_STATS_INTELLIGENCE_BONUS"	"%bonus_stat"
+					"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"		"%bonus_stat"
 				}
 			}
 			//"saber_alter_mana_shroud_aura_effect"
@@ -127,7 +127,7 @@
 		"RequiredLevel"					"1"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
-		"AbilityTextureName"			"custom/gawain_blade_of_the_devoted"
+		"AbilityTextureName"			"custom/gawain_meltdown"
 		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
 		"AnimationPlaybackRate" 		"1.0"
 		
@@ -149,17 +149,17 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"damage"				"20 40 60 80 100"
+				"damage"				"40 55 70 85 100"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"bonus_attack_speed"	"30 40 50 60 70"
+				"bonus_attack_speed"	"40 50 60 70 80"
 			}
 			"03"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"6 7 8 9 10"
+				"bonus_damage"			"8 9 10 11 12"
 			}			
 			"04"
 			{
@@ -506,7 +506,7 @@
 			"02"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"damage"				"800 1025 1250 1475 1700"
+				"damage"				"800 1050 1300 1550 1800"
 			}
 			"03"
 			{
@@ -637,12 +637,12 @@
 		// General		//------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
 		"MaxLevel"						"1"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"25"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE"
+		"RequiredLevel"					"25"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
 		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
 		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
-		"AbilityTextureName"			"custom/gawain_excalibur_galatine"
+		"AbilityTextureName"			"custom/gawain_supernova"
 		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_2"
 		"AnimationPlaybackRate" 		"1.0"
 		"AOERadius"						"%radius"
@@ -702,7 +702,7 @@
 		{
 			"RunScript"
 			{
-				"ScriptFile"    		"abilities/gawain/excalibur_galatine_reborn"
+				"ScriptFile"    		"abilities/gawain/excalibur_galatine_combo"
 				"Function"      		"OnGalatineStart"
 				"Target"				"POINT"
 				"Damage"				"%damage"
@@ -759,6 +759,44 @@
 						"Damage"			"%dot_damage"
 					}
 				}
+			}
+			"modifier_galatine_combo_cd"
+			{
+				"IsDebuff"		"1"
+			}
+		}
+	}
+
+	//=======================================
+	// Gawain : Detonate Excalibur Galatine
+	//=======================================
+	"gawain_excalibur_galatine_detonate_combo"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"			"custom/gawain_supernova"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"5"
+		"AbilityManaCost"				"0"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"			"abilities/gawain/excalibur_galatine_combo"
+				"Function"				"OnGalatineDetonate"
 			}
 		}
 	}

@@ -4,65 +4,78 @@
     //==================================
     //  ERROR MESSAGES
     //==================================
-    "test_msg"    "TEST BOYS"
-    "Not_Enough_Gold_Item"   "Not Enough Gold(Items cost 50% more out of base)"
-    "Out_Of_Stock_C_Scroll"   "Can buy only up to 10 C Scrolls at base price"
-    "Not_Enough_Master_Mana"  "Not Enough Master Mana"
-    "Already_In_Marble"     "Already Within Reality Marble"
-    "Cannot_Travel"       "Cannot Travel to Targeted Location"
-    "Out_Of_Range"        "Out of Range"
-    "Cannot_Be_Cast_Now"    "Cannot be cast now"
-    "Cannot_Blink"        "Cannot Blink"
-    "Workshop_Exists"     "Workshop Already Exists"
-    "Cannot_Target_Self"    "Cannot Target Self"
-    "Caster_Out_Of_Radius"    "Caster must be within 500 radius of Workshop"
-    "Cannot_Unmount"      "Must Be Used on Traversable Terrain"
-    "Not_Enough_Madness"    "Not Enough Madness"
-    "Cannot_Summon"       "Cannot Summon Now"
-    "Tentacle_Out_Of_Radius"  "Must Target Within 500 Range from Caster"
-    "Cannot_Use_While_Integrated" "Cannot Use While Integrated"
-    "Entered_Base"        "Entered Base(Regular Item Cost)"
-    "Left_Base"       "Left Base(50% Additional Item Cost)"
-    "No_Items_Found"    "No Items Found in Chosen Slot of Stash"
-    "Invalid_Location"    "Invalid Location"
-    "Attribute_Not_Earned"  "Attribute Not Earned"
-    "Revoked_Error"     "Revoked From Master"
-    "Master_Not_Enough_Health"    "Not Enough Health(Wait for Health Reset from Holy Grail's Blessing)"
-    "Cannot_Get_Over_50_Stats"    "Cannot Acquire Over 50 Stat"
-    "Cannot_Acquire_Shard"      "Have Not Died 7 Times Yet"
-    "Presence_Detected"     "Enemy Servant's presence has been detected"
-
+    "test_msg"                                      "TEST BOYS"
+    "Not_Enough_Gold_Item"                          "Not Enough Gold(Items cost 50% more out of base)"
+    "Out_Of_Stock_C_Scroll"                         "Can buy only up to 10 C Scrolls at base price"
+    "Not_Enough_Master_Mana"                        "Not Enough Master Mana"
+    "Already_In_Marble"                             "Already Within Reality Marble"
+    "Cannot_Travel"                                 "Cannot Travel to Targeted Location"
+    "Out_Of_Range"                                  "Out of Range"
+    "Cannot_Be_Cast_Now"                            "Cannot be cast now"
+    "Cannot_Blink"                                  "Cannot Blink"
+    "Workshop_Exists"                               "Workshop Already Exists"
+    "Cannot_Target_Self"                            "Cannot Target Self"
+    "Caster_Out_Of_Radius"                          "Caster must be within 500 radius of Workshop"
+    "Cannot_Unmount"                                "Must Be Used on Traversable Terrain"
+    "Not_Enough_Madness"                            "Not Enough Madness"
+    "Cannot_Summon"                                 "Cannot Summon Now"
+    "Tentacle_Out_Of_Radius"                        "Must Target Within 500 Range from Caster"
+    "Cannot_Use_While_Integrated"                   "Cannot Use While Integrated"
+    "Entered_Base"                                  "Entered Base(Regular Item Cost)"
+    "Left_Base"                                     "Left Base(50% Additional Item Cost)"
+    "No_Items_Found"                                "No Items Found in Chosen Slot of Stash"
+    "Invalid_Location"                              "Invalid Location"
+    "Attribute_Not_Earned"                          "Attribute Not Earned"
+    "Revoked_Error"                                 "Revoked From Master"
+    "Master_Not_Enough_Health"                      "Not Enough Health (Wait for Health Reset from Holy Grail's Blessing)"
+    "Cannot_Get_Over_50_Stats"                      "Cannot Acquire Over 50 Stat"
+    "Cannot_Acquire_Shard"                          "Have Not Died 7 Times Yet"
+    "Presence_Detected"                             "Enemy Servant's presence has been detected"
 
     //==================================
     //  NEW VERSION
     //==================================
 
-    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted"  "Blade of the Devoted"
-    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted_Description"  "Saber enchants his blade, gaining bonus movespeed and granting special effect on his next base attack.\n<font color='#58ACFA'>On Ally</font> : Heals target.\n<font color='#58ACFA'>On Enemy</font> : Deals physical damage instead, and ministuns"
-    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted_Lore"     ""
-    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted_bonus_speed"      "%BONUS MOVESPEED:"
+    "DOTA_Tooltip_ability_gawain_attribute_res_sov"                 "The Resurrected Sword of Victory"
+    "DOTA_Tooltip_ability_gawain_attribute_res_sov_Description"     "Unleases the true power of Excalibur Galatine. \nIncreases the damage of Excalibur Galatine by 250 and the damage of Excalibur Galatine: The Resurrected Sword of Victory by 1000. Duration of the trail of fire left behind increased by 3 seconds."
 
-    "DOTA_Tooltip_ability_item_healing_scroll"  "Mass Heal Scroll"
-    "DOTA_Tooltip_ability_item_healing_scroll_Lore" ""
-    "DOTA_Tooltip_ability_item_healing_scroll_Description"  "Instantly restores health and grants bonus armor for yourself and all allies nearby.\n<font color='#FF0000'>\nItem costs 50%% more once you leave your base.</font>"
-    "DOTA_Tooltip_ability_item_healing_scroll_heal_amount"  "HEAL AMOUNT:"
-    "DOTA_Tooltip_ability_item_healing_scroll_armor_amount" "BONUS ARMOR AMOUNT:"
-    "DOTA_Tooltip_ability_item_healing_scroll_armor_duration"   "BONUS ARMOR DURATION:"
-    "DOTA_Tooltip_ability_item_healing_scroll_radius"   "RADIUS:"
+    "DOTA_Tooltip_ability_gawain_attribute_saint_num"               "Numeral of the Saint"
+    "DOTA_Tooltip_ability_gawain_attribute_saint_num_Description"   "The grace of the sun increases Gawain's strength. \nGrant Gawain 3 bonus health regeneration, 3 extra point of armor, 3%% more magic resist. \nSun of Galatine stuns for 1 second when it explodes if Gawain channels more than 1 second."
+
+    "DOTA_Tooltip_ability_gawain_attribute_belt"                    "Belt of Bertilak"
+    "DOTA_Tooltip_ability_gawain_attribute_belt_Description"        "The chivalry of Gawain increases his fighting prowess. \nBlade of the Devoted knocks enemies back twice as far and deals 50%% of Blade of the Devoted damage to them. Bonus damage from Heat is increased by 10."
+
+    //==================================
+    //  NEW VERSION
+    //==================================
+
+    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted"                      "Blade of the Devoted"
+    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted_Description"          "Saber enchants his blade, gaining bonus movespeed. The next base attack he does deals massive bonus damage, stunning the target and knocking back the target's allies."
+    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted_Lore"                 ""
+    "DOTA_Tooltip_ability_gawain_blade_of_the_devoted_bonus_speed"          "%BONUS MOVESPEED:"
+    //"DOTA_Tooltip_ability_gawain_blade_of_the_devoted_bonus_attack_speed"   "%BONUS ATTACK SPEED:"
+
+    "DOTA_Tooltip_ability_item_healing_scroll"                              "Mass Heal Scroll"
+    "DOTA_Tooltip_ability_item_healing_scroll_Lore"                         ""
+    "DOTA_Tooltip_ability_item_healing_scroll_Description"                  "Instantly restores health and grants bonus armor for yourself and all allies nearby.\n<font color='#FF0000'>\nItem costs 50%% more once you leave your base.</font>"
+    "DOTA_Tooltip_ability_item_healing_scroll_heal_amount"                  "HEAL AMOUNT:"
+    "DOTA_Tooltip_ability_item_healing_scroll_armor_amount"                 "BONUS ARMOR AMOUNT:"
+    "DOTA_Tooltip_ability_item_healing_scroll_armor_duration"               "BONUS ARMOR DURATION:"
+    "DOTA_Tooltip_ability_item_healing_scroll_radius"                       "RADIUS:"
 
 
     //=====================================
     //  NEW VERSION
     //====================================
-    "DOTA_Tooltip_Ability_gawain_attribute_sunlight"         "Sunlight"
-    "DOTA_Tooltip_ability_gawain_attribute_sunlight_Description"       "Enchances supportive nature of Saber, improving ability effects on ally.\n<font color='#58ACFA'>Invigorating Ray </font>: Also grants 30%% bonus magic resistance and 20 armor.\n<font color='#58ACFA'>Blade of the Devoted </font>: Also replenishes mana and reduces cooldown of all abilities by 15 seconds.\n<font color='#58ACFA'>Excalibur Galatine </font>: 50%% additional heal is done over next 3 seconds\n<font color='#58ACFA'>Sun's Embrace</font> : Grants 30%% bonus magic resistance\n\n<font color='#FF0000'>Saber may not obtain both Sunlight and Eclipse attribute.</font>"  
+    "DOTA_Tooltip_Ability_gawain_attribute_sunlight"                        "Sunlight"
+    "DOTA_Tooltip_ability_gawain_attribute_sunlight_Description"            "Enhances the potency of Gawain's damage over time effects.\n<font color='#58ACFA'>Solar Ray </font>: Damage ramps up towards the end of its duration.\n<font color='#58ACFA'>Blade of the Devoted </font>: Applies a damage over time effect which slows the target by 20%%.\n<font color='#58ACFA'>Sun's Embrace</font> : Grants bonus health regeneration during its effect.\n<font color='#58ACFA'>Excalibur Galatine </font>: Leaves a trail of fire behind, dealing additional damage over time.\n\n<font color='#FF0000'>Saber may not obtain both Sunlight and Eclipse attribute.</font>"
 
     
     "DOTA_Tooltip_Ability_false_assassin_attribute_quickdraw"               "Quickdraw"
     "DOTA_Tooltip_ability_false_assassin_attribute_quickdraw_Description"   "Enables Quickdraw for 5 seconds after using Gate Keeper.\n<font color='#58ACFA'>Quickdraw : </font>Assassin rapidly draws blade and rushes forward to cut through all enemies in path, inflicting damage based on AGI and applying on-hit effect."
 
-    "DOTA_Tooltip_Ability_false_assassin_windblade" "Windblade"
-    "DOTA_Tooltip_ability_false_assassin_windblade_Description" "Assassin swirls his blade to create slicing wind around him, dealing damage to nearby enemies, applying on-hit effects, and briefly pushing them back."
+    "DOTA_Tooltip_Ability_false_assassin_windblade"                         "Windblade"
+    "DOTA_Tooltip_ability_false_assassin_windblade_Description"             "Assassin swirls his blade to create slicing wind around him, dealing damage to nearby enemies, applying on-hit effects, and briefly pushing them back."
 
     //=====================================
     //  NEW VERSION

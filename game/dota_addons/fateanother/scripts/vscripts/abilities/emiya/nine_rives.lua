@@ -92,7 +92,7 @@ function OnNineLanded(caster, ability)
 	local bonus_damage = 0
 
 	if caster.IsProjectionImproved then
-		bonus_damage = caster:GetAverageTrueAttackDamage() * 0.2
+		bonus_damage = caster:GetAverageTrueAttackDamage(caster) * 0.2
 	end
 
 	local casterInitOrigin = caster:GetAbsOrigin() 

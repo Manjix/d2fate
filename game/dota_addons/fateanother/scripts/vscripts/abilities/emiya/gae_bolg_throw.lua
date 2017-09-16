@@ -104,7 +104,7 @@ function OnGBAOEHit(keys, projectile)
 		local targets = FindUnitsInRadius(caster:GetTeam(), targetPoint, nil, radius
 	            , DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
 		for k,v in pairs(targets) do
-	        DoDamage(caster, v, damage + v:GetHealth() * healthDamagePct/100, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+	        DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
 	        v:AddNewModifier(caster, v, "modifier_stunned", {Duration = stun_duration})
 	        v:AddNewModifier(v, nil, "modifier_knockback", modifierKnockback )
 	    end

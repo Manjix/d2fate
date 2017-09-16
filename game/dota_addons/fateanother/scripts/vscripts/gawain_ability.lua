@@ -88,7 +88,7 @@ function OnGalatineStart(keys)
 	local diff = caster:GetForwardVector()
 	local timeElapsed = 0
 	local flyingDist = 0
-	local orbVelocity = 100
+	local orbVelocity = 60
 	local fireTrailDuration = 3
 	local damage = keys.Damage
 	local InFirstLoop = true
@@ -196,7 +196,9 @@ end
 function OnGalatineDetonate(keys)
 	local caster = keys.caster
 	caster.IsGalatineActive = false
-	if caster:GetAbilityByIndex(2):GetAbilityName() == "gawain_excalibur_galatine_detonate" then
+	local skillname = caster:GetAbilityByIndex(5):GetAbilityName() 
+
+	if skillname == "gawain_excalibur_galatine_detonate" then
 		caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_detonate", true, false)
 	end
 end
@@ -261,12 +263,19 @@ end
 
 function GawainCheckCombo(caster, ability)
 	if caster:GetStrength() >= 19.1 and caster:GetAgility() >= 19.1 and caster:GetIntellect() >= 19.1 then
-		if ability == caster:FindAbilityByName("gawain_heat") and caster:FindAbilityByName("gawain_excalibur_galatine"):IsCooldownReady() and caster:FindAbilityByName("gawain_supernova"):IsCooldownReady() then
-			caster:SwapAbilities("gawain_excalibur_galatine", "gawain_supernova", false, true) 
+		if ability == caster:FindAbilityByName("gawain_heat") 
+			and caster:FindAbilityByName("gawain_excalibur_galatine"):IsCooldownReady() 
+			and caster:FindAbilityByName("gawain_excalibur_galatine_combo"):IsCooldownReady() 
+			and caster:HasModifier("modifier_blade_of_the_devoted")
+			then
+
+			caster:EmitSound("gawain_kill_02")
+			caster:FindAbilityByName("gawain_excalibur_galatine_combo"):StartCooldown(2)
+			caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_combo", false, true) 
 			Timers:CreateTimer({
-				endTime = 3,
+				endTime = 7,
 				callback = function()
-				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_supernova", true, false) 
+				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_combo", true, false) 
 			end
 			})			
 		end

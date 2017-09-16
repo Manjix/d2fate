@@ -1005,7 +1005,7 @@ end
 function OnPresenceDetectionThink(keys)
 	local caster = keys.caster
 	local hasSpecialPresenceDetection = false
-	if caster:GetName() == "npc_dota_hero_juggernaut" and caster.IsEyeOfSerenityAcquired then 
+	if caster:GetName() == "npc_dota_hero_juggernaut" and caster.IsEyeOfSerenityAcquired and caster.IsEyeOfSerenityActive then 
 		hasSpecialPresenceDetection = true
 	elseif caster:GetName() == "npc_dota_hero_shadow_shaman" and caster.IsEyeForArtAcquired then
 		hasSpecialPresenceDetection = true
@@ -1059,7 +1059,11 @@ function OnPresenceDetectionThink(keys)
 					CustomGameEventManager:Send_ServerToPlayer(caster:GetPlayerOwner(), "emit_presence_sound", {sound="Misc.BorrowedTime"})
 				end
 				-- Process Eye of Serenity attribute
-				if caster:GetName() == "npc_dota_hero_juggernaut" and caster.IsEyeOfSerenityAcquired == true and enemy.IsSerenityOnCooldown ~= true then
+				if caster:GetName() == "npc_dota_hero_juggernaut" 
+				and caster.IsEyeOfSerenityAcquired == true 
+				and enemy.IsSerenityOnCooldown ~= true 
+				--and caster.IsEyeOfSerenityActive == true
+				then
 					enemy.IsSerenityOnCooldown = true
 					Timers:CreateTimer(10.0, function() 
 						enemy.IsSerenityOnCooldown = false

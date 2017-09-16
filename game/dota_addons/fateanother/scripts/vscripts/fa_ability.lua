@@ -36,7 +36,7 @@ function OnGKStart(keys)
 		caster:SwapAbilities("false_assassin_gate_keeper", "false_assassin_quickdraw", false, true) 
 		Timers:CreateTimer(5, function() return caster:SwapAbilities("false_assassin_gate_keeper", "false_assassin_quickdraw", true, false)   end)
 	end
-
+	caster.IsEyeOfSerenityActive = true
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_gate_keeper_self_buff", {})
 
 	local gkdummy = CreateUnitByName("sight_dummy_unit", caster:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
@@ -49,7 +49,11 @@ function OnGKStart(keys)
 	local eyeCounter = 0
 
 	Timers:CreateTimer(function() 
-		if eyeCounter > 5.0 then DummyEnd(gkdummy) return end
+		if eyeCounter > 5.0 then 
+			caster.IsEyeOfSerenityActive = false
+			DummyEnd(gkdummy) 
+			return 
+		end
 		gkdummy:SetAbsOrigin(caster:GetAbsOrigin()) 
 		eyeCounter = eyeCounter + 0.2
 		return 0.2
@@ -747,7 +751,7 @@ function OnEyeOfSerenityAcquired(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsEyeOfSerenityAcquired = true
-
+	hero.IsEyeOfSerenityActive = false
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))

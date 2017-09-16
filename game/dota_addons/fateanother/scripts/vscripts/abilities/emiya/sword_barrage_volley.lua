@@ -41,7 +41,7 @@ function OnBarrageStart(keys)
 			local rightvec = Vector(frontward.y, -frontward.x, 0)
 			local gobCount = 0
 
-			local random1 = RandomInt(0, 100) -- position of weapon spawn
+			local random1 = RandomInt(0, 150) -- position of weapon spawn
 			local random2 = RandomInt(0,1) -- whether weapon will spawn on left or right side of hero
 
 			if random2 == 0 then 
@@ -52,7 +52,7 @@ function OnBarrageStart(keys)
 			projectile.vVelocity = frontward * 1500
 			ProjectileManager:CreateLinearProjectile(projectile)
 
-			ParticleManager:SetParticleControlEnt( caster.LatestGOBParticle, 0, caster.LatestGOB, PATTACH_ABSORIGIN, nil, caster.LatestGOB:GetAbsOrigin(), false )
+			--ParticleManager:SetParticleControlEnt( caster.LatestGOBParticle, 0, caster.LatestGOB, PATTACH_ABSORIGIN, nil, caster.LatestGOB:GetAbsOrigin(), false )
 			
 			return
 		end)

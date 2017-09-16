@@ -1102,6 +1102,8 @@
 		"Ability9"						"gawain_excalibur_galatine_detonate"
 		"Ability10"						"presence_detection_passive"
 		"Ability11"						"attribute_bonus_custom"
+		"Ability12"						"gawain_excalibur_galatine_combo"
+		"Ability13"						"gawain_excalibur_galatine_detonate_combo"
 		
 
 		"Combo"							"gawain_excalibur_galatine_combo"

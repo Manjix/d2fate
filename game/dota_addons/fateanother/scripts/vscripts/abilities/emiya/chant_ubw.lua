@@ -99,10 +99,23 @@ function emiya_chant_ubw:OnSpellStart()
 
         if ability_slot:GetName() == "emiya_chant_ubw" then
             caster:SwapAbilities("emiya_chant_ubw", "archer_5th_ubw", false, true) 
-            caster:FindAbilityByName("archer_5th_ubw"):StartCooldown(2)
+            caster:FindAbilityByName("archer_5th_ubw"):StartCooldown(4)
         end        
     end    
 end
+
+function emiya_chant_ubw:OnUpgrade()
+    local caster = self:GetCaster()
+    local ability = self
+    
+    caster:FindAbilityByName("archer_5th_sword_barrage_retreat_shot"):SetLevel(self:GetLevel())    
+    caster:FindAbilityByName("archer_5th_sword_barrage_confine"):SetLevel(self:GetLevel())
+    caster:FindAbilityByName("emiya_gae_bolg"):SetLevel(self:GetLevel())
+    caster:FindAbilityByName("archer_5th_nine_lives"):SetLevel(self:GetLevel())
+    caster:FindAbilityByName("archer_5th_sword_barrage"):SetLevel(self:GetLevel())
+    caster:FindAbilityByName("archer_5th_ubw"):SetLevel(self:GetLevel())
+end
+
 
 function emiya_chant_ubw:GetCastAnimation()
     return ACT_DOTA_CAST_ABILITY_4

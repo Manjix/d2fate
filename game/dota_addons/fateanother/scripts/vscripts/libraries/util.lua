@@ -215,7 +215,8 @@ donotlevel = {
     "avenger_overdrive",
     "berserker_5th_reincarnation",
     "archer_5th_rho_aias",
-    "gawain_saint"
+    "gawain_saint",
+    "gawain_blessing_of_fairy"
 }
 
 CannotReset = {

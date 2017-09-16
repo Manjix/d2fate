@@ -34,24 +34,35 @@ end
 
 function OnDirkHit(keys)
 	local caster = keys.caster
+	local target = keys.target
 	local ply = caster:GetPlayerOwner()
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
 
-	if caster.IsWeakeningVenomAcquired then
+	--[[if caster.IsWeakeningVenomAcquired then
 		keys.ability:ApplyDataDrivenModifier(keys.caster, keys.target, "modifier_dirk_poison_empowered", {}) 
 		if not IsImmuneToSlow(keys.target) then 
 			keys.ability:ApplyDataDrivenModifier(keys.caster, keys.target, "modifier_dirk_poison_empowered_slow", {}) 
 		end
-	else
-		if not IsImmuneToSlow(keys.target) then 
-			keys.ability:ApplyDataDrivenModifier(keys.caster, keys.target, "modifier_dirk_poison", {}) 
-		end
-	end 
+	else]]
+	if not IsImmuneToSlow(keys.target) then 
+		keys.ability:ApplyDataDrivenModifier(keys.caster, keys.target, "modifier_dirk_poison", {}) 
+	end
+	--end 
 
 	if caster.IsWeakeningVenomAcquired then
-		local bonusDamage = caster:GetAverageTrueAttackDamage() * 1.25
+		local stacks = 0
+		if target:HasModifier("modifier_weakening_venom_debuff") then 
+			stacks = target:GetModifierStackCount("modifier_weakening_venom_debuff", keys.ability)
+		end
 
-		DoDamage(keys.caster, keys.target, keys.Damage + bonusDamage, DAMAGE_TYPE_PHYSICAL, 0, keys.ability, false)
+		--local damage = caster:GetAverageTrueAttackDamage(caster) * 1.5
+		--if damage > keys.Damage then keys.Damage = damage end
+
+		target:RemoveModifierByName("modifier_weakening_venom_debuff") 
+		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
+		target:SetModifierStackCount("modifier_weakening_venom_debuff", keys.ability, stacks + 4)
+
+		DoDamage(keys.caster, keys.target, keys.Damage, DAMAGE_TYPE_PHYSICAL, 0, keys.ability, false)
 	else
 		DoDamage(keys.caster, keys.target, keys.Damage, DAMAGE_TYPE_PHYSICAL, 0, keys.ability, false)
 	end
@@ -60,22 +71,40 @@ end
 function OnDirkPoisonTick(keys)
 	local caster = keys.caster
 	local target = keys.target
-	local dmg = target:GetHealth() / 100 * keys.Damage
-	DoDamage(keys.caster, keys.target, dmg, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+	local dmg = keys.Damage * 0.5
+	local currentStack = 0
+	local damage_type = DAMAGE_TYPE_MAGICAL
+
+	if caster.IsWeakeningVenomAcquired then
+		damage_type = DAMAGE_TYPE_PURE
+	end
+
+	--print(target:HasModifier("modifier_weakening_venom_debuff"))
+	if target:HasModifier("modifier_weakening_venom_debuff") then 
+		currentStack = target:GetModifierStackCount("modifier_weakening_venom_debuff", keys.ability)
+		--print(currentStack)
+	end
+
+	dmg = dmg + (dmg * currentStack)
+
+	DoDamage(keys.caster, keys.target, dmg, damage_type, 0, keys.ability, false)
 end
 
 function OnVenomHit(keys)
 	local caster = keys.caster
 	local target = keys.target 
 
-	keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
+	--keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
 
-	--[[local currentStack = target:GetModifierStackCount("modifier_weakening_venom_debuff", keys.ability)
+	local currentStack = 0
 
-	if currentStack == 0 and target:HasModifier("modifier_weakening_venom_debuff") then currentStack = 1 end
+	if target:HasModifier("modifier_weakening_venom_debuff") then 
+		currentStack = target:GetModifierStackCount("modifier_weakening_venom_debuff", keys.ability)
+	end
+
 	target:RemoveModifierByName("modifier_weakening_venom_debuff") 
 	keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
-	target:SetModifierStackCount("modifier_weakening_venom_debuff", keys.ability, currentStack + 1)]]
+	target:SetModifierStackCount("modifier_weakening_venom_debuff", keys.ability, currentStack + 1)
 end
 
 
@@ -302,37 +331,38 @@ function OnAmbushStart(keys)
 			print(units[i]:GetUnitName())
 			if units[i]:GetUnitName() == "ward_familiar" then
 				local ward = units[i]
-				if ward:HasModifier("modifier_item_ward_true_sight") then
-					ward:RemoveModifierByName("modifier_item_ward_true_sight")
-				end
+				--[[if ward:HasModifier("modifier_item_ward_true_sight") then
+					ward:AddNewModifier(ward, ward, "modifier_item_ward_true_sight", {true_sight_range = 100})
+					--ward:RemoveModifierByName("modifier_item_ward_true_sight")
+				end]]
 
-				--ward:SetDayTimeVisionRange(100)
-				--ward:SetNightTimeVisionRange(100)
+				ward:SetDayTimeVisionRange(100)
+				ward:SetNightTimeVisionRange(100)
 
 				Timers:CreateTimer(10.0, function()
 					if IsValidEntity(ward) and not ward:IsNull() then
-						if not ward:HasModifier("modifier_item_ward_true_sight") then
-							ward:AddNewModifier(ward, ward, "modifier_item_ward_true_sight", {true_sight_range = 1250})
-						end
+						--if not ward:HasModifier("modifier_item_ward_true_sight") then
+						--	ward:AddNewModifier(ward, ward, "modifier_item_ward_true_sight", {true_sight_range = 1250})
+						--end
 
-						--ward:SetDayTimeVisionRange(1250)
-						--ward:SetNightTimeVisionRange(1250)
+						ward:SetDayTimeVisionRange(1250)
+						ward:SetNightTimeVisionRange(1250)
 					end 
 				end)
 
-				--local visiondummy = CreateUnitByName("sight_dummy_unit", units[i]:GetAbsOrigin(), false, keys.caster, keys.caster, keys.caster:GetTeamNumber())
-				--visiondummy:SetDayTimeVisionRange(500)
-				--visiondummy:SetNightTimeVisionRange(500)
-				--AddFOWViewer(caster:GetTeamNumber(), visiondummy:GetAbsOrigin(), 500, 5.0, false)
-				--visiondummy:AddNewModifier(caster, caster, "modifier_item_ward_true_sight", {true_sight_range = 100}) 
-				--local unseen = visiondummy:FindAbilityByName("dummy_unit_passive")
-				--unseen:SetLevel(1)
-				--Timers:CreateTimer(5.0, function()
-				--	if IsValidEntity(visiondummy) and not visiondummy:IsNull() then
-				--		visiondummy:RemoveSelf()
-				--	end 
-				--end)
-				--break
+				--[[local visiondummy = CreateUnitByName("sight_dummy_unit", units[i]:GetAbsOrigin(), false, keys.caster, keys.caster, keys.caster:GetTeamNumber())
+				visiondummy:SetDayTimeVisionRange(300)
+				visiondummy:SetNightTimeVisionRange(300)
+				AddFOWViewer(caster:GetTeamNumber(), visiondummy:GetAbsOrigin(), 500, 5.0, false)
+				visiondummy:AddNewModifier(caster, caster, "modifier_item_ward_true_sight", {true_sight_range = 100}) 
+				local unseen = visiondummy:FindAbilityByName("dummy_unit_passive")
+				unseen:SetLevel(1)
+				Timers:CreateTimer(5.0, function()
+					if IsValidEntity(visiondummy) and not visiondummy:IsNull() then
+						visiondummy:RemoveSelf()
+					end 
+				end)
+				break]]
 			end
 		end 
 	end
@@ -421,7 +451,7 @@ function OnStealStart(keys)
 	ability:ApplyDataDrivenModifier(caster, target, "modifier_steal_str_reduction", {})
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_steal_str_increase", {})
 
-	if not caster:IsShadowStrikeAcquired then
+	if not caster.IsShadowStrikeAcquired then
 		local diff = (target:GetAbsOrigin() - caster:GetAbsOrigin()):Normalized()
 		caster:SetAbsOrigin(target:GetAbsOrigin() - diff*100)
 		FindClearSpaceForUnit( caster, caster:GetAbsOrigin(), true )
