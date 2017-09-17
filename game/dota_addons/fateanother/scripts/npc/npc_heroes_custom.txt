@@ -268,7 +268,7 @@
 
 		"StatusHealth"					"1200"
 		"StatusHealthRegen"				"8"
-		"StatusMana"					"1100"
+		"StatusMana"					"1000"
 		"StatusManaRegen"				"5.5"
 		
 		"ArmorPhysical"					"4"
@@ -394,7 +394,7 @@
 
 		"StatusHealth"					"1600"
 		"StatusHealthRegen"				"15"
-		"StatusMana"					"1100"
+		"StatusMana"					"1000"
 		"StatusManaRegen"				"3.0"
 		
 		"ArmorPhysical"					"4"
@@ -593,7 +593,7 @@
 		"StatusHealth"					"850"
 		"StatusHealthRegen"				"3"
 		"StatusMana"					"1000"
-		"StatusManaRegen"				"8.0"
+		"StatusManaRegen"				"10.0"
 		
 		"ArmorPhysical"					"1.5"
 		"MagicalResistance"				"20"
@@ -787,8 +787,8 @@
 
 		"StatusHealth"					"1100"
 		"StatusHealthRegen"				"0"
-		"StatusMana"					"1050"
-		"StatusManaRegen"				"6.0"
+		"StatusMana"					"1000"
+		"StatusManaRegen"				"8.0"
 		
 		"ArmorPhysical"					"1"
 		"MagicalResistance"				"0"
@@ -978,7 +978,7 @@
 
 		"StatusHealth"					"1250"
 		"StatusHealthRegen"				"10"
-		"StatusMana"					"1100"
+		"StatusMana"					"1000"
 		"StatusManaRegen"				"2.0"
 		
 		"ArmorPhysical"					"4"
@@ -1044,8 +1044,8 @@
 
 		"StatusHealth"					"1200"
 		"StatusHealthRegen"				"9.0"
-		"StatusMana"					"1175"
-		"StatusManaRegen"				"2.0"
+		"StatusMana"					"1000"
+		"StatusManaRegen"				"4.0"
 		
 		"ArmorPhysical"					"6"
 		"MagicalResistance"				"10"
@@ -1114,8 +1114,8 @@
 		"Attribute4"					"gawain_attribute_belt"
 		//"Attribute5"					"gawain_attribute_eclipse"
 
-		"StatusHealth"					"1225"
-		"StatusHealthRegen"				"6.0"
+		"StatusHealth"					"1250"
+		"StatusHealthRegen"				"7.0"
 		"StatusMana"					"1000"
 		"StatusManaRegen"				"4.0"
 		
@@ -1174,8 +1174,8 @@
 		
 		"StatusHealth"					"1150"
 		"StatusHealthRegen"				"4.0"
-		"StatusMana"					"1300"
-		"StatusManaRegen"				"4.5"
+		"StatusMana"					"1000"
+		"StatusManaRegen"				"7.5"
 		
 		"ArmorPhysical"					"2"
 		"MagicalResistance"				"20"
@@ -1235,8 +1235,8 @@
 		
 		"StatusHealth"					"1150"
 		"StatusHealthRegen"				"4.0"
-		"StatusMana"					"1100"
-		"StatusManaRegen"				"2.0"
+		"StatusMana"					"1000"
+		"StatusManaRegen"				"3.0"
 		
 		"ArmorPhysical"					"2"
 		"MagicalResistance"				"5"
@@ -1297,8 +1297,8 @@
 		
 		"StatusHealth"					"1250"
 		"StatusHealthRegen"				"7"
-		"StatusMana"					"1175"
-		"StatusManaRegen"				"4.0"
+		"StatusMana"					"1000"
+		"StatusManaRegen"				"5.0"
 		
 		"ArmorPhysical"					"5"
 		"MagicalResistance"				"25"
@@ -1359,7 +1359,7 @@
 		
 		"StatusHealth"					"1250"
 		"StatusHealthRegen"				"5"
-		"StatusMana"					"1050"
+		"StatusMana"					"1000"
 		"StatusManaRegen"				"4.0"
 		
 		"ArmorPhysical"					"3"
@@ -1423,8 +1423,8 @@
 		
 		"StatusHealth"					"1050"
 		"StatusHealthRegen"				"5"
-		"StatusMana"					"1200"
-		"StatusManaRegen"				"3.0"
+		"StatusMana"					"1000"
+		"StatusManaRegen"				"8.0"
 		
 		"ArmorPhysical"					"2"
 		"MagicalResistance"				"15"
@@ -1522,6 +1522,5 @@
 		"VisionDaytimeRange"			"1100"
 		"VisionNighttimeRange"			"1100"
 
-	}
-	
+	}	
 }

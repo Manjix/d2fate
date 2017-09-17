@@ -156,9 +156,11 @@ function OnGalatineStart(keys)
 			--GenerateArtificialSun(caster, orbLoc)
 
 			-- Give Gawain back his Galatine
-			if caster:GetAbilityByIndex(5):GetAbilityName() == "gawain_excalibur_galatine_detonate" then
+			--[[if caster:GetAbilityByIndex(5):GetAbilityName() == "gawain_excalibur_galatine_detonate" then
 				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_detonate", true, false)
-			end
+			end]]
+
+			GiveGawainGalatine(caster)
 
 			-- Explosion on enemies
 			local targets = FindUnitsInRadius(caster:GetTeam(), galatineDummy:GetAbsOrigin(), nil, keys.Radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
@@ -196,10 +198,20 @@ end
 function OnGalatineDetonate(keys)
 	local caster = keys.caster
 	caster.IsGalatineActive = false
-	local skillname = caster:GetAbilityByIndex(5):GetAbilityName() 
+	GiveGawainGalatine(caster)
+	--[[local skillname = caster:GetAbilityByIndex(5):GetAbilityName() ]]
 
-	if skillname == "gawain_excalibur_galatine_detonate" then
+
+	--[[if skillname == "gawain_excalibur_galatine_detonate" then
 		caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_detonate", true, false)
+	end]]
+end
+
+function GiveGawainGalatine(caster)
+	local galatineSlot = caster:GetAbilityByIndex(5)
+
+	if galatineSlot:GetAbilityName() ~= "gawain_excalibur_galatine" then
+		caster:SwapAbilities("gawain_excalibur_galatine", galatineSlot:GetAbilityName(), true, false)
 	end
 end
 
@@ -272,12 +284,19 @@ function GawainCheckCombo(caster, ability)
 			caster:EmitSound("gawain_kill_02")
 			caster:FindAbilityByName("gawain_excalibur_galatine_combo"):StartCooldown(2)
 			caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_combo", false, true) 
-			Timers:CreateTimer({
-				endTime = 7,
+
+			Timers:CreateTimer(7.0, function()
+				local ability = caster:GetAbilityByIndex(5)
+				if ability:GetName() ~= "gawain_excalibur_galatine" then
+					caster:SwapAbilities("gawain_excalibur_galatine", ability:GetName(), true, false) 
+				end				
+			end)
+			--[[Timers:CreateTimer({
+				endTime = 3,
 				callback = function()
 				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_combo", true, false) 
 			end
-			})			
+			})	]]		
 		end
 	end
 end

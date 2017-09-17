@@ -547,7 +547,9 @@ function OnUBWStart(keys)
 	local ubwdummyLoc4 = ubwCenter + Vector(-600,-600, 1000)
 
     -- swap Archer's skillset with UBW ones
-    caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
+    GiveUBWAbilities(caster, nil)
+
+    --[[caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
     caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", false, true) 
     caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", false, true) 
     caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true)
@@ -556,7 +558,7 @@ function OnUBWStart(keys)
     	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true) 
     elseif caster:GetAbilityByIndex(5):GetName() == "emiya_chant_ubw" then
     	caster:SwapAbilities("emiya_chant_ubw", "archer_5th_nine_lives", false, true) 
-    end
+    end]]
 
     ArcherCheckCombo(keys.caster, keys.ability)
     -- Find eligible UBW targets
@@ -718,18 +720,19 @@ end
 function EndUBW(caster)
 	if caster.IsUBWActive == false then return end
 	print("UBW ended")
-    caster:SwapAbilities("archer_5th_clairvoyance", caster:GetAbilityByIndex(4):GetName(), true, false) 
+    --[[caster:SwapAbilities("archer_5th_clairvoyance", caster:GetAbilityByIndex(4):GetName(), true, false) 
     caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", true, false)
     caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", true, false) 
     caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", true, false) 
-    --caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", true, false)
     caster:SwapAbilities("emiya_chant_ubw", "archer_5th_nine_lives", true, false)  
     
     if caster:GetAbilityByIndex(4):GetName()=="archer_5th_clairvoyance" and caster:GetAbilityByIndex(7):GetName()=="archer_5th_hrunting" and caster:GetAbilityByIndex(10):GetName()=="archer_5th_sword_barrage" then
     	--print("fix for start hrunt start ubw end ubw end hrunt")
     	caster:SwapAbilities("archer_5th_clairvoyance", "archer_5th_sword_barrage", false, true)
     	caster:SwapAbilities("archer_5th_hrunting", "archer_5th_sword_barrage", true, false)
-    end
+    end]]
+
+    ReturnNormalAbilities(caster, nil)
 
 	CreateUITimer("Unlimited Blade Works", 0, "ubw_timer")
 	caster.IsUBWActive = false
@@ -808,13 +811,22 @@ function EndUBW(caster)
     Timers:RemoveTimer("ubw_timer")
 end
 
---[[function GiveUBWAbilities(caster, ability)
-	caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_sword_barrage_retreat_shot", false, true) 
-	caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_sword_barrage_confine", false, true)
-	caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "emiya_gae_bolg", false, true) 
-
-	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
-	caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "archer_5th_nine_lives", false, true)
+function GiveUBWAbilities(caster, ability)
+	if caster:GetAbilityByIndex(0):GetName() ~= "archer_5th_sword_barrage_retreat_shot" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_sword_barrage_retreat_shot", false, true) 
+	end
+	if caster:GetAbilityByIndex(1):GetName() ~= "archer_5th_sword_barrage_confine" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_sword_barrage_confine", false, true)
+	end
+	if caster:GetAbilityByIndex(2):GetName() ~= "emiya_gae_bolg" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "emiya_gae_bolg", false, true)  
+	end
+	if caster:GetAbilityByIndex(4):GetName() ~= "archer_5th_sword_barrage" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
+	end
+	if caster:GetAbilityByIndex(5):GetName() ~= "archer_5th_nine_lives" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "archer_5th_nine_lives", false, true)
+	end
 
 	ArcherCheckCombo(caster, ability)
 
@@ -823,26 +835,44 @@ end
 	caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true) 
 
 	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
-	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true)
+	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true)]]
 end
 
 function ReturnNormalAbilities(caster, ability)
-	caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_kanshou_bakuya", false, true) 
+	if caster:GetAbilityByIndex(0):GetName() ~= "archer_5th_kanshou_bakuya" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_kanshou_bakuya", false, true) 
+	end
+	if caster:GetAbilityByIndex(1):GetName() ~= "archer_5th_broken_phantasm" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_broken_phantasm", false, true)
+	end
+	if caster:GetAbilityByIndex(2):GetName() ~= "archer_5th_overedge" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "archer_5th_overedge", false, true)  
+	end
+	if caster:GetAbilityByIndex(4):GetName() ~= "archer_5th_clairvoyance" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_clairvoyance", false, true) 
+	end
+	if caster:GetAbilityByIndex(5):GetName() ~= "emiya_chant_ubw" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "emiya_chant_ubw", false, true)
+	end
+
+
+
+	--[[caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_kanshou_bakuya", false, true) 
 	caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_broken_phantasm", false, true)
 	caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "archer_5th_overedge", false, true) 
 
 	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
-	caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "archer_5th_nine_lives", false, true)
+	caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "archer_5th_nine_lives", false, true)]]
 
-	ArcherCheckCombo(caster, ability)
+	--ArcherCheckCombo(caster, ability)
 
 	--[[caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", false, true) 
 	caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", false, true)
 	caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true) 
 
 	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
-	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true)
-end]]
+	caster:SwapAbilities("archer_5th_ubw", "archer_5th_nine_lives", false, true)]]
+end
 
 -- combo
 function OnRainStart(keys)
@@ -1051,7 +1081,7 @@ function OnUBWBarrageStart(keys)
 					local targets = FindUnitsInRadius(caster:GetTeam(), targetPoint + swordVector, nil, 300, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
 					for k,v in pairs(targets) do
 						DoDamage(caster, v, keys.Damage , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-						v:AddNewModifier(caster, v, "modifier_stunned", {Duration = 0.1})
+						--v:AddNewModifier(caster, v, "modifier_stunned", {Duration = 0.1})
 					end
 					
 					-- Particles on impact
@@ -1455,12 +1485,28 @@ function ArcherCheckCombo(caster, ability)
 			--and caster:FindAbilityByName("archer_5th_overedge"):IsCooldownReady() and		
 
 			caster:SwapAbilities("emiya_gae_bolg", "archer_5th_arrow_rain", false, true) 
-			Timers:CreateTimer({
+
+			Timers:CreateTimer(5.0, function()
+				local ability = caster:GetAbilityByIndex(2)
+				if caster.IsUBWActive then
+					if ability:GetName() ~= "emiya_gae_bolg" then
+						caster:SwapAbilities("emiya_gae_bolg", ability:GetName(), true, false) 
+					end
+				else
+					if ability:GetName() ~= "archer_5th_overedge" then
+						caster:SwapAbilities("archer_5th_overedge", ability:GetName(), true, false) 
+					end
+				end
+
+				
+			end)
+
+			--[[Timers:CreateTimer({
 				endTime = 5,
 				callback = function()
 				caster:SwapAbilities("emiya_gae_bolg", "archer_5th_arrow_rain", true, false) 
 			end
-			})			
+			})	]]		
 		end
 	end
 end

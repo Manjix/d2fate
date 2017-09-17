@@ -253,6 +253,7 @@ CannotReset = {
     "gawain_blessing_of_fairy",
     "gawain_divine_meltdown",
     "gawain_supernova",
+    "gawain_excalibur_galatine_combo",
     "tamamo_armed",
     "tamamo_polygamist_castration_fist",
     "tamamo_polygamist_castration_fist_2",
@@ -983,10 +984,10 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
             targetHero = target
         end
         --print("Before reductions", dmg)
-        sourceHero.ServStat:doDamageBeforeReduction(dmg)
+        --[[sourceHero.ServStat:doDamageBeforeReduction(dmg)
         if not targetHero:IsIllusion() then -- band aid for NR's shapeshift.
 	        targetHero.ServStat:takeDamageBeforeReduction(dmg)
-	    end
+	    end]]
     end
     -- END
 
@@ -1817,12 +1818,12 @@ function OnHeroTakeDamage(keys)
 
     if attacker:GetAttackTarget() == hero then
         --print("Right click before armor reductions", damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
-        attackerHero.ServStat:doDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
-        hero.ServStat:takeDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
+        --[[attackerHero.ServStat:doDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
+        hero.ServStat:takeDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))]]
     end
     --print("Actual damage from KV:", damageTaken)
-    attackerHero.ServStat:doActualDamage(damageTaken)
-    hero.ServStat:takeActualDamage(damageTaken)
+    --[[attackerHero.ServStat:doActualDamage(damageTaken)
+    hero.ServStat:takeActualDamage(damageTaken)]]
 end
 
 function FxDestroyer(PIndex,instant)
