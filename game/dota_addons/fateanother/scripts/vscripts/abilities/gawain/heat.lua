@@ -46,6 +46,7 @@ function RadianceBurnEnemiesThink(keys)
     end
 end
 
+
 function GawainCheckCombo(caster, ability)
 	if caster:GetStrength() >= 19.1 and caster:GetAgility() >= 19.1 and caster:GetIntellect() >= 19.1 then
 		if ability == caster:FindAbilityByName("gawain_heat") 
@@ -54,13 +55,26 @@ function GawainCheckCombo(caster, ability)
 			and caster:HasModifier("modifier_blade_of_the_devoted")
 			then
 
+			--EmitGlobalSound("Hero_Enigma.Black_Hole")
+			EmitGlobalSound("gawain_kill_02")
+
+			caster:FindAbilityByName("gawain_excalibur_galatine_combo"):StartCooldown(2)
 			caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_combo", false, true) 
-			Timers:CreateTimer({
-				endTime = 5,
+
+			Timers:CreateTimer(5.0, function()
+				local ability = caster:GetAbilityByIndex(5)
+				--StopSoundEvent("Hero_Enigma.Black_Hole", nil)
+				print(ability:GetName())
+				if ability:GetName() ~= "gawain_excalibur_galatine" and not caster.IsGalatineActive then
+					caster:SwapAbilities("gawain_excalibur_galatine", ability:GetName(), true, false) 
+				end				
+			end)
+			--[[Timers:CreateTimer({
+				endTime = 3,
 				callback = function()
 				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_combo", true, false) 
 			end
-			})			
+			})	]]		
 		end
 	end
 end

@@ -116,7 +116,7 @@ function OnGalatineStart(keys)
 	galatineDummy:SetNightTimeVisionRange(300)
 
 	if caster.IsSoVAcquired then
-		damage = damage + 250
+		damage = damage + 300
 		fireTrailDuration = fireTrailDuration + 3
 	end
 
@@ -287,7 +287,8 @@ function GawainCheckCombo(caster, ability)
 
 			Timers:CreateTimer(7.0, function()
 				local ability = caster:GetAbilityByIndex(5)
-				if ability:GetName() ~= "gawain_excalibur_galatine" then
+				print(ability:GetName())
+				if ability:GetName() ~= "gawain_excalibur_galatine" and not caster.IsGalatineComboActive then
 					caster:SwapAbilities("gawain_excalibur_galatine", ability:GetName(), true, false) 
 				end				
 			end)

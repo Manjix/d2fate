@@ -367,7 +367,7 @@ function OnAmbushStart(keys)
 		end 
 	end
 
-	Timers:CreateTimer(1.0, function()
+	Timers:CreateTimer(0.3, function()
 		if caster:IsAlive() then
 			ability:ApplyDataDrivenModifier(caster, caster, "modifier_ambush", {})
 			ability:ApplyDataDrivenModifier(caster, caster, "modifier_first_hit", {})
@@ -447,6 +447,8 @@ function OnStealStart(keys)
 	local ability = keys.ability
 	local damage = keys.Damage
 	damage = damage * target:GetMaxHealth() / 100 + keys.StrSteal * 17
+	print(damage)
+	print(keys.StrSteal)
 
 	ability:ApplyDataDrivenModifier(caster, target, "modifier_steal_str_reduction", {})
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_steal_str_increase", {})
@@ -560,23 +562,25 @@ function OnZabHit(keys)
 	keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_zabaniya_curse", {})
 	local cursedHealth = target:GetHealth()
 
-	if caster.IsShadowStrikeAcquired and caster.IsShadowStrikeActivated then 
-		Timers:CreateTimer(function()
-			if not target:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
+	Timers:CreateTimer(function()
+		if not target:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
 			
-  			if target:GetHealth() <= 0 then
-				target:Execute(keys.ability, caster)
-			elseif target:GetHealth() > cursedHealth then
-				target:SetHealth(cursedHealth)
-			end
+  		if target:GetHealth() <= 0 then
+			target:Execute(keys.ability, caster)
+		elseif target:GetHealth() > cursedHealth then
+			target:SetHealth(cursedHealth)
+		end
 
-			cursedHealth = target:GetHealth()
+		cursedHealth = target:GetHealth()
 
-			return 0.033
-		end)
+		return 0.033
+	end)
 
-		caster.IsShadowStrikeActivated = false
-	end
+		--caster.IsShadowStrikeActivated = false
+
+	--if caster.IsShadowStrikeAcquired and caster.IsShadowStrikeActivated then 
+		
+	--end
 
 	--caster:ApplyHeal(keys.Damage/2, caster)
 	--local targetLeftoverMana = math.max(target:GetMana()-keys.Damage/2,0)

@@ -7,7 +7,7 @@
 		{
 			"reference_operator"
 			{
-				"operator"		"sos_reference_stack"
+				"operator"				"sos_reference_stack"
 				"reference_stack"		"dota_update_default"
 				"operator_variables"
 				{
@@ -1437,7 +1437,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1447,8 +1447,8 @@
                               "value0"        "sounds/archer/emiya_ubw1.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "volume"            {   "value"     "1.00000" }
+                    "pitch"             {   "value"     "1.00000" }
                 }
             }
         }
@@ -1464,7 +1464,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1475,7 +1475,7 @@
                         }
                     }
                     "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "pitch"             {   "value"     "1.00000"  }
                 }
             }
         }
@@ -1491,7 +1491,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1502,7 +1502,7 @@
                         }
                     }
                     "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "pitch"             {   "value"     "1.00000"  }
                 }
             }
         }
@@ -1518,7 +1518,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1529,7 +1529,7 @@
                         }
                     }
                     "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "pitch"             {   "value"     "1.00000"  }
                 }
             }
         }
@@ -1545,7 +1545,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1556,7 +1556,7 @@
                         }
                     }
                     "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "pitch"             {   "value"     "1.00000"  }
                 }
             }
         }
@@ -1572,7 +1572,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1583,7 +1583,7 @@
                         }
                     }
                     "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "pitch"             {   "value"     "1.00000"  }
                 }
             }
         }
@@ -1599,7 +1599,7 @@
             "reference_operator"
             {
                 "operator"              "sos_reference_stack"
-                "reference_stack"       "dota_update_vo_switch"
+                "reference_stack"       "dota_src1_3d"
                 "operator_variables"
                 {
                     "vsnd_files"
@@ -1610,7 +1610,7 @@
                         }
                     }
                     "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.000000"  }
+                    "pitch"             {   "value"     "1.00000"  }
                 }
             }
         }

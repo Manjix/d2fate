@@ -84,17 +84,17 @@ function emiya_chant_ubw:OnSpellStart()
     end
         
     if currentStack == 1 then 
-        caster:EmitSound("emiya_ubw1")
+        EmitGlobalSound("emiya_ubw1")
     elseif currentStack == 2 then 
-        caster:EmitSound("emiya_ubw2")
+        EmitGlobalSound("emiya_ubw2")
     elseif currentStack == 3 then 
-        caster:EmitSound("emiya_ubw3")
+        EmitGlobalSound("emiya_ubw3")
     elseif currentStack == 4 then 
-        caster:EmitSound("emiya_ubw4")
+        EmitGlobalSound("emiya_ubw4")
     elseif currentStack == 5 then 
-        caster:EmitSound("emiya_ubw5")
+        EmitGlobalSound("emiya_ubw5")
     elseif currentStack == 6 then 
-        caster:EmitSound("emiya_ubw6") 
+        EmitGlobalSound("emiya_ubw6") 
         local ability_slot = caster:GetAbilityByIndex(5)
 
         if ability_slot:GetName() == "emiya_chant_ubw" then

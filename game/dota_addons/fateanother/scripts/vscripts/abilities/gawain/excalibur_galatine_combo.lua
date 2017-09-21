@@ -23,16 +23,30 @@ function OnGalatineStart(keys)
 
 	-- Stops Gawain from doing anything else essentially and play the Galatine animation
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_excalibur_galatine_vfx", {})	
-	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 1.75)
+	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 2.0)
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_excalibur_galatine_anim",{})
 	-- Need the dank voice. 
 	EmitGlobalSound("gawain_galatine")
+	--EmitGlobalSound("Hero_Enigma.Black_Hole")
+
+	--Timers:CreateTimer(3.0, function()
+	--	StopSoundEvent("Hero_Enigma.Black_Hole", target)
+	--end)
 
 	caster:FindAbilityByName("gawain_excalibur_galatine"):StartCooldown(caster:FindAbilityByName("gawain_excalibur_galatine"):GetCooldown(1))
 
 	-- Make dem particles and the Galatine ball
-	local castFx1 = ParticleManager:CreateParticle("particles/custom/saber_excalibur_circle.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster )
-	ParticleManager:SetParticleControl( castFx1, 0, caster:GetAbsOrigin())
+	--local castFx1 = ParticleManager:CreateParticle("particles/custom/saber_excalibur_circle.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster )
+	--ParticleManager:SetParticleControl( castFx1, 0, caster:GetAbsOrigin())
+
+	local particle = ParticleManager:CreateParticle("particles/custom/gawain/gawain_combo.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
+	ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
+	ParticleManager:SetParticleControl(particle, 1, Vector(1000, 1000, 1000))
+	Timers:CreateTimer( 3.0, function()
+		ParticleManager:DestroyParticle( particle, false )
+		ParticleManager:ReleaseParticleIndex( particle )
+	end)
+
 
 	local castFx2 = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_light_strike_array.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster )
 	ParticleManager:SetParticleControl( castFx2, 0, caster:GetAbsOrigin())
@@ -50,7 +64,7 @@ function OnGalatineStart(keys)
 	end
 
 	-- Checks if Gawain is still alive as well as whether or not it overshot where the player intended it to flew.. or it flew for too long
-	Timers:CreateTimer(1.5, function()
+	Timers:CreateTimer(2.0, function()
 		if caster:IsAlive() and timeElapsed < 1.5 and caster.IsGalatineActive and flyingDist < dist then
 			-- Need to initialize the variables and put in Gawain's detonate Galatine ability
 			if InFirstLoop then
@@ -93,7 +107,7 @@ function OnGalatineStart(keys)
 			-- Explosion on enemies
 			local targets = FindUnitsInRadius(caster:GetTeam(), galatineDummy:GetAbsOrigin(), nil, keys.Radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
 
-			for k,v in pairs(targets) do	
+			for k,v in pairs(targets) do
 				keys.ability:ApplyDataDrivenModifier(caster, v, "modifier_excalibur_galatine_burn", {})
 				DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)				
 			end
@@ -104,13 +118,19 @@ function OnGalatineStart(keys)
 			local explodeFx2 = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_light_strike_array.vpcf", PATTACH_ABSORIGIN_FOLLOW, galatineDummy )
 			ParticleManager:SetParticleControl( explodeFx2, 0, galatineDummy:GetAbsOrigin())
 
-			galatineDummy:EmitSound("Ability.LightStrikeArray")
+			local splashFx = ParticleManager:CreateParticle("particles/custom/screen_yellow_splash_gawain.vpcf", PATTACH_EYES_FOLLOW, caster)
+			Timers:CreateTimer( 3.0, function()
+				ParticleManager:DestroyParticle( splashFx, false )
+				ParticleManager:ReleaseParticleIndex( splashFx )
+			end)
+
+			galatineDummy:EmitSound("Hero_Phoenix.SuperNova.Explode")
 
 			galatineDummy:ForceKill(true) 
 			ParticleManager:DestroyParticle( flameFx1, false )
 			ParticleManager:ReleaseParticleIndex( flameFx1 )
-			ParticleManager:DestroyParticle( castFx1, false )
-			ParticleManager:ReleaseParticleIndex( castFx1 )
+			--ParticleManager:DestroyParticle( castFx1, false )
+			--ParticleManager:ReleaseParticleIndex( castFx1 )
 
 			Timers:CreateTimer( 2.0, function()
 				ParticleManager:DestroyParticle( explodeFx1, false )

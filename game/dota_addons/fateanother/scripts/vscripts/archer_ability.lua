@@ -89,7 +89,7 @@ function KBStart(keys)
 
 	-- Defaults the crossing point to 600 range in front of where Emiya is facing
 	if (math.abs(target_destination.x - origin.x) < 500) and (math.abs(target_destination.y - origin.y) < 500) then
-		target_destination = caster:GetForwardVector() * 600 + origin
+		target_destination = caster:GetForwardVector() * 900 + origin
 	end
 
 	local lsword_origin = origin + leftVec * 75		-- Set left sword spawn location 75 distance to his left
@@ -104,9 +104,9 @@ function KBStart(keys)
 	local lsword ={
 		Ability = keys.ability,
 		EffectName = "",
-		iMoveSpeed = 1100,
+		iMoveSpeed = 1350,
 		vSpawnOrigin = lsword_origin,
-		fDistance = 700,
+		fDistance = 900,
 		Source = caster,
 		fStartRadius = 100,
         fEndRadius = 100,
@@ -117,15 +117,15 @@ function KBStart(keys)
 		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
 		fExpireTime = GameRules:GetGameTime() + 3,
 		bDeleteOnHit = false,
-		vVelocity = left_forward * 1100,
+		vVelocity = left_forward * 1350,
 	}
 
 	local rsword = {
 		Ability = keys.ability,		
-		iMoveSpeed = 1100,
+		iMoveSpeed = 1350,
 		EffectName = "",
 		vSpawnOrigin = rsword_origin,
-		fDistance = 700,
+		fDistance = 900,
 		Source = caster,
 		fStartRadius = 100,
         fEndRadius = 100,
@@ -136,7 +136,7 @@ function KBStart(keys)
 		iUnitTargetType = DOTA_UNIT_TARGET_ALL,
 		fExpireTime = GameRules:GetGameTime() + 3,
 		bDeleteOnHit = false,
-		vVelocity = right_forward * 1100,
+		vVelocity = right_forward * 1350,
 	}
 
 	local bonusSwords = 0
@@ -238,7 +238,7 @@ function KBStart(keys)
 			caster:RemoveModifierByName("modifier_kanshou_byakuya_stock") 		
 		end
 
-		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_kanshou_byakuya_stock", {duration=15.0}) 
+		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_kanshou_byakuya_stock", {duration=10.0}) 
 		if stacks >= 4 then 
 			caster:SetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability, 4)
 		else	
@@ -468,7 +468,7 @@ function OnUBWCastStart(keys)
 		return
 	end 
 
-	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetOrigin(), nil, keys.Radius
+	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetOrigin(), nil, keys.Radius - 150
             , DOTA_UNIT_TARGET_TEAM_BOTH, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES + DOTA_UNIT_TARGET_FLAG_INVULNERABLE, FIND_ANY_ORDER, false)
 
 	for q,w in pairs(targets) do
@@ -1397,7 +1397,7 @@ function OnOveredgeStart(keys)
 	--caster.OveredgeCount = -1
 	--caster:RemoveModifierByName("modifier_overedge_stack")
 	--keys.ability:SetActivated(false)
-	ability:ApplyDataDrivenModifier(caster, caster, "modifier_overedge_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
+	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_overedge_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
 
 	giveUnitDataDrivenModifier(caster, caster, "jump_pause", 0.59)
     local archer = Physics:Unit(caster)
@@ -1420,7 +1420,8 @@ function OnOveredgeStart(keys)
 	if caster:HasModifier("modifier_kanshou_byakuya_stock") then
 		stacks = caster:GetModifierStackCount("modifier_kanshou_byakuya_stock", keys.ability)
 		caster:RemoveModifierByName("modifier_kanshou_byakuya_stock") 
-		damage = damage * (1 + 0.25 * stacks)		
+		damage = damage * (1 + 0.25 * stacks)
+		caster:GiveMana(stacks * 100)
 	end
 
 	Timers:CreateTimer({

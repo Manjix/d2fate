@@ -6,6 +6,7 @@ function OnChannelStart(keys)
 
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_sun_of_galatine_self", {})
 	caster.ChannelDuration = 0
+	caster.SunExploded = false
 
 	caster:EmitSound("Hero_Phoenix.SuperNova.Cast")
 
@@ -42,7 +43,10 @@ function OnChannelEnd(keys)
 	local ability = keys.ability
 	local damage = ((keys.MaxDamage - keys.MinDamage) * (caster.ChannelDuration / 2.5)) + keys.MinDamage
 
-	print(damage)
+	if caster.SunExploded then return end
+
+	--print(damage)
+	--print(keys.Interrupted)
 	
 	caster:RemoveModifierByName("modifier_sun_of_galatine_self")
 	StopSoundEvent("Hero_Phoenix.SuperNova.Cast", caster)
@@ -67,4 +71,5 @@ function OnChannelEnd(keys)
 	end	
 
 	caster:EmitSound("Hero_Phoenix.SuperNova.Explode")
+	caster.SunExploded = true
 end

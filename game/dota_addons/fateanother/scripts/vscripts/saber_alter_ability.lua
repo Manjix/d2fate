@@ -323,7 +323,7 @@ function OnVortigernHit(keys)
 	print("Vortigern hit")
 	damage = damage * (80 + vortigernCount * 5)/100
 	if caster.IsFerocityImproved then 
-		damage = damage + 100
+		--damage = damage + 100
 		keys.StunDuration = keys.StunDuration + 0.3
 	end
 
