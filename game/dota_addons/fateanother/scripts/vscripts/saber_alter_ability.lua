@@ -1,6 +1,8 @@
 --vortigernCount = 0
 --isLeftside = nil
 
+LinkLuaModifier("modifier_vortigern_ferocity", "abilities/arturia_alter/modifiers/modifier_vortigern_ferocity", LUA_MODIFIER_MOTION_NONE)
+
 function OnDerangeStart(keys)
 	local caster = keys.caster
 	local ability = keys.ability
@@ -105,22 +107,13 @@ function OnMBStart(keys)
 	local caster = keys.caster
 	local ability = keys.ability
 	local ply = caster:GetPlayerOwner()
-	local radius = keys.Radius
-	local bonus_radius = 0
-
 
 	if caster.IsManaShroudImproved == true then 
-		bonus_radius = (400 * (caster:GetMana() + 200) / caster:GetMaxMana())
-		if bonus_radius < 200 then bonus_radius = 200 end
-
-		radius = radius + bonus_radius
-		
+		keys.Radius = keys.Radius + 200 
 		keys.Damage = keys.Damage + 3*caster:GetIntellect()
 	end
-
-	print(radius)
 	caster:EmitSound("Saber_Alter.ManaBurst") 
-	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius
+	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, keys.Radius
             , DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_CLOSEST, false)
 	
 	local info = {
@@ -150,16 +143,16 @@ function OnMBStart(keys)
 		caster:SetModifierStackCount( "modifier_derange_counter", caster, caster.ManaBlastCount )
 	end
 
-
+	-- 1.24c particle fix
+	-- Slight fix to make the particle size respect the actual AoE after obtaining SA
 	local mbParticle = ParticleManager:CreateParticle("particles/units/heroes/hero_disruptor/disruptor_static_storm.vpcf", PATTACH_CUSTOMORIGIN, nil)
 	ParticleManager:SetParticleControl(mbParticle, 0, caster:GetAbsOrigin())
-	ParticleManager:SetParticleControl(mbParticle, 1, Vector(radius,0,0))
-	ParticleManager:SetParticleControl(mbParticle, 2, Vector(1.0,0,0))
-
+	ParticleManager:SetParticleControl(mbParticle, 1, Vector(keys.Radius, 0, 0))
+	ParticleManager:SetParticleControl(mbParticle, 2, Vector(1.0, 0, 0))
 
 	for k,v in pairs(targets) do
 	    DoDamage(caster, v, keys.Damage , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-	    v:AddNewModifier(caster, v, "modifier_stunned", {Duration = 0.1})
+	    v:AddNewModifier(caster, v, "modifier_stunned", {Duration = 0.2})
 	end
 
 	ability:ApplyDataDrivenModifier( caster, caster, "modifier_mana_burst_VFX", {} )
@@ -205,6 +198,7 @@ end
 
 vortigernCount = 0
 function OnVortigernStart(keys)
+	ArsenalReturnMana(keys.caster)
 	local caster = keys.caster
 	local ability = keys.ability
 	local ply = caster:GetPlayerOwner()
@@ -218,7 +212,7 @@ function OnVortigernStart(keys)
 		destination = caster:GetForwardVector() + caster:GetAbsOrigin()
 	end
 	
-	giveUnitDataDrivenModifier(keys.caster, keys.caster, "pause_sealdisabled", 0.7) -- Beam interval * 9 + 0.44
+	giveUnitDataDrivenModifier(keys.caster, keys.caster, "pause_sealdisabled", 0.80) -- Beam interval * 9 + 0.44
 	EmitGlobalSound("Saber_Alter.Vortigern")
 
 	local vortigernBeam =
@@ -242,24 +236,24 @@ function OnVortigernStart(keys)
 	}
 
 	if caster.IsFerocityImproved then
-		local stacks = 0
-
-		if caster:HasModifier("modifier_vortigern_chain") then
-			stacks = caster:GetModifierStackCount("modifier_vortigern_chain", keys.ability)
-			caster:SetModifierStackCount("modifier_vortigern_chain", keys.ability, stacks - 1)
-
-			if stacks - 1 == 0 then
-				caster:RemoveModifierByName("modifier_vortigern_chain")
+		if caster:HasModifier("modifier_vortigern_ferocity") then
+			local ferocity_modifier = caster:FindModifierByName("modifier_vortigern_ferocity")
+			local stacks = ferocity_modifier:GetStackCount()
+			if stacks > 1 then
+				ability:EndCooldown()
+				caster:GiveMana(200)
+				ferocity_modifier:SetStackCount(stacks - 1)
 			else
-				RefreshVortigern(keys)
-			end						
+				caster:RemoveModifierByName("modifier_vortigern_ferocity")
+			end
 		else
-			keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_vortigern_chain", {}) 
-			caster:SetModifierStackCount("modifier_vortigern_chain", keys.ability, 2)
-			RefreshVortigern(keys)
-			caster.IsBonusVortigern = true
-		end	
+			local ferocity_modifier = caster:AddNewModifier(caster, ability, "modifier_vortigern_ferocity", { Duration = 3 })
+			ability:EndCooldown()
+			caster:GiveMana(200)
+			ferocity_modifier:SetStackCount(2)
+		end		
 	end
+
 	
 	--[[local casterAngle = QAngle(0, 120 ,0)
 	Timers:CreateTimer(function() 
@@ -319,43 +313,67 @@ function OnVortigernHit(keys)
 	local target = keys.target
 	local ply = caster:GetPlayerOwner()
 	local damage = keys.Damage
+	local StunDuration = keys.StunDuration
+	local vortSwingDamage = 5
 
-	print("Vortigern hit")
-	damage = damage * (80 + vortigernCount * 5)/100
+	damage = damage * (80 + vortigernCount * vortSwingDamage) / 100
+
 	if caster.IsFerocityImproved then 
-		--damage = damage + 100
-		keys.StunDuration = keys.StunDuration + 0.3
+		if caster:HasModifier("modifier_vortigern_ferocity") then
+			damage = damage * 0.66
+		end		
 	end
-
-	if caster.IsBonusVortigern then
-		damage = damage * 0.66
-	end
-	--print("Vortigern damage: ")
-	--print(damage)
-
+	
+	StunDuration = StunDuration * (80 + vortigernCount * 5)/100
 	if target.IsVortigernHit ~= true then
 		target.IsVortigernHit = true
 		Timers:CreateTimer(0.54, function() target.IsVortigernHit = false return end)
 		DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-		target:AddNewModifier(caster, caster, "modifier_stunned", {Duration = keys.StunDuration})
+		target:AddNewModifier(caster, caster, "modifier_stunned", {Duration = StunDuration})
+		print(damage)
+		
 	end
 
 end
 
-function RefreshVortigern(keys)
+--[[ function OnVortigernStart(keys)
 	local caster = keys.caster
+	local ply = caster:GetPlayerOwner()
+	local casterVec = caster:GetForwardVector()
+	local targetVec = Vector(0,0,0)
+	local damage = keys.Damage
+	giveUnitDataDrivenModifier(keys.caster, keys.caster, "pause_sealdisabled", 0.4)
+	if caster.IsFerocityImproved then 
+		damage = damage + 100
+		keys.StunDuration = keys.StunDuration + 0.3
+	end
 
-	caster:FindAbilityByName("saber_alter_vortigern"):EndCooldown()
-	caster:GiveMana(200)
-end
+	local angle = 0
+	EmitGlobalSound("Saber_Alter.Vortigern")
 
-function RemoveBonusVortigern(keys)
-	local caster = keys.caster
+	local vortigerndmg = {
+		attacker = caster,
+		victim = nil,
+		damage = 0,
+		damage_type = DAMAGE_TYPE_MAGICAL,
+		damage_flags = 0,
+		ability = ability
+	}
 
-	caster:FindAbilityByName("saber_alter_vortigern"):StartCooldown(27)
-	caster.IsBonusVortigern = false
-	print("Vortigern bonus expired")
-end
+	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetOrigin(), nil, keys.Radius
+            , DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
+	for k,v in pairs(targets) do
+        targetVec = v:GetAbsOrigin() - caster:GetAbsOrigin() 
+        degree = CalculateAngle(casterVec, targetVec)*180/math.pi -- degree from caster to target
+        -- Starts at 120(85% damage), ends at -120(120% damage)
+        if degree <= 120 and degree >= -120 then
+        	local multiplier = 0.85 + (120 - degree)/(240/0.35)
+        	DoDamage(caster, v, damage * multiplier , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+        	--print(degree .. " " .. multiplier)
+        	v:AddNewModifier(caster, target, "modifier_stunned", {duration = keys.StunDuration})
+        end
+    end
+end]]
 
 function OnDexVfxControllerStart(keys)
 	local caster = keys.caster
@@ -412,10 +430,10 @@ function OnDexStart(keys)
 		end
 	end)
 
-	local casterFacing = caster:GetForwardVector()
 	Timers:CreateTimer(2.75, function()
 		if caster:IsAlive() then
 			-- Create Particle for projectile
+			local casterFacing = caster:GetForwardVector()
 			local dummy = CreateUnitByName("dummy_unit", caster:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
 			dummy:FindAbilityByName("dummy_unit_passive"):SetLevel(1)
 			dummy:SetForwardVector(casterFacing)

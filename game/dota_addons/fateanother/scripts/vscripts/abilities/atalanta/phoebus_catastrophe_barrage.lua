@@ -1,6 +1,8 @@
 atalanta_phoebus_catastrophe_barrage = class({})
 LinkLuaModifier("modifier_phoebus_catastrophe_cooldown", "abilities/atalanta/modifier_phoebus_catastrophe_cooldown", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_barrage_slow", "abilities/atalanta/modifier_barrage_slow", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_barrage_cd", "abilities/atalanta/modifier_barrage_cd", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_catastrophe_active", "abilities/atalanta/modifiers/modifier_catastrophe_active", LUA_MODIFIER_MOTION_NONE)
 
 require("abilities/atalanta/phoebus_catastrophe")
 
@@ -8,6 +10,11 @@ atalanta_phoebus_catastrophe_wrapper(atalanta_phoebus_catastrophe_barrage)
 
 function atalanta_phoebus_catastrophe_barrage:GetCastRange(location, target)
     return self:GetSpecialValueFor("range")
+    --[[if IsClient() then 
+        return self:GetSpecialValueFor("range")
+    else
+        return self:GetSpecialValueFor("range")
+    end]]
 end
 
 function atalanta_phoebus_catastrophe_barrage:GetAOERadius()
@@ -20,6 +27,19 @@ function atalanta_phoebus_catastrophe_barrage:CastFilterResultLocation(location)
     if IsServer() and not IsInSameRealm(caster:GetOrigin(), location) then
         return UF_FAIL_CUSTOM
     end
+    
+    --[[if IsServer() and caster.BowOfHeavenAcquired then
+        local fMaxDist = CustomNetTables:GetTableValue("sync","atalanta_bow_of_heaven").fMaxDist
+        local fCastDistFromCenter = (caster.vRImpactLoc - location):Length2D()
+        local fCastDistFromCaster = (caster:GetAbsOrigin() - location):Length2D()
+        if fCastDistFromCenter > fMaxDist and fCastDistFromCaster > self:GetSpecialValueFor("range") then
+            return UF_FAIL_CUSTOM
+        end
+    end]]
+
+    --[[if IsServer() and caster:HasModifier("modifier_catastrophe_active") then
+        return UF_FAIL_CUSTOM
+    end]]
 
     if caster:GetArrowCount() < 2 then
         return UF_FAIL_CUSTOM
@@ -35,8 +55,21 @@ function atalanta_phoebus_catastrophe_barrage:GetCustomCastErrorLocation(locatio
         return "#Cannot_Be_Cast_Now"
     end
 
+    --[[if IsServer() and caster:HasModifier("modifier_catastrophe_active") then
+        return "#Cannot_Be_Cast_Now"
+    end]]
+    
+    --[[if IsServer() and caster.BowOfHeavenAcquired then
+        local fMaxDist = CustomNetTables:GetTableValue("sync","atalanta_bow_of_heaven").fMaxDist
+        local fCastDistFromCenter = (caster.vRImpactLoc - location):Length2D()
+        local fCastDistFromCaster = (caster:GetAbsOrigin() - location):Length2D()
+        if fCastDistFromCenter > fMaxDist and fCastDistFromCaster > self:GetSpecialValueFor("range") then
+            return "Out of range"
+        end
+    end]]
+    
     if caster:GetArrowCount() < 2 then
-        return "Not enough arrows..."
+        return "#Not_enough_arrows"
     end
 end
 
@@ -46,9 +79,17 @@ function atalanta_phoebus_catastrophe_barrage:OnSpellStart()
     local position = self:GetCursorPosition()
     local origin = caster:GetOrigin()
     local aoe = self:GetAOERadius()
-    local arrows = self:GetSpecialValueFor("arrows")
-    local fixDuration = 3
+    local arrows = math.floor(math.min(self:GetSpecialValueFor("arrows") + (caster:GetArrowCount() * self:GetSpecialValueFor("arrows_per_arrow")), self:GetSpecialValueFor("arrows_cap")))
+    local fixDuration = 4
     local interval = fixDuration / arrows
+    
+    caster:UseArrow(caster:GetArrowCount())
+
+    caster:AddNewModifier(caster, ability, "modifier_catastrophe_active", { duration = self:GetSpecialValueFor("delay")})
+    
+    --caster:EndBowOfHeaven()
+    --Timers:RemoveTimer(caster.BowOfHeavenTimer)
+    --caster:AddNewModifier(caster, self, "modifier_barrage_cd", {Duration = self:GetCooldown(1)})
 
     AddFOWViewer(caster:GetTeamNumber(), position, aoe, 3 + fixDuration, false)
 
@@ -70,9 +111,14 @@ function atalanta_phoebus_catastrophe_barrage:OnSpellStart()
 
         local arrowAoE = self:GetSpecialValueFor("arrow_aoe")
 
-        if caster:HasModifier("modifier_tauropolos") then
+        --[[if caster:HasModifier("modifier_tauropolos") then
             local tauropolos = caster:FindAbilityByName("atalanta_tauropolos")
             arrowAoE = arrowAoE + tauropolos:GetSpecialValueFor("bonus_aoe_per_agi") * caster:GetAgility()
+        end]]
+        if caster:HasModifier("modifier_arrows_of_the_big_dipper") then
+            local fAgility = caster:GetAgility()
+            local tAttributeTable = CustomNetTables:GetTableValue("sync","atalanta_big_dipper")
+            arrowAoE = arrowAoE + (tAttributeTable.fAOEPerAGI * fAgility)
         end
 
         for i=1,arrows do
@@ -86,8 +132,9 @@ function atalanta_phoebus_catastrophe_barrage:OnSpellStart()
                     Delay = 0.2,
                     DontUseArrow = true,
                     NoShock = true,
-                    DontCountArrow = true,
-                    Slow = 0.4
+		            DontCountArrow = true,
+                    Slow = 0.4,
+                    IsPhoebus = true,
                 })
             end)
         end

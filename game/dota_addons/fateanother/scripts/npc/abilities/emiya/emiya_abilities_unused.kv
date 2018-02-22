@@ -1,0 +1,245 @@
+"DOTAAbilities"
+{
+	//=================================================================================================================
+	// Archer : Broken Phantasm
+	//=================================================================================================================
+	"archer_5th_broken_phantasm_unused"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_CHANNELED"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_HERO | DOTA_UNIT_TARGET_CREEP"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/archer_5th_broken_phantasm"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_2"
+		"AnimationPlaybackRate" 		"1.0"
+		"AOERadius"						"%radius"
+		
+		"AbilityCastPoint"				"0.25"
+		"AbilityChannelTime"			"1.5"		
+		"AbilityCastRange"				"2000"
+		"AbilityCastRangeBuffer"		"500"
+		"AbilityCooldown"				"20"
+		"AbilityManaCost"				"200"
+		
+		"precache"
+		{
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_sven.vsndevts"
+			"particle"					"particles/units/heroes/hero_sven/sven_storm_bolt_projectile_explosion.vpcf"
+			"particle"					"particles/units/heroes/hero_clinkz/clinkz_searing_arrow.vpcf"
+			"particle"					"particles/custom/archer/archer_broken_phantasm/archer_broken_phantasm_crosshead.vpcf"
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"cast_delay"			"1.75"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"target_damage"			"100 150 200 250 300"
+			}
+
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"splash_damage"			"225 275 325 375 425"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"375"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"stun_duration"			"1.0 1.0 1.5 1.5 2.0"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"range"					"2000"
+			}
+			"07"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"total_damage"			"325 425 525 625 725"
+			}
+		}
+
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"archer_ability"
+				"Function"		"OnBPCast"
+			}
+		}
+	
+		"OnChannelInterrupted"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"archer_ability"
+				"Function"		"OnBPInterrupted"
+			}
+		}
+		"OnChannelSucceeded"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"archer_ability"
+				"Function"		"OnBPStart"
+			}
+		}
+		"OnProjectileHitUnit"
+		{
+			"RunScript"
+			{
+				"ScriptFile"    "archer_ability"
+				"Function"      "OnBPHit"
+				"Radius"		"%radius"
+				"StunDuration"	"%stun_duration"
+				"TargetDamage"	"%target_damage"
+				"SplashDamage"	"%splash_damage"
+			}
+			"FireSound"
+			{
+				"EffectName"	"Hero_Sven.StormBoltImpact"
+			}
+		}
+	}
+	
+	//=====================================
+	// Archer : Rule Breaker
+	//=====================================
+	"archer_5th_rule_breaker"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"25"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
+		"AbilityTextureName"			"custom/archer_5th_rule_breaker"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_3"
+		"AnimationPlaybackRate" 		"2.0"
+		"AbilityCastPoint"				"0.3"
+		"AbilityCastRange"				"200"
+		"AbilityCastRangeBuffer"		"50"
+		"AbilityCooldown"				"4.0"
+		"AbilityManaCost"				"100"
+		
+		"precache"
+		{
+			"particle"		"particles/units/heroes/hero_dazzle/dazzle_weave_circle_trace.vpcf"
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"duration"				"10.0"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"ministun"				"0.3"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"armor_reduction"		"-2 -4 -6 -8 -10"
+			}
+		}
+
+		"OnSpellStart"
+		{
+			"ApplyModifier"
+			{
+				"ModifierName"		"modifier_rb_armor_reduction"
+				"Target"			"TARGET"
+			}
+			"RunScript"
+			{
+				"ScriptFile"		"archer_ability"
+				"Function"			"OnUBWRBStart"
+				"StunDuration"		"%ministun"
+			}
+		}
+
+		"Modifiers"
+		{
+			"modifier_rb_armor_reduction"
+			{
+				"IsDebuff"					"true"
+				"Duration"					"%duration"
+				"EffectName"				"particles/units/heroes/hero_dazzle/dazzle_weave_circle_trace.vpcf"	
+				"EffectAttachType"			"follow_origin"
+				"Properties"
+				{
+					"MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"	"%armor_reduction"
+				}
+			}
+		}
+	}	
+
+	//=======================================
+	// Archer Attribute : Improve Projection
+	//=======================================
+	"archer_5th_attribute_improve_projection_level2"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/archer_5th_attribute_improve_projection"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"14"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"sword_interval"		"20"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"sword_base_damage"		"30"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"sword_int_ratio"		"30"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"archer_ability"
+				"Function"		"OnImproveProjection2Acquired"
+			}
+		}
+	}
+}

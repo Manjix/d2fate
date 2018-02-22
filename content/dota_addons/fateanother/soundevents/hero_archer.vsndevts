@@ -1447,8 +1447,8 @@
                               "value0"        "sounds/archer/emiya_ubw1.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000" }
-                    "pitch"             {   "value"     "1.00000" }
+                    "volume"            {   "value"     "0.60000"   }
+                    "pitch"             {   "value"     "1.00000"   }
                 }
             }
         }
@@ -1474,7 +1474,7 @@
                               "value0"        "sounds/archer/emiya_ubw2.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
+                    "volume"            {   "value"     "0.60000"  }
                     "pitch"             {   "value"     "1.00000"  }
                 }
             }
@@ -1501,8 +1501,8 @@
                               "value0"        "sounds/archer/emiya_ubw3.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.00000"  }
+                    "volume"            {   "value"     "0.60000"  }
+                    "pitch"             {   "value"     "1.00000"  }                 
                 }
             }
         }
@@ -1528,7 +1528,7 @@
                               "value0"        "sounds/archer/emiya_ubw4.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
+                    "volume"            {   "value"     "0.60000"  }
                     "pitch"             {   "value"     "1.00000"  }
                 }
             }
@@ -1555,7 +1555,7 @@
                               "value0"        "sounds/archer/emiya_ubw5.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
+                    "volume"            {   "value"     "0.60000"  }
                     "pitch"             {   "value"     "1.00000"  }
                 }
             }
@@ -1582,8 +1582,8 @@
                               "value0"        "sounds/archer/emiya_ubw6.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
-                    "pitch"             {   "value"     "1.00000"  }
+                    "volume"            {   "value"     "0.60000"  }
+                    "pitch"             {   "value"     "1.00000"  }                    
                 }
             }
         }
@@ -1609,7 +1609,142 @@
                               "value0"        "sounds/archer/emiya_ubw7.vsnd"
                         }
                     }
-                    "volume"            {   "value"     "1.00000"  }
+                    "volume"            {   "value"     "0.60000"  }
+                    "pitch"             {   "value"     "1.00000"  }
+                }
+            }
+        }
+    }
+}
+
+"Emiya_Crane1"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator"              "sos_reference_stack"
+                "reference_stack"       "dota_update_vo_switch"
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                              "value0"        "sounds/archer/Emiya_Crane1.vsnd"
+                        }
+                    }
+                    "volume"            {   "value"     "3.0000"  }
+                    "pitch"             {   "value"     "1.00000"  }
+                }
+            }
+        }
+    }
+}
+
+"Emiya_Crane2"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator"              "sos_reference_stack"
+                "reference_stack"       "dota_update_vo_switch"
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                              "value0"        "sounds/archer/Emiya_Crane2.vsnd"
+                        }
+                    }
+                    "volume"            {   "value"     "3.0000"  }
+                    "pitch"             {   "value"     "1.00000"  }
+                }
+            }
+        }
+    }
+}
+
+"Emiya_Crane3"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator"              "sos_reference_stack"
+                "reference_stack"       "dota_update_vo_switch"
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                              "value0"        "sounds/archer/Emiya_Crane3.vsnd"
+                        }
+                    }
+                    "volume"            {   "value"     "3.0000"  }
+                    "pitch"             {   "value"     "1.00000"  }
+                }
+            }
+        }
+    }
+}
+
+"Emiya_Hrunt1"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator"              "sos_reference_stack"
+                "reference_stack"       "dota_update_vo_switch"
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                              "value0"        "sounds/archer/Emiya_Hrunt1.vsnd"
+                        }
+                    }
+                    "volume"            {   "value"     "3.0000"  }
+                    "pitch"             {   "value"     "1.00000"  }
+                }
+            }
+        }
+    }
+}
+
+"Emiya_Hrunt2"
+{
+    "operator_stacks"
+    {
+        "update_stack"
+        {
+            "reference_operator"
+            {
+                "operator"              "sos_reference_stack"
+                "reference_stack"       "dota_update_vo_switch"
+                "operator_variables"
+                {
+                    "vsnd_files"
+                    {
+                        "value"
+                        {
+                              "value0"        "sounds/archer/Emiya_Hrunt2.vsnd"
+                        }
+                    }
+                    "volume"            {   "value"     "3.0000"  }
                     "pitch"             {   "value"     "1.00000"  }
                 }
             }

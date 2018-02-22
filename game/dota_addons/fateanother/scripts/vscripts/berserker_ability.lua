@@ -39,28 +39,29 @@ function OnFissureHit(keys)
 	if not IsImmuneToSlow(target) then keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_fissure_strike_slow", {}) end
 
 	giveUnitDataDrivenModifier(keys.caster, keys.target, "pause_sealenabled", 0.01)
-
-    local pushTarget = Physics:Unit(target)
-    target:PreventDI()
-    target:SetPhysicsFriction(0)
-	local vectorC = (caster.FissureTarget - caster.FissureOrigin) + Vector(0,0,100) --knockback in direction as fissure
-	-- get the direction where target will be pushed back to
-	target:SetPhysicsVelocity(vectorC:Normalized() * 1500)
-    target:SetNavCollisionType(PHYSICS_NAV_BOUNCE)
-	local initialUnitOrigin = keys.target:GetAbsOrigin()
-	
-	target:OnPhysicsFrame(function(unit) -- pushback distance check
-		local unitOrigin = unit:GetAbsOrigin()
-		local diff = unitOrigin - initialUnitOrigin
-		local n_diff = diff:Normalized()
-		unit:SetPhysicsVelocity(unit:GetPhysicsVelocity():Length() * n_diff) -- track the movement of target being pushed back
-		if diff:Length() > caster:FindAbilityByName("berserker_5th_fissure_strike"):GetSpecialValueFor("knockback") then -- if pushback distance is over 400, stop it
-			unit:PreventDI(false)
-			unit:SetPhysicsVelocity(Vector(0,0,0))
-			unit:OnPhysicsFrame(nil)
-			FindClearSpaceForUnit(unit, unit:GetAbsOrigin(), true)
-		end
-	end)
+	if not target:HasModifier("modifier_wind_protection_passive") then
+	    local pushTarget = Physics:Unit(target)
+	    target:PreventDI()
+	    target:SetPhysicsFriction(0)
+		local vectorC = (caster.FissureTarget - caster.FissureOrigin) + Vector(0,0,100) --knockback in direction as fissure
+		-- get the direction where target will be pushed back to
+		target:SetPhysicsVelocity(vectorC:Normalized() * 1500)
+	    target:SetNavCollisionType(PHYSICS_NAV_BOUNCE)
+		local initialUnitOrigin = keys.target:GetAbsOrigin()
+		
+		target:OnPhysicsFrame(function(unit) -- pushback distance check
+			local unitOrigin = unit:GetAbsOrigin()
+			local diff = unitOrigin - initialUnitOrigin
+			local n_diff = diff:Normalized()
+			unit:SetPhysicsVelocity(unit:GetPhysicsVelocity():Length() * n_diff) -- track the movement of target being pushed back
+			if diff:Length() > caster:FindAbilityByName("berserker_5th_fissure_strike"):GetSpecialValueFor("knockback") then -- if pushback distance is over 400, stop it
+				unit:PreventDI(false)
+				unit:SetPhysicsVelocity(Vector(0,0,0))
+				unit:OnPhysicsFrame(nil)
+				FindClearSpaceForUnit(unit, unit:GetAbsOrigin(), true)
+			end
+		end)
+	end
 	
 	target:OnPreBounce(function(unit, normal) -- stop the pushback when unit hits wall
 		unit:SetBounceMultiplier(0)
@@ -241,6 +242,8 @@ function OnBerserkStart(keys)
 		Timers:CreateTimer(function()
 			if caster:HasModifier("modifier_berserk_self_buff") == false then return end
 			if explosionCounter == duration then return end
+			
+			HardCleanse(caster)
 			local radius = 300
 			local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
 			for k,v in pairs(targets) do
@@ -353,6 +356,7 @@ function OnNineCast(keys)
 end
 
 function OnNineStart(keys)
+	ArsenalReturnMana(keys.caster)
 	local caster = keys.caster
 	local casterName = caster:GetName()
 	local targetPoint = keys.target_points[1]
@@ -485,23 +489,26 @@ function OnNineLanded(caster, ability)
 						else
 							DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 						end
-						giveUnitDataDrivenModifier(caster, v, "stunned", 1.0)
-						if caster:GetName() ~= "npc_dota_hero_ember_spirit" then
+						giveUnitDataDrivenModifier(caster, v, "stunned", 1.5)
+
+						--[[if caster:GetName() ~= "npc_dota_hero_ember_spirit" then
 							giveUnitDataDrivenModifier(caster, v, "revoked", 0.5)
-						end
+						end]]
 						-- push enemies back
-						local pushback = Physics:Unit(v)
-						v:PreventDI()
-						v:SetPhysicsFriction(0)
-						v:SetPhysicsVelocity((v:GetAbsOrigin() - casterInitOrigin):Normalized() * 300)
-						v:SetNavCollisionType(PHYSICS_NAV_NOTHING)
-						v:FollowNavMesh(false)
-						Timers:CreateTimer(0.5, function()  
-							v:PreventDI(false)
-							v:SetPhysicsVelocity(Vector(0,0,0))
-							v:OnPhysicsFrame(nil)
-							FindClearSpaceForUnit(v, v:GetAbsOrigin(), true)
-						end)
+						if not v:HasModifier("modifier_wind_protection_passive") then
+							local pushback = Physics:Unit(v)
+							v:PreventDI()
+							v:SetPhysicsFriction(0)
+							v:SetPhysicsVelocity((v:GetAbsOrigin() - casterInitOrigin):Normalized() * 300)
+							v:SetNavCollisionType(PHYSICS_NAV_NOTHING)
+							v:FollowNavMesh(false)
+							Timers:CreateTimer(0.5, function()  
+								v:PreventDI(false)
+								v:SetPhysicsVelocity(Vector(0,0,0))
+								v:OnPhysicsFrame(nil)
+								FindClearSpaceForUnit(v, v:GetAbsOrigin(), true)
+							end)
+						end
 					end
 				end
 
@@ -534,10 +541,10 @@ function OnNineLanded(caster, ability)
 						DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 					end
 					giveUnitDataDrivenModifier(caster, v, "stunned", 0.5)
-					if caster:GetName() ~= "npc_dota_hero_ember_spirit" then
+					--[[if caster:GetName() ~= "npc_dota_hero_ember_spirit" then
 						print("9 revoke")
 						giveUnitDataDrivenModifier(caster, v, "revoked", 0.5)
-					end
+					end]]
 				end
 
 				ParticleManager:SetParticleControl(particle, 2, Vector(1,1,radius))
@@ -601,7 +608,7 @@ function OnGodHandDeath(keys)
 	Timers:CreateTimer({
 		endTime = 1,
 		callback = function()
-		print(caster.bIsGHReady)
+		--print(caster.bIsGHReady)
 		if IsTeamWiped(caster) == false and caster.GodHandStock > 0 and caster.bIsGHReady and _G.CurrentGameState == "FATE_ROUND_ONGOING" then
 			caster.bIsGHReady = false
 			Timers:CreateTimer(7.0, function() caster.bIsGHReady = true end)
@@ -610,7 +617,8 @@ function OnGodHandDeath(keys)
 			caster.GodHandStock = caster.GodHandStock - 1
 			GameRules:SendCustomMessage("<font color='#FF0000'>----------!!!!!</font> Remaining God Hand stock : " .. caster.GodHandStock , 0, 0)
 			caster:SetRespawnPosition(dummy:GetAbsOrigin())
-			caster:RespawnHero(false,false,false)
+			RemoveDebuffsForRevival(caster)
+			caster:RespawnHero(false,false)
 			caster:RemoveModifierByName("modifier_god_hand_stock")
 			if caster.GodHandStock > 0 then
 				keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_god_hand_stock", {})

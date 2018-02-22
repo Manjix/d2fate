@@ -3,6 +3,7 @@ require('lishuwen_ability')
 require('archer_ability')
 require('master_ability')
 require('gille_ability')
+require('lancelot_ability')
 require('nursery_rhyme_ability')
 require('libraries/notifications')
 require('items')
@@ -20,7 +21,7 @@ require('libraries/servantstats')
 require('libraries/alternateparticle')
 
 require('blink')
-require('unit_voice')
+--require('unit_voice')
 require('wrappers')
 
 
@@ -78,8 +79,6 @@ ROUND_DURATION = 120
 FIRST_BLESSING_PERIOD = 300
 BLESSING_PERIOD = 480
 BLESSING_MANA_REWARD = 15
---SPAWN_POSITION_RADIANT_DM = Vector(-1600, 5820, 320)
---SPAWN_POSITION_DIRE_DM = Vector(2960, -1000, 320)
 SPAWN_POSITION_RADIANT_DM = Vector(-5400, 762, 376)
 SPAWN_POSITION_DIRE_DM = Vector(7200, 4250, 755)
 SPAWN_POSITION_T1_TRIO = Vector(-796,7032,512)
@@ -89,7 +88,7 @@ SPAWN_POSITION_T4_TRIO = Vector(-888,1748,512)
 TRIO_RUMBLE_CENTER = Vector(2436,4132,1000)
 FFA_CENTER = Vector(368,3868,1000)
 mode = nil
-FATE_VERSION = "vMEME_BETA"
+FATE_VERSION = "v1.25"
 roundQuest = nil
 IsGameStarted = false
 
@@ -107,6 +106,8 @@ _G.XP_PER_LEVEL_TABLE[24] = 0
 for i=2,MAX_LEVEL-2 do
     _G.XP_PER_LEVEL_TABLE[i] = XP_TABLE[i+1] - XP_TABLE[i] -- XP required per level formula : Previous level XP requirement + Level * 100
 end
+
+
 _G.XP_PER_LEVEL_TABLE[MAX_LEVEL-1] = _G.XP_PER_LEVEL_TABLE[MAX_LEVEL-2] + 2400
 
 for i=1, MAX_LEVEL do
@@ -114,9 +115,10 @@ for i=1, MAX_LEVEL do
 end
 
 XP_BOUNTY_PER_LEVEL_TABLE[1] = 100
-XP_BOUNTY_PER_LEVEL_TABLE[2] = 100 * 0.85 + 8 + 120
+XP_BOUNTY_PER_LEVEL_TABLE[2] = 100 * 0.85 + 8 + 100
 for i=3, MAX_LEVEL do
-    XP_BOUNTY_PER_LEVEL_TABLE[i] = XP_BOUNTY_PER_LEVEL_TABLE[i-1]*0.85 + i*4 + 120 -- Bounty XP formula : Previous level XP + Current Level * 4 + 120(constant)
+    XP_BOUNTY_PER_LEVEL_TABLE[i] = XP_BOUNTY_PER_LEVEL_TABLE[i-1] * 0.85 + i * 4 + 120 
+    -- Bounty XP formula : Previous level XP + Current Level * 4 + 120(constant)
 end
 
 -- Client to Server message data tables
@@ -358,8 +360,23 @@ function FateGameMode:OnAllPlayersLoaded()
             maxval = i
             maxkey = votePool[i]
         end
-    end
+    end  
+    
+    
+    local particleDummyOrigin
+    if _G.GameMap == "fate_elim_6v6" or _G.GameMap == "fate_elim_7v7" then
+        particleDummyOrigin = Vector(-7900,-8000, 200)--Vector(6250,-7200, 200)
+    elseif _G.GameMap == "fate_trio_rumble_3v3v3v3" or "fate_ffa" then
+        particleDummyOrigin = Vector(6250,-7200, 200)
+    end    
+    --add global particle dummy in master's territory along with vision for both teams
 
+    local particleDummy = CreateUnitByName("visible_dummy_unit", particleDummyOrigin, true, nil, nil, 4)
+    particleDummy:FindAbilityByName("dummy_visible_unit_passive"):SetLevel(1)
+    AddFOWViewer(2, particleDummyOrigin, 500, 99999, false) -- duration -1 doesnt work lols
+    AddFOWViewer(3, particleDummyOrigin, 500, 99999, false)
+    _G.ParticleDummy = particleDummy
+    
     -- CUSTOM COLOURS
     badGuyColorIndex = 1
     goodGuyColorIndex = 1
@@ -509,6 +526,7 @@ function FateGameMode:OnGameInProgress()
         dummyLevel = 2
         dummyLoc = TRIO_RUMBLE_CENTER
     end
+    
 
     if bIsDummyNeeded then
         local xpGranter = CreateUnitByName("dummy_unit", Vector(0, 0, 1000), true, nil, nil, DOTA_TEAM_NEUTRALS)
@@ -517,7 +535,6 @@ function FateGameMode:OnGameInProgress()
         xpGranter:FindAbilityByName("dummy_unit_passive"):SetLevel(1)
         xpGranter:SetAbsOrigin(dummyLoc)
     end
-
 end
 
 -- Cleanup a player when they leave
@@ -940,6 +957,25 @@ function OnPlayerAltClick(eventSourceIndex, keys)
 	Say(player, message, not keys.toAll)
 end
 
+function OnPlayerRemoveBuff(iSource, args)
+    local iPlayer = args.PlayerID
+    local hUnit = EntIndexToHScript(args.iUnit)
+
+    if iPlayer == hUnit:GetPlayerOwnerID() then
+        hUnit:RemoveModifierByName(args.sModifier)
+    end
+end
+
+function OnPlayerCastSeal(iSource, args)
+    local iPlayer = args.PlayerID
+    local hUnit = EntIndexToHScript(args.iUnit)
+    local hAbility = EntIndexToHScript(args.iAbility)
+
+    if iPlayer == hUnit:GetPlayerOwnerID() then
+        hUnit:CastAbilityNoTarget(hAbility, iPlayer)
+    end
+end
+
 function DistributeGold(hero, cutoff)
     -- get gold amount of teammates
     -- exclude from table if more than stated amount
@@ -1097,7 +1133,7 @@ function FateGameMode:OnHeroInGame(hero)
     -- Initialize stuffs
     hero:SetCustomDeathXP(0)
     hero.bFirstSpawned = true
-	UnitVoice(hero)
+	--UnitVoice(hero)
     hero.PresenceTable = {}
     hero.bIsDmgPopupDisabled = false
     hero.bIsAlertSoundDisabled = false
@@ -1181,7 +1217,12 @@ function FateGameMode:OnHeroInGame(hero)
     master:SetMana(0)
     hero.MasterUnit = master
     LevelAllAbility(master)
-    hero:FindAbilityByName("attribute_bonus_custom"):SetHidden(false)
+
+    if hero:GetName() == "npc_dota_hero_juggernaut" then -- or hero:GetName() == "npc_dota_hero_shadow_shaman" then
+        hero:FindAbilityByName("attribute_bonus_custom_no_int"):SetHidden(false)
+    else
+        hero:FindAbilityByName("attribute_bonus_custom"):SetHidden(false)
+    end
     master:AddItem(CreateItem("item_master_transfer_items1", nil, nil))
     master:AddItem(CreateItem("item_master_transfer_items2", nil, nil))
     master:AddItem(CreateItem("item_master_transfer_items3", nil, nil))
@@ -1217,7 +1258,8 @@ function FateGameMode:OnHeroInGame(hero)
     master3:RemoveAbility("courier_return_stash_items")
     master3:RemoveAbility("courier_take_stash_items")
     master3:RemoveAbility("courier_transfer_items")
-    master3:RemoveAbility("courier_burst")
+    --master3:RemoveAbility("courier_burst")
+    master3:RemoveAbility("courier_shield")
     master3:RemoveAbility("courier_morph")
     master3:RemoveAbility("courier_take_stash_and_transfer_items")
 
@@ -1262,9 +1304,14 @@ function FateGameMode:OnHeroInGame(hero)
         hero.MasterUnit:SetMana(hero.MasterUnit:GetMaxMana())
         hero.MasterUnit2:SetMana(hero.MasterUnit2:GetMaxMana())
 
-        hero:SetBaseStrength(20)
-        hero:SetBaseAgility(20)
-        hero:SetBaseIntellect(20)
+        if hero:GetName() ~= "npc_dota_hero_juggernaut" then
+            hero:SetBaseStrength(20)
+            hero:SetBaseAgility(20)
+            hero:SetBaseIntellect(20)
+        else
+            hero:SetBaseStrength(25)
+            hero:SetBaseAgility(25)
+        end
     end
 
 
@@ -1314,6 +1361,9 @@ end
 
 -- An item was picked up off the ground
 function FateGameMode:OnItemPickedUp(keys)
+
+    print("Item pickup")
+    for k,v in pairs(keys) do print(k,v) end
 
     local heroEntity = nil
     local player = nil
@@ -1457,9 +1507,18 @@ function FateGameMode:OnItemPurchased( keys )
     -- The cost of the item purchased
     local itemCost = keys.itemcost
 
-    print(itemCost)
-
     local hero = PlayerResource:GetPlayer(plyID):GetAssignedHero()
+
+    --[[if not hero:IsAlive() then
+       for i = 0, 5 do 
+            if hero:GetItemInSlot(i):GetName() == itemName then
+
+            end
+        end
+
+        return
+    end]]
+
     CheckItemCombinationInStash(hero)
 
     local isPriceIncreased = true
@@ -1534,6 +1593,11 @@ function FateGameMode:OnItemPurchased( keys )
     end
 end
 
+--[[function FateGameMode:OnItemAdded(args)
+    for k,v in pairs(args) do print(k,v) end
+
+end]]
+
 function GetStashItems(hero)
     local stashTable = {}
     for i=1,6 do
@@ -1585,7 +1649,9 @@ local spellBooks = {
     "nero_close_spellbook",
     "tamamo_armed_up",
     "tamamo_close_spellbook",
-    "lancelot_arms_mastership" -- Not a spellbook but it is an empty ability when attribute is NOT taken that can trigger amaterasu heals and mark of mortality.
+    "lancelot_arms_mastership", -- Not a spellbook but it is an empty ability when attribute is NOT taken that can trigger amaterasu heals and mark of mortality.
+    "atalanta_traps",
+    "atalanta_traps_close"
 }
 -- An ability was used by a player
 function FateGameMode:OnAbilityUsed(keys)
@@ -1806,7 +1872,7 @@ function FateGameMode:OnEntityKilled( keys )
                 CustomGameEventManager:Send_ServerToPlayer( killedUnit:GetPlayerOwner(), "servant_stats_updated", statTable ) -- Send the current stat info to JS
             end
             -- Distribute XP to allies
-            local alliedHeroes = FindUnitsInRadius(killerEntity:GetTeamNumber(), killedUnit:GetAbsOrigin(), nil, 2500, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_HERO, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES + DOTA_UNIT_TARGET_FLAG_INVULNERABLE, FIND_CLOSEST, false)
+            local alliedHeroes = FindUnitsInRadius(killerEntity:GetTeamNumber(), killedUnit:GetAbsOrigin(), nil, 4000, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_HERO, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES + DOTA_UNIT_TARGET_FLAG_INVULNERABLE, FIND_CLOSEST, false)
             local realHeroCount = 0
             for i=1, #alliedHeroes do
                 if alliedHeroes[i]:IsHero() and alliedHeroes[i]:GetName() ~= "npc_dota_hero_wisp" then
@@ -1970,7 +2036,8 @@ function OnServantCustomizeActivated(Index, keys)
     local caster = EntIndexToHScript(keys.unitEntIndex)
     local ability = EntIndexToHScript(keys.abilEntIndex)
     local hero = caster:GetPlayerOwner():GetAssignedHero()
-    if ability:GetBehavior() ~= 6293508 then
+    local behav_string = tostring(ability:GetBehavior())
+    if behav_string ~= "6293508" then
         return
     end
     if ability:GetManaCost(1) > caster:GetMana() then
@@ -2094,6 +2161,13 @@ function FateGameMode:InitGameMode()
     GameRules:SetCustomGameEndDelay(30)
     GameRules:SetCustomVictoryMessageDuration(30)
 
+    GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_STRENGTH_HP_REGEN_PERCENT, 0)
+    GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_STRENGTH_STATUS_RESISTANCE_PERCENT, 0)
+    GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_AGILITY_MOVE_SPEED_PERCENT, 0)
+    GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_INTELLIGENCE_MANA_REGEN_PERCENT, 0)
+    GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_INTELLIGENCE_MAGIC_RESISTANCE_PERCENT, 0)    
+    --GameRules:GetGameModeEntity():SetCustomAttributeDerivedStatValue(DOTA_ATTRIBUTE_, 0)
+
 
     -- Random seed for RNG
     local timeTxt = string.gsub(string.gsub(GetSystemTime(), ':', ''), '0','')
@@ -2108,6 +2182,7 @@ function FateGameMode:InitGameMode()
     ListenToGameEvent('player_disconnect', Dynamic_Wrap(FateGameMode, 'OnDisconnect'), self)
     ListenToGameEvent('dota_item_purchased', Dynamic_Wrap(FateGameMode, 'OnItemPurchased'), self)
     ListenToGameEvent('dota_item_picked_up', Dynamic_Wrap(FateGameMode, 'OnItemPickedUp'), self)
+    --ListenToGameEvent('dota_inventory_player_got_item', Dynamic_Wrap(FateGameMode, 'OnItemAdded'), self)
     --ListenToGameEvent('last_hit', Dynamic_Wrap(FateGameMode, 'OnLastHit'), self)
     --ListenToGameEvent('dota_non_player_used_ability', Dynamic_Wrap(FateGameMode, 'OnNonPlayerUsedAbility'), self)
     ListenToGameEvent('player_changename', Dynamic_Wrap(FateGameMode, 'OnPlayerChangedName'), self)
@@ -2144,6 +2219,8 @@ function FateGameMode:InitGameMode()
     CustomGameEventManager:RegisterListener( "config_option_4_checked", OnConfig4Checked )
     -- CustomGameEventManager:RegisterListener( "player_chat_panorama", OnPlayerChat )
     CustomGameEventManager:RegisterListener( "player_alt_click", OnPlayerAltClick )
+    CustomGameEventManager:RegisterListener("player_remove_buff", OnPlayerRemoveBuff )
+    CustomGameEventManager:RegisterListener("player_cast_seal", OnPlayerCastSeal )
     -- LUA modifiers
     LinkLuaModifier("modifier_ms_cap", "modifiers/modifier_ms_cap", LUA_MODIFIER_MOTION_NONE)
 
@@ -2349,11 +2426,11 @@ function FateGameMode:ExecuteOrderFilter(filterTable)
     -- DOTA_UNIT_ORDER_MOVE_ITEM = 19(drag and drop)
 
     -- attack command
-    if orderType == 4 then
+    --[[if orderType == 4 then
         if caster:GetName() == "npc_dota_hero_bloodseeker" and caster:HasModifier("modifier_lishuwen_concealment") and target:IsRealHero() then
             caster:FindAbilityByName("lishuwen_concealment"):ApplyDataDrivenModifier(caster, caster, "modifier_concealment_speed_boost", {})
         end
-    end
+    end]]
     -- What do we do when handling the move between inventory and stash?
     if orderType == 11 then
     end
@@ -2459,9 +2536,16 @@ function FateGameMode:ExecuteOrderFilter(filterTable)
     return true
 end
 
+function FateGameMode:ItemAddedFilter(args)
+    local item = EntIndexToHScript(args.item_entindex_const)
+    if item:GetName() == "item_tpscroll" then return false end
+
+    return true
+end
+
 function FateGameMode:InitializeRound()
     -- do first round stuff
-    if self.nCurrentRound == 1 then
+    --if self.nCurrentRound == 1 then
         --[[print("[FateGameMode]First round started, initiating 10 minute timer...")
         IsGameStarted = true
         GameRules:SendCustomMessage("#Fate_Game_Begin", 0, 0)
@@ -2482,14 +2566,15 @@ function FateGameMode:InitializeRound()
 
                 return BLESSING_PERIOD
         end})]]
-    end
+    --end
 
     -- Flag game mode as pre round, and display tip
     _G.IsPreRound = true
     CreateUITimer("Pre-Round", PRE_ROUND_DURATION, "pregame_timer")
     --FireGameEvent('cgm_timer_display', { timerMsg = "Pre-Round", timerSeconds = 16, timerEnd = true, timerPosition = 0})
     --DisplayTip()
-    --Say(nil, string.format("Round %d will begin in " .. PRE_ROUND_DURATION .. " seconds.", self.nCurrentRound), false)
+    GameRules:SendCustomMessage("Round "..self.nCurrentRound.." will begin in " .. PRE_ROUND_DURATION .. " seconds.", 0, 0)
+    --Say(nil, string.format("Round %d will begin in " .. PRE_ROUND_DURATION .. " seconds.", self.nCurrentRound), false) -- Valve please
 
 
     local msg = {
@@ -2537,6 +2622,8 @@ function FateGameMode:InitializeRound()
                     hero:ModifyGold(3000, true, 0)
                 end
             end
+
+            --local xpBonus = 100 + 
 
             hero:AddExperience(self.nCurrentRound * 50, false, false)
         end
@@ -2765,7 +2852,7 @@ function FateGameMode:FinishRound(IsTimeOut, winner)
             end
             hero.ServStat:printconsole()
         end)
-        --Say(nil, "Red Faction Victory!", false)
+        GameRules:SendCustomMessage("Red Faction Victory!",0,0)
         my_http_post()
         GameRules:SetSafeToLeave( true )
         GameRules:SetGameWinner( DOTA_TEAM_GOODGUYS )
@@ -2780,7 +2867,7 @@ function FateGameMode:FinishRound(IsTimeOut, winner)
             end
             hero.ServStat:printconsole()
         end)
-        --Say(nil, "Black Faction Victory!", false)
+        GameRules:SendCustomMessage("Black Faction Victory!",0,0)
         my_http_post()
         GameRules:SetSafeToLeave( true )
         GameRules:SetGameWinner( DOTA_TEAM_BADGUYS )
@@ -2833,7 +2920,7 @@ function FateGameMode:FinishRound(IsTimeOut, winner)
                     respawnPos = GetRespawnPos(playerHero, self.nCurrentRound, index)
                 end
                 playerHero:SetRespawnPosition(respawnPos)
-                playerHero:RespawnHero(false, false, false)
+                playerHero:RespawnHero(false, false)
                 ProjectileManager:ProjectileDodge(playerHero)
             end, true)
             self:InitializeRound()
@@ -2850,14 +2937,12 @@ function GetRespawnPos(playerHero, currentRound, index)
     -- [0] [1]
     -- [2] [3]
     -- [4] [x] x is default spawn
-    --local radiantOffset = vColumn * -2 + vRow * -1
     local radiantOffset = vColumn * -1 + vRow * -.5
     local radiantSpawn = SPAWN_POSITION_RADIANT_DM + radiantOffset
 
     -- [0] [1]
     -- [2] [x]
     -- [4] [5] x is default spawn
-    --local direOffset = vColumn * -1 + vRow * -1
     local direOffset = vColumn * 1 + vRow * -.5
     local direSpawn = SPAWN_POSITION_DIRE_DM + direOffset
 
@@ -2911,6 +2996,7 @@ function FateGameMode:CaptureGameMode()
         mode:SetAnnouncerDisabled( true )
         mode:SetLoseGoldOnDeath( false )
         mode:SetExecuteOrderFilter( Dynamic_Wrap( FateGameMode, "ExecuteOrderFilter" ), FateGameMode )
+        mode:SetItemAddedToInventoryFilter(Dynamic_Wrap(FateGameMode, "ItemAddedFilter"), FateGameMode)
         mode:SetModifyGoldFilter(Dynamic_Wrap(FateGameMode, "ModifyGoldFilter"), FateGameMode)
         mode:SetDamageFilter(Dynamic_Wrap(FateGameMode, "TakeDamageFilter"), FateGameMode)
         mode:SetModifyExperienceFilter(Dynamic_Wrap(FateGameMode, "ModifyExperienceFilter"), FateGameMode)

@@ -35,11 +35,12 @@ function OnDevoteHit(keys)
 	caster:RemoveModifierByName("modifier_blade_of_the_devoted")
 	target:AddNewModifier(caster, caster, "modifier_stunned", {Duration = 0.5})
 	
-	local knockBackUnits = FindUnitsInRadius(caster:GetTeam(), target:GetAbsOrigin(), nil, 500, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false )
+	local knockBackUnits = FindUnitsInRadius(caster:GetTeam(), target:GetAbsOrigin(), nil, 250, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false )
 	local kbDistance = 200
 
 	if caster.IsBeltAcquired then
 		kbDistance = 300
+		keys.ability:ApplyDataDrivenModifier(caster,target,"modifier_blade_of_the_devoted_slow",{duration=3.0})
 	end
 
 	local modifierKnockback = {	center_x = target:GetAbsOrigin().x,
@@ -96,7 +97,7 @@ function OnGalatineStart(keys)
 
 	-- Stops Gawain from doing anything else essentially and play the Galatine animation
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_excalibur_galatine_vfx", {})	
-	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 1.75)
+	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 2.1)
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_excalibur_galatine_anim",{})
 	-- Need the dank voice. 
 	EmitGlobalSound("gawain_galatine")
@@ -116,12 +117,12 @@ function OnGalatineStart(keys)
 	galatineDummy:SetNightTimeVisionRange(300)
 
 	if caster.IsSoVAcquired then
-		damage = damage + 300
+		damage = damage + 250
 		fireTrailDuration = fireTrailDuration + 3
 	end
 
 	-- Checks if Gawain is still alive as well as whether or not it overshot where the player intended it to flew.. or it flew for too long
-	Timers:CreateTimer(1.5, function()
+	Timers:CreateTimer(2.0, function()
 		if caster:IsAlive() and timeElapsed < 1.5 and caster.IsGalatineActive and flyingDist < dist then
 			-- Need to initialize the variables and put in Gawain's detonate Galatine ability
 			if InFirstLoop then
@@ -144,22 +145,15 @@ function OnGalatineStart(keys)
 			end
 
 			--Hacky way to leave a fire trail 
-			--print(flyingDist)
 			if (math.ceil(flyingDist) % 300 < 5) then
-				LeaveFireTrail(keys, galatineDummy:GetAbsOrigin(), fireTrailDuration)
+				LeaveFireTrail(keys, GetGroundPosition(galatineDummy:GetAbsOrigin(), nil), fireTrailDuration)
 			end
 			
 			return 0.05
 		else 
-			LeaveFireTrail(keys, galatineDummy:GetAbsOrigin(), fireTrailDuration)
-			-- Make ball
-			--GenerateArtificialSun(caster, orbLoc)
+			LeaveFireTrail(keys, GetGroundPosition(galatineDummy:GetAbsOrigin(), nil), fireTrailDuration)
 
 			-- Give Gawain back his Galatine
-			--[[if caster:GetAbilityByIndex(5):GetAbilityName() == "gawain_excalibur_galatine_detonate" then
-				caster:SwapAbilities("gawain_excalibur_galatine", "gawain_excalibur_galatine_detonate", true, false)
-			end]]
-
 			GiveGawainGalatine(caster)
 
 			-- Explosion on enemies
@@ -173,7 +167,7 @@ function OnGalatineStart(keys)
 			local explodeFx1 = ParticleManager:CreateParticle("particles/units/heroes/hero_ember_spirit/ember_spirit_hit.vpcf", PATTACH_ABSORIGIN, galatineDummy )
 			ParticleManager:SetParticleControl( explodeFx1, 0, galatineDummy:GetAbsOrigin())			
 
-			local explodeFx2 = ParticleManager:CreateParticle("particles/units/heroes/hero_lina/lina_spell_light_strike_array.vpcf", PATTACH_ABSORIGIN_FOLLOW, galatineDummy )
+			local explodeFx2 = ParticleManager:CreateParticle("particles/custom/gawain/gawain_galetine_explosion_parent.vpcf", PATTACH_ABSORIGIN_FOLLOW, galatineDummy )
 			ParticleManager:SetParticleControl( explodeFx2, 0, galatineDummy:GetAbsOrigin())
 
 			galatineDummy:EmitSound("Ability.LightStrikeArray")
@@ -210,6 +204,8 @@ end
 function GiveGawainGalatine(caster)
 	local galatineSlot = caster:GetAbilityByIndex(5)
 
+	caster.IsGalatineActive = false
+
 	if galatineSlot:GetAbilityName() ~= "gawain_excalibur_galatine" then
 		caster:SwapAbilities("gawain_excalibur_galatine", galatineSlot:GetAbilityName(), true, false)
 	end
@@ -223,7 +219,7 @@ function LeaveFireTrail(keys, location, duration)
 	local ability = keys.ability
 	local damage = keys.BurnDamage
 
-	local fireFx = ParticleManager:CreateParticle("particles/custom/ruler/la_pucelle/la_pucelle_flame.vpcf", PATTACH_CUSTOMORIGIN, nil)
+	local fireFx = ParticleManager:CreateParticle("particles/custom/gawain/gawain_galetine_flametrail_parent.vpcf", PATTACH_CUSTOMORIGIN, nil)
 	ParticleManager:SetParticleControl(fireFx, 0, location)
 	ParticleManager:SetParticleControl(fireFx, 1, Vector(duration,0,0))
 
@@ -232,11 +228,9 @@ function LeaveFireTrail(keys, location, duration)
 	Timers:CreateTimer(function()
 		counter = counter + period
 		if counter > duration then return end
-		local targets = FindUnitsInRadius(caster:GetTeam(), location, nil, 325, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_CLOSEST, false)
+		local targets = FindUnitsInRadius(caster:GetTeam(), location, nil, 350, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_CLOSEST, false)
 		for k,v in pairs(targets) do
-			--v:RemoveModifierByName("modifier_excalibur_galatine_burn")
 			ability:ApplyDataDrivenModifier(caster, v, "modifier_excalibur_galatine_burn", {})
-			--DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 		end
 		return period
 	end)
@@ -258,7 +252,8 @@ function OnFairyDamageTaken(keys)
 	local currentHealth = caster:GetHealth()
 
 	if currentHealth == 0 and keys.ability:IsCooldownReady() and IsRevivePossible(caster) then
-		caster:SetHealth(300)
+		RemoveDebuffsForRevival(caster)
+		caster:SetHealth(350)
 		keys.ability:StartCooldown(60) 
 		ability:ApplyDataDrivenModifier(caster, caster, "modifier_gawain_blessing_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
 		ability:ApplyDataDrivenModifier(caster, caster, "modifier_gawain_revive_regen", {duration = 5})
@@ -316,7 +311,7 @@ function OnFairyAcquired(keys)
     hero:FindAbilityByName("gawain_blessing_of_fairy"):SetLevel(1)
     --hero:SwapAbilities("fate_empty8", "gawain_blessing_of_fairy", false, true)
 
-    hero:FindAbilityByName("gawain_blessing_of_fairy"):SetHidden(true)
+    --hero:FindAbilityByName("gawain_blessing_of_fairy"):SetHidden(true)
     --hero:SwapAbilities(hero:GetAbilityByIndex(4):GetName(), "gawain_blessing_of_fairy", true, true)
     -- Set master 1's mana 
     local master = hero.MasterUnit
@@ -343,9 +338,6 @@ function OnNoSAcquired(keys)
     hero:SetBaseMagicalResistanceValue(23)
     hero:SwapAbilities("fate_empty1", "gawain_saint", false, true)
     hero:FindAbilityByName("gawain_saint"):SetLevel(1)
-
-    --hero:SetBaseHealthRegen(9)
-    --hero:Set
 
     -- Set master 1's mana 
     local master = hero.MasterUnit

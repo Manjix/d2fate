@@ -1,0 +1,1 @@
+true_assassin_selfmod = class({})

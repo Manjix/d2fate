@@ -1,5 +1,9 @@
 modifier_calydonian_hunt_root = class({})
 
+--[[function modifier_calydonian_hunt_root:OnCreated(table)
+	self:GetParent()
+end]]
+
 function modifier_calydonian_hunt_root:DeclareFunctions()
     local funcs = {
         MODIFIER_PROPERTY_PROVIDES_FOW_POSITION,
@@ -7,6 +11,9 @@ function modifier_calydonian_hunt_root:DeclareFunctions()
  
     return funcs
 end
+
+--function modifier_calydonian_hunt_root:CheckState()
+--end
 
 function modifier_calydonian_hunt_root:GetModifierProvidesFOWVision()
     return 1

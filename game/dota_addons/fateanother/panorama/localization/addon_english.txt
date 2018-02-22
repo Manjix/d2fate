@@ -1,4 +1,4 @@
-"addon"
+﻿"addon"
 {
 	"Language"									"english"	
 	"Tokens"
@@ -103,11 +103,14 @@
 		"FA_Config_Option4"				"Disable alert sound upon presence detection"
 		"FA_Config_Option5"				"Hide Portrait/Master UI"
 		"FA_Config_Option6"				"Enable alt-click on buffs"
+		"FA_Config_Option7"				"Disable Master's bar"
 
 		"FA_Config_Cmd1"	"Pops a message that asks for gold to your team."
 		"FA_Config_Cmd2"	"Turns BGM on/off."
 		"FA_Config_Cmd3"	"Increases Master mana/health to 100/1000, \nand sets up Combo requirement stats."
 		"FA_Config_Cmd4"	"Removes pre-round pause status from all Servants."
+		"FA_Config_Cmd5"	"Enables or disables servants' voices."
+
 
 		"Fateanother_Portrait_Tooltip"					"Click to select your Servant."
 		"Fateanother_Master_Tooltip"					"Click to select Master, who can aid your Servant with powerful Command Seals."

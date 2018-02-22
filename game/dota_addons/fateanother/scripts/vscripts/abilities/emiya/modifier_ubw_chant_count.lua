@@ -1,13 +1,10 @@
 modifier_ubw_chant_count = class({})
 
---[[function modifier_ubw_chant_count:OnRefresh()
-    local hero = self:GetParent()
+--[[function modifier_ubw_chant_count:OnCreated(table)
     if IsServer() then
-        self:SetStackCount(self:GetStackCount() + 1)
-    end    
-end]]
-
------------------------------------------------------------------------------------
+        self.MsBonus = table.MsBonus
+    end
+end
 
 function modifier_ubw_chant_count:DeclareFunctions()
     local funcs = {
@@ -17,13 +14,27 @@ function modifier_ubw_chant_count:DeclareFunctions()
     return funcs
 end
 
------------------------------------------------------------------------------------
+function modifier_ubw_chant_count:GetModifierMoveSpeedBonus_Constant()
+    if IsServer() then
+        CustomNetTables:SetTableValue("sync","ubw_chant_buff", { ms_bonus = self.MsBonus})
+        return self.MsBonus * self:GetStackCount()
+    elseif IsClient() then
+        local ms_bonus = CustomNetTables:GetTableValue("sync","ubw_chant_buff").ms_bonus
+        return ms_bonus 
+    end
+end]]
 
 function modifier_ubw_chant_count:OnDestroy()
-    local hero = self:GetParent()
-    local ability = hero:GetAbilityByIndex(5)
-    if ability:GetName() == "archer_5th_ubw" then
-        hero:SwapAbilities("archer_5th_ubw", "emiya_chant_ubw", false, true)
+    if IsServer() then
+        local hero = self:GetCaster()
+
+        if hero ~= nil then
+            if hero:GetName() ~= "npc_dota_hero_ember_spirit" then return end
+            local ability = hero:GetAbilityByIndex(5)
+            if ability:GetName() == "archer_5th_ubw" then
+                hero:SwapAbilities("archer_5th_ubw", "emiya_chant_ubw", false, true)
+            end
+        end
     end
 end
 
@@ -33,25 +44,17 @@ function modifier_ubw_chant_count:GetAttributes()
     return MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE
 end
 
------------------------------------------------------------------------------------
-
 function modifier_ubw_chant_count:IsPurgable()
     return false
 end
-
------------------------------------------------------------------------------------
 
 function modifier_ubw_chant_count:IsDebuff()
     return false
 end
 
------------------------------------------------------------------------------------
-
 function modifier_ubw_chant_count:RemoveOnDeath()
     return true
 end
-
------------------------------------------------------------------------------------
 
 function modifier_ubw_chant_count:GetTexture()
     return "custom/archer_5th_ubw"

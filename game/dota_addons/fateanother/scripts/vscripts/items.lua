@@ -1,6 +1,7 @@
 cdummy = nil
 itemKV = LoadKeyValues("scripts/npc/npc_items_custom.txt")
 
+LinkLuaModifier("modifier_sex_scroll_root","items/modifiers/modifier_sex_scroll_root.lua", LUA_MODIFIER_MOTION_NONE)
 
 function ParseCombinationKV()
 	for k,v in pairs(itemKV) do
@@ -176,7 +177,10 @@ function PotInstantHeal(keys)
 		return
 	end
 	caster:ApplyHeal(500, caster)
-	caster:GiveMana(300)
+
+	if caster:GetName() ~= "npc_dota_hero_juggernaut" then
+		caster:GiveMana(300)
+	end
 
 	local healFx = ParticleManager:CreateParticle("particles/units/heroes/hero_omniknight/omniknight_purification_g.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 	ParticleManager:SetParticleControl(healFx, 1, caster:GetAbsOrigin()) -- target effect location
@@ -289,14 +293,14 @@ end
 function WardOnTakeDamage(keys)
 	if keys.unit.dmgcooldown ~= true then
 		keys.unit.dmgcooldown = true
-		print("Took Dmg")
+		--print("Took Dmg")
 		local dmgtable = {
 	        attacker = keys.attacker,
 	        victim = keys.unit,
 	        damage = 2,
 	        damage_type = DAMAGE_TYPE_PURE,
 	    }
-	    print(dmgtable.attacker:GetName(), dmgtable.victim:GetName(), dmgtable.damage)
+	    --print(dmgtable.attacker:GetName(), dmgtable.victim:GetName(), dmgtable.damage)
 	    ApplyDamage(dmgtable)
 	    Timers:CreateTimer(0.05, function()
 			keys.unit.dmgcooldown = false
@@ -397,17 +401,6 @@ function SpiritLink(keys)
 	end
 end
 
-function OnLinkDamageTaken(keys)
-    LoopOverHeroes(function(hero)
-        if hero:HasModifier("modifier_share_damage") and hero:GetHealth() == 0 then
-            --print("Spirit Link broken on " .. hero:GetName())
-            if IsRevivePossible(hero) then hero:SetHealth(1) end
-            hero:RemoveModifierByName("modifier_share_damage")
-            RemoveHeroFromLinkTables(hero)
-        end
-    end)
-end
-
 function OnLinkDestroyed(keys)
 	local caster = keys.caster
 	local target = keys.target
@@ -431,7 +424,13 @@ function Blink(keys)
 		return
 	end
 
-	if caster:HasModifier("modifier_aestus_domus_aurea_lock") then
+	--[[if caster:HasModifier("modifier_aestus_domus_aurea_enemy") 
+		or caster:HasModifier("modifier_aestus_domus_aurea_ally") 
+		or caster:HasModifier("modifier_aestus_domus_aurea_nero") then
+		
+		keys.ability:EndCooldown()
+		SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Blink")
+		return
 		local target = 0
 		local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 1200, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES + DOTA_UNIT_TARGET_FLAG_INVULNERABLE, FIND_ANY_ORDER, false)
 		for i=1, #targets do
@@ -445,7 +444,8 @@ function Blink(keys)
 			SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Blink")
 			return
 		end
-	end
+
+	end]]
 
 
 	if GridNav:IsBlocked(targetPoint) or not GridNav:IsTraversable(targetPoint) then
@@ -643,11 +643,13 @@ function SScroll(keys)
 	DoDamage(caster, target, 400, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 	ApplyPurge(target)
 
-	ability:ApplyDataDrivenModifier(caster, target, "modifier_purge", {})
+	--[[ability:ApplyDataDrivenModifier(caster, target, "modifier_purge", {})
 	if not IsImmuneToSlow(target) then
 		ability:ApplyDataDrivenModifier(caster, target, "modifier_slow_tier1", {})
 		ability:ApplyDataDrivenModifier(caster, target, "modifier_slow_tier2", {})
-	end
+	end]]
+
+	target:AddNewModifier(caster, ability, "modifier_sex_scroll_root", {duration = 1.0})
 
 	local boltFx = ParticleManager:CreateParticle("particles/units/heroes/hero_zuus/zuus_arc_lightning.vpcf", PATTACH_OVERHEAD_FOLLOW, caster)
 	ParticleManager:SetParticleControl(boltFx, 1, Vector(target:GetAbsOrigin().x,target:GetAbsOrigin().y,target:GetAbsOrigin().z+((target:GetBoundingMaxs().z - target:GetBoundingMins().z)/2)))
@@ -686,11 +688,13 @@ function EXScroll(keys)
 	DoDamage(caster, target, 600, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 	ApplyPurge(target)
 
-	ability:ApplyDataDrivenModifier(caster, target, "modifier_purge", {})
+	--[[ability:ApplyDataDrivenModifier(caster, target, "modifier_purge", {})
 	if not IsImmuneToSlow(target) then
 		ability:ApplyDataDrivenModifier(caster, target, "modifier_slow_tier1", {})
 		ability:ApplyDataDrivenModifier(caster, target, "modifier_slow_tier2", {})
-	end
+	end]]
+
+	target:AddNewModifier(caster, ability, "modifier_sex_scroll_root", {duration = 1.0})
 
 	local boltFx = ParticleManager:CreateParticle("particles/units/heroes/hero_zuus/zuus_arc_lightning.vpcf", PATTACH_OVERHEAD_FOLLOW, caster)
 	--local lightningBoltFx = ParticleManager:CreateParticle("particles/units/heroes/hero_leshrac/leshrac_lightning_bolt.vpcf", PATTACH_ABSORIGIN, target)
@@ -762,7 +766,7 @@ function AntiMagic(keys)
 
 end
 
-function FullHeal(keys)
+function Replenish(keys)
 	local caster = keys.caster
 	local ability = keys.ability
 	if caster:HasModifier("jump_pause_nosilence")

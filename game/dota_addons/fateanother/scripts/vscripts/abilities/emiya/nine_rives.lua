@@ -92,7 +92,7 @@ function OnNineLanded(caster, ability)
 	local bonus_damage = 0
 
 	if caster.IsProjectionImproved then
-		bonus_damage = caster:GetAverageTrueAttackDamage(caster) * 0.2
+		bonus_damage = caster:GetAverageTrueAttackDamage(caster)
 	end
 
 	local casterInitOrigin = caster:GetAbsOrigin() 
@@ -118,12 +118,12 @@ function OnNineLanded(caster, ability)
 				local lasthitTargets = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), caster, lasthitradius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, 1, false)
 				for k,v in pairs(lasthitTargets) do
 					if v:GetName() ~= "npc_dota_ward_base" then
+						DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 						if caster.IsProjectionImproved then 
-							DoDamage(caster, v, damage + bonus_damage * 5, DAMAGE_TYPE_MAGICAL, 0, ability, false)
-						else
-							DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
-						end
-						giveUnitDataDrivenModifier(caster, v, "stunned", 1.0)
+							giveUnitDataDrivenModifier(caster, v, "stunned", 1.5)
+						else							
+							giveUnitDataDrivenModifier(caster, v, "stunned", 1.0)
+						end						
 						
 						-- push enemies back
 						local pushback = Physics:Unit(v)

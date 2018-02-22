@@ -35,7 +35,7 @@ function atalanta_phoebus_catastrophe_snipe:GetCustomCastErrorTarget(target)
         return "#Cannot_Be_Cast_Now"
     end
 
-    return "Not enough arrows..."
+    return "#Not_enough_arrows"
 end
 
 function atalanta_phoebus_catastrophe_snipe:OnSpellStart()
@@ -78,9 +78,14 @@ function atalanta_phoebus_catastrophe_snipe:OnSpellStart()
 
         local arrowAoE = self:GetSpecialValueFor("arrow_aoe")
 
-        if caster:HasModifier("modifier_tauropolos") then
+        --[[if caster:HasModifier("modifier_tauropolos") then
             local tauropolos = caster:FindAbilityByName("atalanta_tauropolos")
             arrowAoE = arrowAoE + tauropolos:GetSpecialValueFor("bonus_aoe_per_agi") * caster:GetAgility()
+        end]]
+        if caster:HasModifier("modifier_arrows_of_the_big_dipper") then
+            local fAgility = caster:GetAgility()
+            local tAttributeTable = CustomNetTables:GetTableValue("sync","atalanta_big_dipper")
+            arrowAoE = arrowAoE + (tAttributeTable.fAOEPerAGI * fAgility)
         end
 
         for i=1,arrows do
@@ -97,6 +102,7 @@ function atalanta_phoebus_catastrophe_snipe:OnSpellStart()
                     DontUseArrow = true,
                     NoShock = true,
                     DontCountArrow = true,
+                    IsPhoebus = true,
                 })
             end)
         end

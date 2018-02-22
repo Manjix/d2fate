@@ -91,31 +91,32 @@ function vlad_kazikli_bey:OnSpellStart()
 	local activation = self:GetSpecialValueFor("activation")
 	local endcast_pause = self:GetSpecialValueFor("endcast_pause")
 	local hitcounter = 1
-  local bloodpower = 0
+	local bloodpower = 0
   --caster:AddNewModifier(caster,self,"modifier_kazikli_bey",{duration = 4})
 
 
 	--check how many bloodpower stacks vlad has at start of cast and save number
-  if not caster:HasModifier("modifier_transfusion_self") then
-  	local modifier = caster:FindModifierByName("modifier_transfusion_bloodpower")
-   	bloodpower = modifier and modifier:GetStackCount() or 0
-   	local bloodpowerduration = modifier and modifier:GetRemainingTime() or 0
-   	local attribute_ability = caster.MasterUnit2:FindAbilityByName("vlad_attribute_bloodletter")
-   	local bloodpowercap = attribute_ability:GetSpecialValueFor("bloodpower_cap")
-    caster:ResetImpaleSwapTimer()
-	if bloodpower > 30 then 
-		caster:RemoveModifierByName("modifier_transfusion_bloodpower")
-		caster:AddNewModifier(caster, self, "modifier_transfusion_bloodpower", {duration = bloodpowerduration})
-		caster:SetModifierStackCount("modifier_transfusion_bloodpower", caster, bloodpower - bloodpowercap)
-	else caster:RemoveModifierByName("modifier_transfusion_bloodpower")
+	if not caster:HasModifier("modifier_transfusion_self") then
+	  	local modifier = caster:FindModifierByName("modifier_transfusion_bloodpower")
+	   	bloodpower = modifier and modifier:GetStackCount() or 0
+	   	local bloodpowerduration = modifier and modifier:GetRemainingTime() or 0
+	   	local attribute_ability = caster.MasterUnit2:FindAbilityByName("vlad_attribute_bloodletter")
+	   	local bloodpowercap = attribute_ability:GetSpecialValueFor("bloodpower_cap")
+	    caster:ResetImpaleSwapTimer()
+		if bloodpower > 30 then 
+			caster:RemoveModifierByName("modifier_transfusion_bloodpower")
+			caster:AddNewModifier(caster, self, "modifier_transfusion_bloodpower", {duration = bloodpowerduration})
+			caster:SetModifierStackCount("modifier_transfusion_bloodpower", caster, bloodpower - bloodpowercap)
+		else 
+			caster:RemoveModifierByName("modifier_transfusion_bloodpower")
+		end
 	end
-  end
 
 	dmg_spikes, dmg_lastspike = self:ApplyAttrBaseBonuses(caster,dmg_spikes,dmg_lastspike)
-	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 2.66 + endcast_pause) -- 2.66 is ideal time if there is to be no endcast pause, for current values of activation and interval
-	StartAnimation(caster, {duration=2.5, activity=ACT_DOTA_CAST_ABILITY_4, rate=1.05})
+	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 1.66 + endcast_pause) -- 2.66 is ideal time if there is to be no endcast pause, for current values of activation and interval
+	StartAnimation(caster, {duration = 2.4, activity = ACT_DOTA_CAST_ABILITY_4, rate = 0.4 })
 	self:VFX1_SmallSpikesHold(caster)
-  EmitGlobalSound("Vlad.Laugh")
+	--EmitGlobalSound("Vlad.Laugh")
 
 	Timers:CreateTimer(activation,function()
 		if caster:IsAlive() then
@@ -126,11 +127,12 @@ function vlad_kazikli_bey:OnSpellStart()
 				caster:EmitSound("Hero_NyxAssassin.SpikedCarapace")
 			end
 
-			if hitcounter == 2 then
-				caster:EmitSound("Ability.SandKing_Epicenter.spell")
-			elseif hitcounter == 4 then
-				StartAnimation(caster, {duration=2.5, activity=ACT_DOTA_CAST_ABILITY_2, rate=0.8})
-			elseif hitcounter == 8 then
+			--if hitcounter == 2 then
+				--caster:EmitSound("Ability.SandKing_Epicenter.spell")
+			--elseif hitcounter == 4 then
+			--	StartAnimation(caster, {duration=2.5, activity=ACT_DOTA_CAST_ABILITY_2, rate=0.8})
+			--else
+			if hitcounter == 8 then
 				EmitGlobalSound("Vlad.KB")
 			elseif hitcounter == 9 then
 				self.PI1 = {}
@@ -145,30 +147,30 @@ function vlad_kazikli_bey:OnSpellStart()
 				self.PI2 = {}
 				self.PI3 = {}
 				self:VFX2_LastSpikes(caster)
-        caster:EmitSound("Hero_OgreMagi.Bloodlust.Cast")
+        		caster:EmitSound("Hero_OgreMagi.Bloodlust.Cast")
 				ScreenShake(caster:GetOrigin(), 7, 1.0, 2, 1500, 0, true)
 				dmg_lastspike = self:ApplyAttrExtraDmg(caster,dmg_lastspike,bloodpower) --last spike bonuses from bleeds and bloodpower are calculated right before it hits
 
 				local lasthitTargets = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), nil, aoe_lastspike, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, FIND_ANY_ORDER, false)
 				for k,v in pairs(lasthitTargets) do
-          if v:GetName() ~= "npc_dota_ward_base" then
-            DoDamage(caster, v, dmg_lastspike, DAMAGE_TYPE_MAGICAL, 0, self, false)
-  					caster:AddBleedStack(v, false)
-  					giveUnitDataDrivenModifier(caster, v, "stunned", stun)
-  					giveUnitDataDrivenModifier(caster, v, "revoked", stun)
-  					ApplyAirborneOnly(v, 2000, stun)
-  					self:VFX4_OnTargetImpale(k,v)
-          end
+			        if v:GetName() ~= "npc_dota_ward_base" then
+			        	DoDamage(caster, v, dmg_lastspike, DAMAGE_TYPE_MAGICAL, 0, self, false)
+			  			caster:AddBleedStack(v, false)
+			  			giveUnitDataDrivenModifier(caster, v, "stunned", stun)
+			  			--giveUnitDataDrivenModifier(caster, v, "revoked", stun)
+			  			ApplyAirborneOnly(v, 2000, stun)
+			  			self:VFX4_OnTargetImpale(k,v)
+			        end
 				end
 
 				if #lasthitTargets ~= 0 then
 					caster:EmitSound("Hero_PhantomAssassin.CoupDeGrace")
 				end
 
-        if caster.ImprovedImpalingAcquired then
-          local heal_per_target = caster.MasterUnit2:FindAbilityByName("vlad_attribute_improved_impaling"):GetSpecialValueFor("kb_spike_heal_per_target")
-          caster:ApplyHeal(heal_per_target * #lasthitTargets, caster)
-        end
+		        if caster.ImprovedImpalingAcquired then
+		        	local heal_per_target = caster.MasterUnit2:FindAbilityByName("vlad_attribute_improved_impaling"):GetSpecialValueFor("kb_spike_heal_per_target")
+		        	caster:ApplyHeal(heal_per_target * #lasthitTargets, caster)
+		        end
 				--remove ontarget VFX
 				Timers:CreateTimer(1.5, function()
 					FxDestroyer(self.PI1, false)
@@ -179,15 +181,15 @@ function vlad_kazikli_bey:OnSpellStart()
 			else
 				local targets = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), nil, aoe_spikes, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
 				for k,v in pairs(targets) do
-          if caster.ImprovedImpalingAcquired and (hitcounter % 2) == 0 then
-            caster:AddBleedStack(v,false,1)
-          end
+			        if caster.ImprovedImpalingAcquired and (hitcounter % 2) == 0 then
+			          	caster:AddBleedStack(v,false,1)
+			        end
 					DoDamage(caster, v, dmg_spikes, DAMAGE_TYPE_MAGICAL, 0, self, false)
 					giveUnitDataDrivenModifier(caster, v, "stunned", 0.4)
-					giveUnitDataDrivenModifier(caster, v, "revoked", 0.4)
+					--giveUnitDataDrivenModifier(caster, v, "revoked", 0.4)
 				end
 				hitcounter = hitcounter + 1
-				return 0.2
+				return 0.1
 			end
 		else
 			FxDestroyer(self.PI4, false)

@@ -4,10 +4,13 @@ ATTR_HEARTSEEKER_COMBO_AD_RATIO = 2
 function OnPFAStart(keys)
 	local caster = keys.caster
 	local ability = keys.ability
-
-	ability:ApplyDataDrivenModifier(caster, caster, "modifier_lancer_protection_from_arrows_active", {duration=3})
+	caster:RemoveModifierByName("modifier_lancer_protection_from_arrows")
+	ability:ApplyDataDrivenModifier(caster, caster, "modifier_lancer_protection_from_arrows_active", {duration = 3})
 	caster:EmitSound("DOTA_Item.Buckler.Activate")
 	StartAnimation(caster, {duration=1, activity=ACT_DOTA_CAST_ABILITY_1, rate=0.45})
+	Timers:CreateTimer(3.0, function()
+		ability:ApplyDataDrivenModifier(caster, caster, "modifier_lancer_protection_from_arrows", {})
+	end)
 
 end
 
@@ -39,6 +42,7 @@ function LancerOnTakeDamage(keys)
 		health = 500
 	end
 	if currentHealth == 0 and keys.ability:IsCooldownReady() and keys.DamageTaken <= highend and keys.DamageTaken >= lowend and IsRevivePossible(caster) then
+		RemoveDebuffsForRevival(caster)
 		caster:SetHealth(health)
 		keys.ability:StartCooldown(cd) 
 		ability:ApplyDataDrivenModifier(caster, caster, "modifier_battle_continuation_cooldown", {duration = cd})
@@ -107,7 +111,11 @@ function RuneMagicUsed(keys)
 	caster:SwapAbilities(a1:GetName(), "lancer_5th_rune_magic", true, true) 
 	caster:SwapAbilities(a2:GetName(), "lancer_5th_relentless_spear", true, true) 
 	caster:SwapAbilities(a3:GetName(), "lancer_5th_gae_bolg", true, true) 
-	caster:SwapAbilities(a4:GetName(), "lancer_5th_battle_continuation", true, true) 
+	if caster.IsSoaringAcquired then
+		caster:SwapAbilities(a4:GetName(), "lancer_5th_soaring_spear", true, true) 
+	else
+		caster:SwapAbilities(a4:GetName(), "lancer_5th_battle_continuation", true, true) 
+	end
 	caster:SwapAbilities(a5:GetName(), "fate_empty1", true, true) 
 	caster:SwapAbilities(a6:GetName(), "lancer_5th_gae_bolg_jump", true, true) 
 	caster:FindAbilityByName("lancer_5th_rune_magic"):StartCooldown(20)
@@ -124,7 +132,11 @@ function RuneMagicClose(keys)
 	caster:SwapAbilities(a1:GetName(), "lancer_5th_rune_magic", false, true) 
 	caster:SwapAbilities(a2:GetName(), "lancer_5th_relentless_spear", false, true) 
 	caster:SwapAbilities(a3:GetName(), "lancer_5th_gae_bolg", false, true) 
-	caster:SwapAbilities(a4:GetName(), "lancer_5th_battle_continuation", false, true) 
+	if caster.IsSoaringAcquired then
+		caster:SwapAbilities(a4:GetName(), "lancer_5th_soaring_spear", false, true) 
+	else
+		caster:SwapAbilities(a4:GetName(), "lancer_5th_battle_continuation", false, true) 
+	end
 	if caster.IsPFAAcquired then
 		caster:SwapAbilities(a5:GetName(), "lancer_5th_protection_from_arrows", false, true) 
 	else
@@ -286,7 +298,9 @@ end
 
 
 function OnGBTargetHit(keys)
+	ArsenalReturnMana(keys.caster)
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
+	if keys.caster:GetAbilityByIndex(2):GetAbilityName() == "lancer_5th_wesen_gae_bolg" then return end -- laziest fix of my lyfe
 
 	local caster = keys.caster
 	local casterName = caster:GetName()
@@ -494,6 +508,7 @@ function OnGBComboHit(keys)
 end
 
 function OnGBAOEStart(keys)
+	ArsenalReturnMana(keys.caster)
 	local caster = keys.caster
 	local ability = keys.ability
 	local targetPoint = keys.target_points[1]
@@ -507,8 +522,13 @@ function OnGBAOEStart(keys)
 		keys.ability:EndCooldown() 
 		return
 	end
-	
-	EmitGlobalSound("Lancer.GaeBolg")
+
+	if caster:GetName() == "npc_dota_hero_sven" then
+		EmitGlobalSound("Lancelot.Growl_Local")
+	else
+		EmitGlobalSound("Lancer.GaeBolg")
+	end
+
 	giveUnitDataDrivenModifier(caster, caster, "jump_pause", 0.8)
 	Timers:CreateTimer(0.8, function()
 		giveUnitDataDrivenModifier(caster, caster, "jump_pause_postdelay", 0.15)
@@ -516,7 +536,7 @@ function OnGBAOEStart(keys)
 	Timers:CreateTimer(0.95, function()
 		giveUnitDataDrivenModifier(caster, caster, "jump_pause_postlock", 0.2)
 	end)
-	ability:ApplyDataDrivenModifier(caster, caster, "modifier_gae_jump_throw_anim", {}) 
+	ability:ApplyDataDrivenModifier(caster, caster, "modifier_gae_jump_throw_anim", {})
 
 	Timers:CreateTimer('gb_throw', {
 		endTime = 0.45,
@@ -566,13 +586,19 @@ function OnGBAOEHit(keys, projectile)
 	local damage = keys.ability:GetSpecialValueFor("damage")
 	local ply = caster:GetPlayerOwner()
 	if caster.IsGaeBolgImproved == true then damage = damage + 250 end
-	local runeAbil = caster:FindAbilityByName("lancer_5th_rune_of_flame")
-	local healthDamagePct = runeAbil:GetLevelSpecialValueFor("ability_bonus_damage", runeAbil:GetLevel()-1)
+	local healthDamagePct = 0
+
+	if caster:GetName() == "npc_dota_hero_phantom_lancer" then
+		local runeAbil = caster:FindAbilityByName("lancer_5th_rune_of_flame")
+		local healthDamagePct = runeAbil:GetLevelSpecialValueFor("ability_bonus_damage", runeAbil:GetLevel()-1)
+	end
+
+
 	if caster.IsGaeBolgImproved == true then
 		healthDamagePct = healthDamagePct * 2
 	end
-	
-	local modifierKnockback =
+
+	--[[local modifierKnockback =
 	{
 		center_x = targetPoint.x,
 		center_y = targetPoint.y,
@@ -581,15 +607,16 @@ function OnGBAOEHit(keys, projectile)
 		knockback_duration = 0.25,
 		knockback_distance = 0,
 		knockback_height = 150,
-	}
+	}]]
 
 	Timers:CreateTimer(0.15, function()
 		local targets = FindUnitsInRadius(caster:GetTeam(), targetPoint, nil, radius
 	            , DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
 		for k,v in pairs(targets) do
 	        DoDamage(caster, v, damage + v:GetHealth() * healthDamagePct/100, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-	        v:AddNewModifier(caster, v, "modifier_stunned", {Duration = 0.1})
-	        v:AddNewModifier(v, nil, "modifier_knockback", modifierKnockback )
+	        --v:AddNewModifier(caster, v, "modifier_stunned", {Duration = 0.25})
+	        --v:AddNewModifier(v, nil, "modifier_knockback", modifierKnockback )
+	        ApplyAirborne(caster, v, 0.25)
 	    end
 	    projectile:SetAbsOrigin(targetPoint)
 	    local fire = ParticleManager:CreateParticle("particles/units/heroes/hero_warlock/warlock_rainofchaos_start_breakout_fallback_mid.vpcf", PATTACH_ABSORIGIN, projectile)
@@ -665,6 +692,18 @@ function OnHeartseekerAcquired(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsHeartSeekerAcquired = true
+
+	-- Set master 1's mana 
+	local master = hero.MasterUnit
+	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))
+end
+function OnSoaringAcquired(keys)
+	local caster = keys.caster
+	local ply = caster:GetPlayerOwner()
+	local hero = caster:GetPlayerOwner():GetAssignedHero()
+	hero.IsSoaringAcquired = true
+	hero:AddAbility("lancer_5th_soaring_spear"):SetLevel(1)
+	hero:SwapAbilities("lancer_5th_battle_continuation","lancer_5th_soaring_spear",false,true)
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit

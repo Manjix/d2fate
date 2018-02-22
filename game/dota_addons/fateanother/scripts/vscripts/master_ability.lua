@@ -1,3 +1,8 @@
+LinkLuaModifier("modifier_charges", "modifiers/modifier_charges", LUA_MODIFIER_MOTION_NONE)
+
+LinkLuaModifier("modifier_tiger_strike_tracker", "abilities/lishuwen/modifiers/modifier_tiger_strike_tracker", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_vortigern_ferocity", "abilities/arturia_alter/modifiers/modifier_vortigern_ferocity", LUA_MODIFIER_MOTION_NONE)
+
 SaberAttribute = {
 	"saber_attribute_improve_excalibur",
 	"saber_attribute_improve_instinct",
@@ -12,6 +17,7 @@ LancerAttribute = {
 	"lancer_attribute_improve_gae_bolg",
 	"lancer_attribute_protection_from_arrows",
 	"lancer_attribute_the_heartseeker",
+	--"lancer_attribute_soaring_spear",
 	"lancer_5th_wesen_gae_bolg",
 	attrCount = 4
 }
@@ -86,7 +92,7 @@ CasterAttribute = {
 	"caster_5th_attribute_improve_argos",
 	"caster_5th_attribute_improve_hecatic_graea",
 	"caster_5th_attribute_dagger_of_treachery",
-	"caster_5th_hecatic_graea_powered",
+	"medea_hecatic_graea_combo",
 	attrCount = 4
 }
 
@@ -94,6 +100,7 @@ LancelotAttribute = {
 	"lancelot_attribute_blessing_of_fairy",
 	"lancelot_attribute_improve_eternal",
 	"lancelot_attribute_improve_knight_of_honor",
+	--"lancelot_attribute_improve_koh_arsenal",
 	"lancelot_attribute_eternal_flame",
 	"lancelot_nuke",
 	attrCount = 4
@@ -111,10 +118,11 @@ AvengerAttribute = {
 DiarmuidAttribute = {
 	"diarmuid_attribute_improve_love_spot",
 	"diarmuid_attribute_minds_eye",
-	"diarmuid_attribute_rosebloom",
+	"diarmuid_attribute_golden_rose_of_mortality",
+	"diarmuid_attribute_crimson_rose_of_exorcism",
 	"diarmuid_attribute_double_spear_strike",
 	"diarmuid_rampant_warrior",
-	attrCount = 4
+	attrCount = 5
 }
 
 IskanderAttribute = {
@@ -141,8 +149,9 @@ NeroAttribute = {
 	"nero_attribute_improve_imperial_privilege",
 	"nero_attribute_invictus_spiritus",
 	"nero_attribute_soverigns_glory",
-	"nero_fiery_finale",
-	attrCount = 4
+	--"nero_attribute_pavilion",
+	"nero_fiery_finale",	
+	attrCount = 5
 }
 
 GawainAttribute = {
@@ -151,7 +160,6 @@ GawainAttribute = {
 	"gawain_attribute_saint_num",
 	"gawain_attribute_belt",
 	"gawain_excalibur_galatine_combo",
-	--"gawain_supernova",
 	attrCount = 4
 }
 
@@ -204,8 +212,9 @@ AtalantaAttribute = {
 	"atalanta_attribute_hunters_mark",
 	"atalanta_attribute_golden_apple",
 	"atalanta_attribute_crossing_arcadia_plus",
+	--"atalanta_attribute_bow_of_heaven",
 	"atalanta_phoebus_catastrophe_proxy",
-	attrCount = 4
+	attrCount = 5
 }
 VladAttribute = {
 	"vlad_attribute_innocent_monster",
@@ -216,9 +225,11 @@ VladAttribute = {
 	"vlad_combo",
 	attrCount = 5
 }
---[[LiAttribute = {
-	attrCount = 4
-}]]
+
+ChargeBasedBuffs = {
+	"modifier_tiger_strike_tracker",
+	"modifier_vortigern_ferocity"
+}
 
 function OnSeal1Start(keys)
 	local caster = keys.caster
@@ -268,7 +279,8 @@ end
 
 function ResetAbilities(hero)
 	-- Reset all resetable abilities
-	for i=0, 15 do 
+	RemoveChargeModifiers(hero)
+	for i=0, 23 do 
 		local ability = hero:GetAbilityByIndex(i)
 		if ability ~= nil then
 			if ability.IsResetable ~= false then
@@ -288,6 +300,20 @@ function ResetItems(hero)
 			item:EndCooldown()
 		end
 	end
+end
+
+function IncrementCharges(hero)
+	if hero:HasModifier("modifier_charges") then
+		local modifier = hero:FindModifierByName("modifier_charges")
+		modifier:OnIntervalThink()
+	end
+end
+
+function RemoveChargeModifiers(hero)
+	for i=1, #ChargeBasedBuffs do
+		print(ChargeBasedBuffs[i])
+        hero:RemoveModifierByName(ChargeBasedBuffs[i])        
+    end
 end
 
 function OnSeal2Start(keys)
@@ -312,7 +338,7 @@ function OnSeal2Start(keys)
 	end
 
 	if not hero:IsAlive() or IsRevoked(hero) then
-		keys.ability:EndCooldown() 
+		keys.ability:EndCooldown() 		
 		SendErrorMessage(caster:GetPlayerOwnerID(), "#Revoked_Error")
 		return
 	end
@@ -326,6 +352,7 @@ function OnSeal2Start(keys)
 
 	ResetAbilities(hero)
 	ResetItems(hero)
+	IncrementCharges(hero)
 
 	-- Particle
 	hero:EmitSound("DOTA_Item.Refresher.Activate")
@@ -396,6 +423,13 @@ function OnSeal4Start(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = ply:GetAssignedHero()
 
+	if caster:GetName() == "npc_dota_hero_juggernaut" then
+		caster:SetMana(caster:GetMana()+1) 
+		keys.ability:EndCooldown() 
+		SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Recover_Mana")
+		return 
+	end
+
 	if caster:GetHealth() == 1 then
 		caster:SetMana(caster:GetMana()+1) 
 		keys.ability:EndCooldown() 
@@ -446,9 +480,8 @@ function OnPRStart(keys)
     LoopOverPlayers(function(player, playerID, playerHero)
     	--print("looping through " .. playerHero:GetName())
         if playerHero:GetTeamNumber() ~= hero:GetTeamNumber() then
-        	if not playerHero:IsInvisible() and not playerHero:IsInvulnerable() and playerHero:IsAlive() then
+        	if not playerHero:IsInvisible() and not playerHero:IsInvulnerable() and playerHero:IsAlive() and CanBeDetected(playerHero) then
         		table.insert(heroTable, playerHero)
-
         	end
         end
      end)
@@ -729,6 +762,11 @@ function OnIntelligenceGain(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = ply:GetAssignedHero()
 
+	if hero:GetName() == "npc_dota_hero_juggernaut" then
+		SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Acquire_Intelligence")
+		caster:GiveMana(1)
+		return
+	end
 
 	if hero.INTgained == nil then
 		hero.INTgained = 1
@@ -830,7 +868,8 @@ function OnHPRegenGain(keys)
 		end
 	end 
 	hero.ServStat:addHPregen()
-	hero:SetBaseHealthRegen(hero:GetBaseHealthRegen()+2.5) --down here attributes.txt is useless, and this line is working.
+	-- Bandaid balance for health regen.
+	hero:SetBaseHealthRegen(hero:GetBaseHealthRegen() + 2.5) --down here attributes.txt is useless, and this line is working.
 	hero:CalculateStatBonus()
 	-- Set master 1's mana 
 	local master1 = hero.MasterUnit
@@ -841,6 +880,12 @@ function OnManaRegenGain(keys)
 	local caster = keys.caster
 	local ply = caster:GetPlayerOwner()
 	local hero = ply:GetAssignedHero()
+
+	if hero:GetName() == "npc_dota_hero_juggernaut" then
+		SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Acquire_Mana_Regeneration")
+		caster:GiveMana(1)
+		return
+	end
 
 	if hero.MPREGgained == nil then
 		hero.MPREGgained = 1
@@ -854,7 +899,7 @@ function OnManaRegenGain(keys)
 		end
 	end 
 	hero.ServStat:addMPregen()
-	hero:SetBaseManaRegen(hero:GetManaRegen()+1.5) --down here attributes.txt is useless, and this line is working.
+	hero:SetBaseManaRegen(hero:GetBaseManaRegen() + 1.25) --down here attributes.txt is useless, and this line is working.
 	hero:CalculateStatBonus()
 	-- Set master 1's mana 
 	local master1 = hero.MasterUnit
@@ -878,7 +923,7 @@ function OnMovementSpeedGain(keys)
 		end
 	end 
 	hero.ServStat:addMS()
-	hero:SetBaseMoveSpeed(hero:GetBaseMoveSpeed()+5) 
+	hero:SetBaseMoveSpeed(hero:GetBaseMoveSpeed() + 5) 
 	hero:CalculateStatBonus()
 	-- Set master 1's mana 
 	local master1 = hero.MasterUnit
@@ -984,7 +1029,7 @@ function OnProsperityAcquired(keys)
 			hero:AddExperience(_G.XP_PER_LEVEL_TABLE[level], false, false)
 			--hero:AddExperience(XP_BOUNTY_PER_LEVEL_TABLE[killedUnit:GetLevel()]/realHeroCount, false, false)
 		else
-			master:SetMana(master:GetMana()+3)
+			master:SetMana(master:GetMana() + 3)
 			master2:SetMana(master:GetMana())		
 		end
 	end
@@ -993,8 +1038,8 @@ function OnProsperityAcquired(keys)
 	--[[
 	master:SetMana(master:GetMana()+20)
 	master2:SetMana(master:GetMana())]]
-	master:SetMaxHealth(master:GetMaxHealth()+2) 
-	master:SetHealth(master:GetHealth()+2)
+	master:SetMaxHealth(master:GetMaxHealth() + 1) 
+	master:SetHealth(master:GetHealth() + 1)
 	master2:SetMaxHealth(master:GetMaxHealth()) 
 	master2:SetHealth(master:GetHealth())
     local statTable = CreateTemporaryStatTable(hero)
@@ -1035,21 +1080,18 @@ function OnPresenceDetectionThink(keys)
 	end
 
 	-- Do the ping for everyone with IsPresenceDetected marked as true
+	-- Filter TA from ping if he has improved presence concealment attribute
+	--and not (enemy:GetName() == "npc_dota_hero_bounty_hunter" and enemy.IsPCImproved and (enemy:HasModifier("modifier_ta_invis") or enemy:HasModifier("modifier_ambush")))
+	-- Filter EA from ping
+	--and not (enemy:GetName() == "npc_dota_hero_bloodseeker" and enemy:HasModifier("modifier_lishuwen_concealment"))
 	for i=1, #newEnemyTable do
 		local enemy = newEnemyTable[i]
-		if enemy:IsRealHero() and not enemy:IsIllusion()
-			-- Filter TA from ping if he has improved presence concealment attribute
-			and not (enemy:GetName() == "npc_dota_hero_bounty_hunter" and enemy.IsPCImproved and (enemy:HasModifier("modifier_ta_invis") or enemy:HasModifier("modifier_ambush")))
-			-- Filter EA from ping
-			and not (enemy:GetName() == "npc_dota_hero_bloodseeker" and enemy:HasModifier("modifier_lishuwen_concealment"))
-		then
-
+		if enemy:IsRealHero() and not enemy:IsIllusion() and CanBeDetected(enemy) then
 			if enemy.IsPresenceDetected == true or enemy.IsPresenceDetected == nil then
 				--print("Pinged " .. enemy:GetPlayerOwnerID() .. " by player " .. caster:GetPlayerOwnerID())
 				MinimapEvent( caster:GetTeamNumber(), caster, enemy:GetAbsOrigin().x, enemy:GetAbsOrigin().y, DOTA_MINIMAP_EVENT_HINT_LOCATION, 2 )
 				SendErrorMessage(caster:GetPlayerOwnerID(), "#Presence_Detected")
 				local dangerping = ParticleManager:CreateParticleForPlayer("particles/ui_mouseactions/ping_world.vpcf", PATTACH_ABSORIGIN, caster, PlayerResource:GetPlayer(caster:GetPlayerID()))
-
 
 				ParticleManager:SetParticleControl(dangerping, 0, enemy:GetAbsOrigin())
 				ParticleManager:SetParticleControl(dangerping, 1, enemy:GetAbsOrigin())
@@ -1059,11 +1101,7 @@ function OnPresenceDetectionThink(keys)
 					CustomGameEventManager:Send_ServerToPlayer(caster:GetPlayerOwner(), "emit_presence_sound", {sound="Misc.BorrowedTime"})
 				end
 				-- Process Eye of Serenity attribute
-				if caster:GetName() == "npc_dota_hero_juggernaut" 
-				and caster.IsEyeOfSerenityAcquired == true 
-				and enemy.IsSerenityOnCooldown ~= true 
-				--and caster.IsEyeOfSerenityActive == true
-				then
+				if caster:GetName() == "npc_dota_hero_juggernaut" and caster.IsEyeOfSerenityAcquired == true and enemy.IsSerenityOnCooldown ~= true then
 					enemy.IsSerenityOnCooldown = true
 					Timers:CreateTimer(10.0, function() 
 						enemy.IsSerenityOnCooldown = false
@@ -1071,14 +1109,17 @@ function OnPresenceDetectionThink(keys)
 					FAEyeAttribute(caster, enemy)
 				end
 				-- Process Eye for Art attribute
-				if caster:GetName() == "npc_dota_hero_shadow_shaman" and caster.IsEyeForArtAcquired == true then
-					local choice = math.random(1,3)
-					if choice == 1 then
-						Say(caster:GetPlayerOwner(), FindName(enemy:GetName()) .. ", dare to enter the demon's lair on your own?", true) 
-					elseif choice == 2 then
-						Say(caster:GetPlayerOwner(), "This presence...none other than " .. FindName(enemy:GetName()) .. "!", true) 
-					elseif choice == 3 then
-						Say(caster:GetPlayerOwner(), "Come forth, " .. FindName(enemy:GetName()) .. "...The fresh terror awaits you!", true) 
+				local hPlayer = caster:GetPlayerOwner()
+				if IsValidEntity(hPlayer) and not hPlayer:IsNull() then
+					if caster:GetName() == "npc_dota_hero_shadow_shaman" and caster.IsEyeForArtAcquired == true then
+						local choice = math.random(1,3)
+						if choice == 1 then
+							Say(hPlayer, FindName(enemy:GetName()) .. ", dare to enter the demon's lair on your own?", true)
+						elseif choice == 2 then
+							Say(hPlayer, "This presence...none other than " .. FindName(enemy:GetName()) .. "!", true)
+						elseif choice == 3 then
+							Say(hPlayer, "Come forth, " .. FindName(enemy:GetName()) .. "...The fresh terror awaits you!", true)
+						end
 					end
 				end
 			end

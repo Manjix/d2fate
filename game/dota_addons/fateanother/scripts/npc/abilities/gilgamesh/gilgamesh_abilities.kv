@@ -90,7 +90,7 @@
 			"02"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"strike_amount"		"5"
+				"strike_amount"			"5"
 			}			
 			"03"
 			{
@@ -567,10 +567,172 @@
 			}
 		}
 	}
+	
 	//=====================================
 	// Gilgamesh : Enuma Elish
 	//=====================================
 	"gilgamesh_enuma_elish"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/gilg/enuma_elish"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"2"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_CHANNELLED"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/gilgamesh_enuma_elish"
+
+		"precache"
+			{
+			"particle"		"particles/custom/gilgamesh/gilgamesh_enuma_elish_charge_wave.vpcf"
+			"particle"		"particles/units/heroes/hero_keeper_of_the_light/keeper_of_the_light_illuminate_impact.vpcf"
+			"particle"		"particles/custom/gilgamesh/enuma_elish/projectile.vpcf"			
+			"particle"		"particles/custom/gilgamesh/enuma_elish/charging_sparkles.vpcf"
+			"soundfile"		"soundevents/game_sounds_heroes/game_sounds_weaver.vsndevts"
+			"soundfile"		"soundevents/game_sounds_heroes/game_sounds_dark_seer.vsndevts"
+			}
+			
+		// Casting
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCastRange"				"1700"
+		"AbilityCastPoint"				"0.2"
+		"AbilityChannelTime"      		"4.05"
+
+		// Time
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCooldown"				"47.0"
+
+
+		// Cost
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityManaCost"				"800"
+
+		// AbilitySpecial
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"activation"			"1.5"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"250"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"end_radius"			"250"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"range"					"1700"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"speed"					"1000"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"700 900 1100 1300 1500"
+			}
+			"07"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"endcast_pause"			"1.0"
+			}
+
+			// Extra charge variables
+			"08"
+			{
+				"var_type"					"FIELD_FLOAT"
+				"endradius_charge_start"	"10"
+			}
+			"09"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"endradius_charge_end"	"50"
+			}
+			"10"
+			{				
+				"var_type"				"FIELD_FLOAT"
+				"endradius_total"		"500"
+			}
+			"11"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"damage_charge_start"	"7.5"
+			}
+			"12"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"damage_charge_end"		"37.5"
+			}
+			"13"
+			{				
+				"var_type"				"FIELD_FLOAT"
+				"damage_total"			"400 550 700 850 1000"
+			}
+			"14"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"add1_charge_start"		"22.5"
+			}
+			"15"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"add1_charge_end"		"37.5"
+			}
+			// Tool Tip variables
+			"16"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damagemax"				"1300 1725 2150 2575 3000"
+			}
+			"17"
+			{				
+				"var_type"				"FIELD_FLOAT"
+				"endradiusmax"			"750"
+			}
+		}
+	}
+	//=====================================
+	// Gilgamesh : Enuma Elish ACTIVATE
+	//=====================================
+	"gilgamesh_enuma_elish_activate"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/gilg/enuma_elish"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
+		"AbilityTextureName"			"custom/gilgamesh_enuma_elish"
+
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"1"
+		"AbilityManaCost"				"0"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+		}
+	}	
+	
+	//=====================================
+	// Gilgamesh : Enuma Elish (OLD)
+	//=====================================
+	"gilgamesh_enuma_elish_old"
 	{
 		// General
 		//-------------------------------------------------------------------------------------------------------------
@@ -623,13 +785,13 @@
 			"02"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"damage"			"1000 1425 1850 2275 2700"
+				"damage"			"1000 1400 1800 2200 2600"
 			}
 			
 			"03"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"start_radius"		"300"
+				"start_radius"		"250"
 			}
 			"04"
 			{

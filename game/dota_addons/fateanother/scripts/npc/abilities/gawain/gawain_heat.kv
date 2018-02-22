@@ -1,0 +1,62 @@
+"DOTAAbilities"
+{
+	//=================================================================================================================
+	// Gawain : Heat
+	//=================================================================================================================
+	"gawain_heat"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/gawain/gawain_heat"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/gawain_meltdown"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1"
+		"AnimationPlaybackRate" 		"1.0"
+		
+		"precache"
+		{
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_beam.vpcf"
+			"particle"					"particles/units/heroes/hero_phoenix/phoenix_fire_spirit_ground.vpcf"
+			"particle"					"particles/units/heroes/hero_invoker/invoker_sun_strike_sparks.vpcf"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_invoker.vsndevts"
+			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_ember_spirit.vsndevts"
+			"particle"					"particles/units/heroes/hero_ember_spirit/ember_spirit_flameguard.vpcf"
+		}
+		
+		"AbilityCooldown"				"16"
+		"AbilityManaCost"				"100"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"burn_damage"			"40 55 70 85 100"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"attack_speed"			"40 55 70 85 100"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"stack_damage"			"9 10 11 12 13"
+			}			
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"8"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"300"
+			}
+		}
+	}	
+}

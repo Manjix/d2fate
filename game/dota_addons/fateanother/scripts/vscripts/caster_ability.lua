@@ -1,3 +1,4 @@
+LinkLuaModifier("modifier_workshop_recall", "abilities/caster/modifier_workshop_recall", LUA_MODIFIER_MOTION_NONE)
 territoryAbilHandle = nil -- Ability handle for Create Workshop
 ATTRIBUTE_HG_INT_MULTIPLIER = 0
 
@@ -63,15 +64,15 @@ function OnTerritoryCreated(keys)
 
 	-- Do special handling for attribute
 	Timers:CreateTimer(5, function() --because it takes 5 seconds for territory to be built
-		if hero.IsTerritoryImproved and caster.Territory:IsAlive() then 
+		if hero.IsTerritoryImproved and hero.IsTerritoryPresent and not caster.Territory:IsNull() then 
 			truesightdummy = CreateUnitByName("sight_dummy_unit", caster.Territory:GetAbsOrigin(), false, keys.caster, keys.caster, keys.caster:GetTeamNumber())
 			truesightdummy:AddNewModifier(caster, caster, "modifier_item_ward_true_sight", {true_sight_range = 600}) 
 			local unseen = truesightdummy:FindAbilityByName("dummy_unit_passive")
 			unseen:SetLevel(1)
 			Timers:CreateTimer(function() 
-				if not caster.Territory:IsAlive() then 
+				if not hero.IsTerritoryPresent then -- and not truesightdummy:IsNull() then 
 					truesightdummy:RemoveSelf()
-					return 
+					return
 				else
 					truesightdummy:SetAbsOrigin(caster.Territory:GetAbsOrigin())
 					return 1.0
@@ -80,8 +81,8 @@ function OnTerritoryCreated(keys)
 
 			-- Give out mana regen for nearby allies
 			Timers:CreateTimer(function()
-				if not caster.Territory:IsAlive() then return end
-			    local targets = FindUnitsInRadius(caster:GetTeam(), caster.Territory:GetOrigin(), nil, 500, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
+				if caster.Territory:IsNull() or not hero.IsTerritoryPresent then return end
+			  local targets = FindUnitsInRadius(caster:GetTeam(), caster.Territory:GetOrigin(), nil, 500, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
 				for k,v in pairs(targets) do
 			        --if v:GetUnitName() ~= "caster_5th_territory" then 
 			         	keys.ability:ApplyDataDrivenModifier(caster, v, "modifier_territory_mana_regen", {Duration = 1.0}) 
@@ -210,7 +211,7 @@ function OnTerritoryExplosion(keys)
 
 
 
-	Timers:CreateTimer(0.3, function()
+	Timers:CreateTimer(1, function()
 		if caster:IsAlive() then
 			caster:EmitSound("Hero_ObsidianDestroyer.SanityEclipse.Cast")
 			local damage = 300 + caster:GetMana() + hero:GetIntellect() * 8 
@@ -418,7 +419,6 @@ function OnSummonDragon(keys)
 	drag:AddNewModifier(caster, nil, "modifier_kill", {duration = 60})
 
 	drag:SetMaxHealth(keys.Health)
-	drag:SetBaseMaxHealth(keys.Health)
 	drag:SetHealth(keys.Health)
 	drag:SetBaseDamageMax(keys.Damage)
 	drag:SetBaseDamageMin(keys.Damage)
@@ -428,7 +428,6 @@ function OnSummonDragon(keys)
 		-- Bonus properties(give it 0.1 sec delay just in case)
 		local newHealth = drag:GetMaxHealth() + hero:GetIntellect()*keys.HealthRatio
 		drag:SetMaxHealth(newHealth)
-		drag:SetBaseMaxHealth(newHealth)
 		drag:SetHealth(newHealth)
 		drag:SetBaseMoveSpeed(drag:GetBaseMoveSpeed() + hero:GetIntellect()*keys.MSRatio)
 	end)
@@ -536,31 +535,11 @@ function OnTerritoryImmobilize(keys)
 end
 
 function OnTerritoryRecall(keys)
-	local caster = keys.caster
-	local target = caster:GetOwnerEntity() 
-	if target:GetName() == "npc_dota_hero_crystal_maiden" then
-        local pc = ParticleManager:CreateParticle("particles/units/heroes/hero_wisp/wisp_relocate_channel.vpcf", PATTACH_ABSORIGIN_FOLLOW, target)
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_recall", {})
-        local modifier = target:FindModifierByName("modifier_recall")
-        modifier.Particle = pc
+	local hCaster = keys.caster
+	local hTarget = hCaster:GetOwnerEntity()
+    local hAbility = keys.ability
 
-		caster.IsRecallCanceled = false
-		Timers:CreateTimer(3.0, function()  
-		if not caster.IsRecallCanceled and caster:IsAlive() and IsInSameRealm(target:GetAbsOrigin(), caster:GetAbsOrigin()) then
-            local pcTeleportOut = ParticleManager:CreateParticle("particles/custom/caster/caster_recall_out.vpcf", PATTACH_CUSTOMORIGIN, target)
-            ParticleManager:SetParticleControl(pcTeleportOut, 0, target:GetAbsOrigin())
-            ParticleManager:ReleaseParticleIndex(pcTeleportOut)
-
-			target:SetAbsOrigin(caster:GetAbsOrigin())
-			FindClearSpaceForUnit(target, target:GetAbsOrigin(), true)
-
-            ParticleManager:DestroyParticle(pc, false)
-            ParticleManager:ReleaseParticleIndex(pc)
-            local pcTeleportIn = ParticleManager:CreateParticle("particles/units/heroes/hero_wisp/wisp_relocate_teleport.vpcf", PATTACH_ABSORIGIN, target)
-            ParticleManager:ReleaseParticleIndex(pcTeleportIn)
-		end
-		return end)
-	end
+    hTarget:AddNewModifier(hCaster, hAbility, "modifier_workshop_recall", { Duration = 3 })
 end
 
 function OnRecallCanceled(keys)
@@ -987,20 +966,21 @@ function OnFirewallStart(keys)
     for k,v in pairs(targets) do
     	if v:GetName() ~= "npc_dota_ward_base" then
 	    	DoDamage(caster, v, keys.Damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-
-			giveUnitDataDrivenModifier(caster, v, "drag_pause", 0.5)
-			local pushback = Physics:Unit(v)
-			v:PreventDI()
-			v:SetPhysicsFriction(0)
-			v:SetPhysicsVelocity((v:GetAbsOrigin() - casterPos):Normalized() * keys.Pushback * 2)
-			v:SetNavCollisionType(PHYSICS_NAV_NOTHING)
-			v:FollowNavMesh(false)
-			Timers:CreateTimer(0.5, function()  
-				print("kill it")
-				v:PreventDI(false)
-				v:SetPhysicsVelocity(Vector(0,0,0))
-				v:OnPhysicsFrame(nil)
-			return end)
+	    	if not v:HasModifier("modifier_wind_protection_passive") then
+				giveUnitDataDrivenModifier(caster, v, "drag_pause", 0.5)
+				local pushback = Physics:Unit(v)
+				v:PreventDI()
+				v:SetPhysicsFriction(0)
+				v:SetPhysicsVelocity((v:GetAbsOrigin() - casterPos):Normalized() * keys.Pushback * 2)
+				v:SetNavCollisionType(PHYSICS_NAV_NOTHING)
+				v:FollowNavMesh(false)
+				Timers:CreateTimer(0.5, function()  
+					print("kill it")
+					v:PreventDI(false)
+					v:SetPhysicsVelocity(Vector(0,0,0))
+					v:OnPhysicsFrame(nil)
+				return end)
+			end
 		end
 	end
 end
@@ -1145,10 +1125,10 @@ function OnAncientClosed(keys)
 	local a5 = caster:GetAbilityByIndex(4)
 	local a6 = caster:GetAbilityByIndex(5)
 
-	local ultiName = "caster_5th_hecatic_graea"
+	local ultiName = "medea_hecatic_graea"
 	if caster.IsHGComboEnabled then 
 		print("combo is currently active")
-		ultiName = "caster_5th_hecatic_graea_powered"
+		ultiName = "medea_hecatic_graea_combo"
 	end
 	caster:SwapAbilities(a1:GetName(), "caster_5th_argos", false ,true) 
 	caster:SwapAbilities(a2:GetName(), "caster_5th_ancient_magic", false, true) 
@@ -1163,6 +1143,7 @@ function OnAncientClosed(keys)
 end
 
 function OnRBStart(keys)
+	ArsenalReturnMana(keys.caster)
 	local caster = keys.caster
 	local target = keys.target
 	local ply = caster:GetPlayerOwner()
@@ -1170,20 +1151,31 @@ function OnRBStart(keys)
 	ApplyStrongDispel(target)
 	if caster:GetName() == "npc_dota_hero_crystal_maiden" then
 		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_c_rule_breaker", {}) 
+
+		if caster.IsRBImproved then
+			keys.ability:EndCooldown()
+			keys.ability:StartCooldown(25)
+			giveUnitDataDrivenModifier(caster, target, "revoked", 5)
+			keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_dagger_of_treachery", {}) 
+
+			if target.MasterUnit:GetMana() > 1 then
+				target.MasterUnit:SetMana(target.MasterUnit:GetMana() - 1) 
+				target.MasterUnit2:SetMana(target.MasterUnit2:GetMana() - 1) 
+				
+				caster.MasterUnit:SetMana(caster.MasterUnit:GetMana() + 1)
+				caster.MasterUnit2:SetMana(caster.MasterUnit2:GetMana() + 1)
+			end		
+		else
+			giveUnitDataDrivenModifier(caster, target, "revoked", 3)
+		end
 	else
 		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_l_rule_breaker", {}) 
 	end
 	EmitGlobalSound("Caster.RuleBreaker") 
-	CasterCheckCombo(keys.caster,keys.ability)
-
+	CasterCheckCombo(keys.caster,keys.ability)	
 	
-	if caster.IsRBImproved then
-		keys.ability:EndCooldown()
-		keys.ability:StartCooldown(25)
-		giveUnitDataDrivenModifier(caster, target, "revoked", 3)
-		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_dagger_of_treachery", {}) 
-	end
-
+	print(caster:GetName())
+	print(keys.StunDuration)
 	keys.target:AddNewModifier(caster, target, "modifier_stunned", {Duration = keys.StunDuration})
 
 end
@@ -1193,11 +1185,14 @@ function OnRBSealStolen(keys)
 	local caster = keys.caster
 
 	victim:EmitSound("Hero_Silencer.LastWord.Cast")
-	victim.MasterUnit:SetMana(victim.MasterUnit:GetMana() - 1) 
-	victim.MasterUnit2:SetMana(victim.MasterUnit2:GetMana() - 1) 
-	
-	caster.MasterUnit:SetMana(caster.MasterUnit:GetMana() + 1)
-	caster.MasterUnit2:SetMana(caster.MasterUnit2:GetMana() + 1)
+
+	if victim.MasterUnit:GetMana() > 1 then
+		victim.MasterUnit:SetMana(victim.MasterUnit:GetMana() - 1) 
+		victim.MasterUnit2:SetMana(victim.MasterUnit2:GetMana() - 1) 
+		
+		caster.MasterUnit:SetMana(caster.MasterUnit:GetMana() + 1)
+		caster.MasterUnit2:SetMana(caster.MasterUnit2:GetMana() + 1)
+	end
 end
 
 function OnHGStart(keys)
@@ -1219,7 +1214,7 @@ function OnHGStart(keys)
 	if caster.IsHGImproved then keys.Damage = keys.Damage + caster:GetIntellect()*ATTRIBUTE_HG_INT_MULTIPLIER end
 
 	local initTargets = 0
-	if GridNav:IsBlocked(targetPoint) or not GridNav:IsTraversable(targetPoint) then
+	if GridNav:IsBlocked(targetPoint) or not GridNav:IsTraversable(targetPoint) or not IsInSameRealm(caster:GetOrigin(), targetPoint) then
 		keys.ability:EndCooldown() 
 		caster:GiveMana(800) 
 		SendErrorMessage(caster:GetPlayerOwnerID(), "#Cannot_Travel")
@@ -1429,13 +1424,13 @@ end
 
 function CasterCheckCombo(caster, ability)
 	if caster:GetStrength() >= 19.1 and caster:GetAgility() >= 19.1 and caster:GetIntellect() >= 19.1 then
-		if ability == caster:FindAbilityByName("caster_5th_rule_breaker") and caster:FindAbilityByName("caster_5th_hecatic_graea"):IsCooldownReady() and caster:FindAbilityByName("caster_5th_hecatic_graea_powered"):IsCooldownReady() then
-			caster:SwapAbilities("caster_5th_hecatic_graea", "caster_5th_hecatic_graea_powered", false, true) 
+		if ability == caster:FindAbilityByName("caster_5th_rule_breaker") and caster:FindAbilityByName("medea_hecatic_graea"):IsCooldownReady() and caster:FindAbilityByName("medea_hecatic_graea_combo"):IsCooldownReady() then
+			caster:SwapAbilities("medea_hecatic_graea", "medea_hecatic_graea_combo", false, true) 
 			caster.IsHGComboEnabled = true
 			Timers:CreateTimer({
 				endTime = 5,
 				callback = function()
-				caster:SwapAbilities("caster_5th_hecatic_graea", "caster_5th_hecatic_graea_powered", true, false) 
+				caster:SwapAbilities("medea_hecatic_graea", "medea_hecatic_graea_combo", true, false) 
 				caster.IsHGComboEnabled = false
 			end
 			})			
@@ -1474,7 +1469,7 @@ function OnImproveHGAcquired(keys)
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))
-	ATTRIBUTE_HG_INT_MULTIPLIER = 1
+	ATTRIBUTE_HG_INT_MULTIPLIER = 1.5
 end
 
 function OnDaggerOfTreacheryAcquired(keys)

@@ -1,3 +1,7 @@
+LinkLuaModifier("modifier_weakening_venom", "abilities/true_assassin/modifiers/modifier_weakening_venom", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_perfect_agony_penalty", "abilities/true_assassin/modifiers/modifier_perfect_agony_penalty", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_zabaniya_curse", "abilities/true_assassin/modifiers/modifier_zabaniya_curse", LUA_MODIFIER_MOTION_NONE)
+
 function OnDirkStart(keys)
 	local caster = keys.caster
 	local target = keys.target
@@ -43,20 +47,21 @@ function OnDirkHit(keys)
 		if not IsImmuneToSlow(keys.target) then 
 			keys.ability:ApplyDataDrivenModifier(keys.caster, keys.target, "modifier_dirk_poison_empowered_slow", {}) 
 		end
-	else]]
+	else
+	end]]
+
 	if not IsImmuneToSlow(keys.target) then 
 		keys.ability:ApplyDataDrivenModifier(keys.caster, keys.target, "modifier_dirk_poison", {}) 
-	end
-	--end 
+	end	 
+
+	local damage = caster:GetAverageTrueAttackDamage(caster)
+	if damage > keys.Damage then keys.Damage = damage end
 
 	if caster.IsWeakeningVenomAcquired then
 		local stacks = 0
 		if target:HasModifier("modifier_weakening_venom_debuff") then 
 			stacks = target:GetModifierStackCount("modifier_weakening_venom_debuff", keys.ability)
-		end
-
-		--local damage = caster:GetAverageTrueAttackDamage(caster) * 1.5
-		--if damage > keys.Damage then keys.Damage = damage end
+		end		
 
 		target:RemoveModifierByName("modifier_weakening_venom_debuff") 
 		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
@@ -93,18 +98,39 @@ end
 function OnVenomHit(keys)
 	local caster = keys.caster
 	local target = keys.target 
+	local ability = keys.ability
 
-	--keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
+	if caster:GetMana() > 50 then
+		local stacks = 0
+		if target:HasModifier("modifier_weakening_venom") then 
+			stacks = target:GetModifierStackCount("modifier_weakening_venom", ability)
+		end		
 
-	local currentStack = 0
+		target:RemoveModifierByName("modifier_weakening_venom") 
+		target:AddNewModifier(caster, ability, "modifier_weakening_venom", { duration = 12 })
+		target:SetModifierStackCount("modifier_weakening_venom", ability, stacks + 1)
 
-	if target:HasModifier("modifier_weakening_venom_debuff") then 
-		currentStack = target:GetModifierStackCount("modifier_weakening_venom_debuff", keys.ability)
+		local dirkAbility = caster:FindAbilityByName("true_assassin_dirk")
+
+		if not dirkAbility:IsCooldownReady() then
+			local dirkCooldown = dirkAbility:GetCooldownTimeRemaining()
+			dirkAbility:EndCooldown()
+
+			if dirkCooldown > 1 then
+				dirkAbility:StartCooldown(dirkCooldown - 1)
+			end
+		end
+
+		caster:SetMana(caster:GetMana() - 50)
 	end
 
-	target:RemoveModifierByName("modifier_weakening_venom_debuff") 
+	--[[if target:HasModifier("modifier_weakening_venom") then 
+		currentStack = target:GetModifierStackCount("modifier_weakening_venom", keys.ability)
+	end
+
+	target:RemoveModifierByName("modifier_weakening_venom") 
 	keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_weakening_venom_debuff", {}) 
-	target:SetModifierStackCount("modifier_weakening_venom_debuff", keys.ability, currentStack + 1)
+	target:SetModifierStackCount("modifier_weakening_venom_debuff", keys.ability, currentStack + 1)]]
 end
 
 
@@ -326,33 +352,13 @@ function OnAmbushStart(keys)
 			team = DOTA_TEAM_GOODGUYS
 		end]]
 		--local units = FindUnitsInRadius(enemyTeamNumber, caster:GetAbsOrigin(), nil, 2500, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, 0, FIND_CLOSEST, false)
-		local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 2500, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_INVULNERABLE + DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, FIND_CLOSEST, false)
+		local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 1600, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_INVULNERABLE + DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, FIND_CLOSEST, false)
 		for i=1, #units do
 			print(units[i]:GetUnitName())
 			if units[i]:GetUnitName() == "ward_familiar" then
-				local ward = units[i]
-				--[[if ward:HasModifier("modifier_item_ward_true_sight") then
-					ward:AddNewModifier(ward, ward, "modifier_item_ward_true_sight", {true_sight_range = 100})
-					--ward:RemoveModifierByName("modifier_item_ward_true_sight")
-				end]]
-
-				ward:SetDayTimeVisionRange(100)
-				ward:SetNightTimeVisionRange(100)
-
-				Timers:CreateTimer(10.0, function()
-					if IsValidEntity(ward) and not ward:IsNull() then
-						--if not ward:HasModifier("modifier_item_ward_true_sight") then
-						--	ward:AddNewModifier(ward, ward, "modifier_item_ward_true_sight", {true_sight_range = 1250})
-						--end
-
-						ward:SetDayTimeVisionRange(1250)
-						ward:SetNightTimeVisionRange(1250)
-					end 
-				end)
-
-				--[[local visiondummy = CreateUnitByName("sight_dummy_unit", units[i]:GetAbsOrigin(), false, keys.caster, keys.caster, keys.caster:GetTeamNumber())
-				visiondummy:SetDayTimeVisionRange(300)
-				visiondummy:SetNightTimeVisionRange(300)
+				local visiondummy = CreateUnitByName("sight_dummy_unit", units[i]:GetAbsOrigin(), false, keys.caster, keys.caster, keys.caster:GetTeamNumber())
+				visiondummy:SetDayTimeVisionRange(500)
+				visiondummy:SetNightTimeVisionRange(500)
 				AddFOWViewer(caster:GetTeamNumber(), visiondummy:GetAbsOrigin(), 500, 5.0, false)
 				visiondummy:AddNewModifier(caster, caster, "modifier_item_ward_true_sight", {true_sight_range = 100}) 
 				local unseen = visiondummy:FindAbilityByName("dummy_unit_passive")
@@ -362,14 +368,18 @@ function OnAmbushStart(keys)
 						visiondummy:RemoveSelf()
 					end 
 				end)
-				break]]
+				break
 			end
 		end 
 	end
 
 	Timers:CreateTimer(0.3, function()
 		if caster:IsAlive() then
-			ability:ApplyDataDrivenModifier(caster, caster, "modifier_ambush", {})
+			if caster.IsPCImproved then
+				ability:ApplyDataDrivenModifier(caster, caster, "modifier_ambush_empowered", {})
+			else
+				ability:ApplyDataDrivenModifier(caster, caster, "modifier_ambush", {})
+			end			
 			ability:ApplyDataDrivenModifier(caster, caster, "modifier_first_hit", {})
 		end
 	end)
@@ -446,26 +456,35 @@ function OnStealStart(keys)
 	local target = keys.target
 	local ability = keys.ability
 	local damage = keys.Damage
-	damage = damage * target:GetMaxHealth() / 100 + keys.StrSteal * 17
-	print(damage)
-	print(keys.StrSteal)
 
-	ability:ApplyDataDrivenModifier(caster, target, "modifier_steal_str_reduction", {})
-	ability:ApplyDataDrivenModifier(caster, caster, "modifier_steal_str_increase", {})
+	damage = damage * target:GetHealth() / 100 
 
-	if not caster.IsShadowStrikeAcquired then
+	local attackRatio = ability:GetSpecialValueFor("attack_ratio") * caster:GetAverageTrueAttackDamage(caster) / 100
+
+	damage = damage + attackRatio
+	--print(damage)
+
+	--ability:ApplyDataDrivenModifier(caster, target, "modifier_steal_str_reduction", {})
+	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_steal_str_increase", {})	--It increases agi now
+
+	--[[if not caster.IsShadowStrikeAcquired then
 		local diff = (target:GetAbsOrigin() - caster:GetAbsOrigin()):Normalized()
 		caster:SetAbsOrigin(target:GetAbsOrigin() - diff*100)
 		FindClearSpaceForUnit( caster, caster:GetAbsOrigin(), true )
-	end
+	end]]
 
-	print(caster.bIsVisibleToEnemy)
-	if (caster:HasModifier("modifier_ambush") or not caster.bIsVisibleToEnemy) and caster.IsShadowStrikeAcquired then
-		--print("Shadow Strike activated")
+	--[[if caster.IsShadowStrikeAcquired then
+		damage = damage 
+	end]]
+
+	--print(caster.bIsVisibleToEnemy)
+	--[[if (caster:HasModifier("modifier_ambush") or not caster.bIsVisibleToEnemy) and caster.IsShadowStrikeAcquired then
 		damage = damage + 300
 		ability:ApplyDataDrivenModifier(caster, target, "modifier_steal_vision", {})
-	end
-	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
+	end]]
+	DoDamage(caster, target, damage, DAMAGE_TYPE_PHYSICAL, 0, ability, false)
+
+	caster:Heal(damage / 2, caster)
 end
 
 function OnZabCastStart(keys)
@@ -489,20 +508,24 @@ end
 function OnZabStart(keys)
 	local caster = keys.caster
 	local target = keys.target
+	local projectileSpeed = 950
+
+	if caster.IsShadowStrikeAcquired then
+		projectileSpeed = 750
+	end
+
+
 	local info = {
 		Target = keys.target,
 		Source = caster, 
 		Ability = keys.ability,
 		EffectName = "particles/custom/ta/zabaniya_projectile.vpcf",
 		vSpawnOrigin = caster:GetAbsOrigin(),
-		iMoveSpeed = 950
+		iMoveSpeed = projectileSpeed
 	}
 
-	print(caster.bIsVisibleToEnemy)
-	if (caster:HasModifier("modifier_ambush") or not caster.bIsVisibleToEnemy) then 
-		caster.IsShadowStrikeActivated = true 
-		--giveUnitDataDrivenModifier(caster, target, "rooted", 1.0)
-	end
+	--print(caster.bIsVisibleToEnemy)
+	--if (caster:HasModifier("modifier_ambush") or not caster.bIsVisibleToEnemy) then caster.IsShadowStrikeActivated = true end
 	--if caster:HasModifier("modifier_ambush") then caster.IsShadowStrikeActivated = true end
 
 	ProjectileManager:CreateTrackingProjectile(info) 
@@ -518,12 +541,12 @@ function OnZabStart(keys)
 
 		-- Destroy particle after delay
 		Timers:CreateTimer( 2.0, function()
-				ParticleManager:DestroyParticle( particle, false )
-				ParticleManager:ReleaseParticleIndex( particle )
 				ParticleManager:DestroyParticle( smokeFx, false )
 				ParticleManager:ReleaseParticleIndex( smokeFx )
 				ParticleManager:DestroyParticle( smokeFx2, false )
 				ParticleManager:ReleaseParticleIndex( smokeFx2 )
+				ParticleManager:DestroyParticle( smokeFx3, false )
+				ParticleManager:ReleaseParticleIndex( smokeFx3 )
 				return nil
 		end)
 
@@ -558,35 +581,37 @@ function OnZabHit(keys)
 		return nil
 	end)
 
-	DoDamage(keys.caster, keys.target, keys.Damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-	keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_zabaniya_curse", {})
-	local cursedHealth = target:GetHealth()
+	local curseDuration = 1.5
+	local damage_type = DAMAGE_TYPE_MAGICAL
 
-	Timers:CreateTimer(function()
-		if not target:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
-			
-  		if target:GetHealth() <= 0 then
-			target:Execute(keys.ability, caster)
-		elseif target:GetHealth() > cursedHealth then
-			target:SetHealth(cursedHealth)
-		end
+	if caster.IsShadowStrikeAcquired then
+		curseDuration = 3.0
+		damage_type = DAMAGE_TYPE_PURE
+		keys.Damage = keys.Damage - 400
+	end
+	
+	if not keys.target:IsMagicImmune() then
+		DoDamage(keys.caster, keys.target, keys.Damage, damage_type, 0, keys.ability, false)
+		target:AddNewModifier(caster, keys.ability, "modifier_zabaniya_curse", { Duration = curseDuration })
+		local cursedHealth = target:GetHealth()
 
-		cursedHealth = target:GetHealth()
+		Timers:CreateTimer(function()
+			if not target:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
+				
+	  		if target:GetHealth() <= 0 then
+				target:Execute(keys.ability, caster)
+			elseif target:GetHealth() > cursedHealth then
+				target:SetHealth(cursedHealth)
+			end
 
-		return 0.033
-	end)
+			cursedHealth = target:GetHealth()
 
-		--caster.IsShadowStrikeActivated = false
+			return 0.033
+		end)
+	end
 
-	--if caster.IsShadowStrikeAcquired and caster.IsShadowStrikeActivated then 
-		
-	--end
+	--keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_zabaniya_curse", {duration = curseDuration})
 
-	--caster:ApplyHeal(keys.Damage/2, caster)
-	--local targetLeftoverMana = math.max(target:GetMana()-keys.Damage/2,0)
-	--local manaSap = target:GetMana() - targetLeftoverMana
-	--caster:SetMana(caster:GetMana()+manaSap)
-	--target:SetMana(targetLeftoverMana)
 	
 end
 
@@ -643,11 +668,24 @@ end
 function OnWeakeningVenomAcquired(keys)
 	local caster = keys.caster
 	local ply = caster:GetPlayerOwner()
+	local ability = keys.ability
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsWeakeningVenomAcquired = true
 	hero:FindAbilityByName("true_assassin_weakening_venom_passive"):SetLevel(1)
 	hero:FindAbilityByName("true_assassin_dirk"):SetLevel(2)
 	--hero:SwapAbilities("true_assassin_dirk", "true_assassin_dirk_attr_temp", true, true) 
+
+	--local penalty = ability:GetSpecialValueFor("attack_penalty")
+
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+	    hero:AddNewModifier(hero, ability, "modifier_perfect_agony_penalty", {} )
+			return nil
+		else
+			return 1
+		end
+	end)
+
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))

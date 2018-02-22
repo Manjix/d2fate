@@ -9,7 +9,7 @@ softdispellable = {
     "modifier_courage_damage_stack_indicator",
     "modifier_courage_stackable_buff",
     "modifier_berserk_self_buff",
-    "modifier_ta_self_mod",
+    "modifier_self_mod",
     "modifier_berserk_scroll",
     "modifier_share_damage",
     "modifier_a_plus_armor",
@@ -33,8 +33,11 @@ softdispellable = {
     "modifier_jeanne_charisma_agi",
     "modifier_jeanne_charisma_int",
     "modifier_atalanta_last_spurt",
-    "modifier_cursed_lance",
+    --"modifier_cursed_lance",
     "modifier_battle_continuation_heal",
+    "modifier_argos_armor",
+    "modifier_ambush_invis",
+    "modifier_blade_devoted_self",
 }
 
 strongdispellable = {
@@ -72,7 +75,9 @@ strongdispellable = {
     "modifier_atalanta_last_spurt",
     "modifier_cursed_lance",
     "modifier_battle_continuation_heal",
-
+    "modifier_argos_armor",
+    "modifier_ambush_invis",
+    "modifier_blade_devoted_self",
 
     -- Strong Dispelable
     "modifier_b_scroll",
@@ -87,34 +92,40 @@ strongdispellable = {
 }
 
 revokes = {
-    "modifier_subterranean_grasp_revoke",
+    --"modifier_subterranean_grasp_revoke",
     "modifier_enkidu_hold",
     "jump_pause",
     "pause_sealdisabled",
     "rb_sealdisabled",
     "revoked",
-    "modifier_command_seal_2",
-    "modifier_command_seal_3",
-    "modifier_command_seal_4",
-    "round_pause"
+    --"modifier_command_seal_2",
+    --"modifier_command_seal_3",
+    --"modifier_command_seal_4",
+    "round_pause",
+    "modifier_nss_shock"
 }
 
 locks = {
-    "modifier_purge",
+    --"modifier_purge",
+    "modifier_sex_scroll_root",
     "locked",
     "dragged",
-    "jump_pause_postlock"
+    "jump_pause_postlock",
+    "modifier_aestus_domus_aurea_enemy",
+    "modifier_aestus_domus_aurea_ally",
+    "modifier_aestus_domus_aurea_nero"
 }
 
 
-goesthruB = {"saber_avalon",
-            "archer_5th_hrunting",
-            "avenger_berg_avesta",
-            "gilgamesh_gate_of_babylon",
-            "false_assassin_quickdraw",
-            "archer_5th_overedge",
-            "avenger_verg_avesta",
-            "lancer_5th_wesen_gae_bolg",
+goesthruB = {
+    "saber_avalon",
+    --"archer_5th_hrunting",
+    "avenger_berg_avesta",
+    "gilgamesh_gate_of_babylon",
+    "false_assassin_quickdraw",
+    "avenger_verg_avesta",
+    "lancer_5th_gae_bolg",
+    "lancer_5th_wesen_gae_bolg",
 }
 
 cleansable = {
@@ -145,6 +156,9 @@ cleansable = {
     "modifier_la_black_luna_slow",
     "modifier_nursery_rhyme_shapeshift_slow",
     "modifier_doppelganger_lookaway_slow",
+    "modifier_cobweb_slow",
+    "modifier_tauropolos_slow",
+    "modifier_calydonian_hunt_slow",
     -- Other CCs
     "modifier_stunned",
     "modifier_rule_breaker",
@@ -163,6 +177,7 @@ cleansable = {
     "locked",
     "rooted",
     "stunned",
+    "modifier_sting_shot",
 
     -- Debuffs
     "modifier_gust_heaven_indicator_enemy"
@@ -196,11 +211,15 @@ slowmodifier = {
     "modifier_nursery_rhyme_shapeshift_slow",
     "modifier_doppelganger_lookaway_slow",
     "modifier_ceremonial_purge_slow",
+    "modifier_cobweb_slow",
+    "modifier_tauropolos_slow",
+    "modifier_sex_scroll_slow",
 }
 
 donotlevel = {
     "attribute_bonus",
     "attribute_bonus_custom",
+    "attribute_bonus_custom_no_int",
     "saber_improved_instinct",
     "lancer_5th_protection_from_arrows",
     "saber_alter_darklight_passive",
@@ -213,10 +232,11 @@ donotlevel = {
     "true_assassin_weakening_venom_passive",
     "true_assassin_protection_from_wind",
     "avenger_overdrive",
-    "berserker_5th_reincarnation",
-    "archer_5th_rho_aias",
+    "berserker_5th_reincarnation",    
+    "archer_5th_rho_aias",    
     "gawain_saint",
-    "gawain_blessing_of_fairy"
+    "gawain_blessing_of_fairy"--,
+
 }
 
 CannotReset = {
@@ -229,14 +249,15 @@ CannotReset = {
     "saber_alter_max_mana_burst",
     "rider_5th_bellerophon_2",
     "archer_5th_hrunting",
-    "archer_5th_rho_aias",
+    --"archer_5th_overedge",
     "archer_5th_arrow_rain",
     "berserker_5th_madmans_roar",
     "false_assassin_quickdraw",
     "false_assassin_tsubame_mai",
     "true_assassin_combo",
     "gilgamesh_max_enuma_elish",
-    "caster_5th_hecatic_graea_powered",
+    --"caster_5th_hecatic_graea_powered",
+    "medea_hecatic_graea_combo",
     "lancelot_blessing_of_fairy",
     "lancelot_arms_mastership_improved",
     "lancelot_nuke",
@@ -283,6 +304,8 @@ CannotReset = {
     "vlad_battle_continuation",
     "vlad_combo",
     "vlad_protection_of_faith_cd",
+    --"phoebus_catastrophe_barrage",
+    "lancer_5th_soaring_spear",
 }
 
 femaleservant = {
@@ -295,6 +318,17 @@ femaleservant = {
     "npc_dota_hero_mirana",
     "npc_dota_hero_windrunner",
     "npc_dota_hero_drow_ranger",
+}
+
+tCannotDetect = {
+    "npc_dota_hero_juggernaut",
+    "npc_dota_hero_bounty_hunter",
+    "npc_dota_hero_bloodseeker"
+}
+
+tDangerousBuffs = {
+    "modifier_gae_buidhe",
+    "modifier_zabaniya_curse"
 }
 
 itemComp = {
@@ -389,6 +423,7 @@ function DoCompositeDamage(source, target, dmg, dmg_type, dmg_flag, abil, isLoop
 end
 
 function ApplyAirborne(source, target, duration)
+    if target:HasModifier("modifier_wind_protection_passive") then return end
     target:AddNewModifier(source, source, "modifier_stunned", {Duration = duration})
     --if target:GetName() == "npc_dota_hero_legion_commander" and target:HasModifier("modifier_avalon") then return end
     --[[local ascendCounter = 0
@@ -410,6 +445,7 @@ function ApplyAirborne(source, target, duration)
 end
 
 function ApplyAirborneOnly(target, knockupSpeed, duration, Acc)
+    if target:HasModifier("modifier_wind_protection_passive") then return end
     if target:GetName() == "npc_dota_hero_legion_commander" and target:HasModifier("modifier_avalon") then return end
 
     local knockupAcc = knockupSpeed/duration * 2
@@ -566,9 +602,7 @@ function PlayBGM(player)
 end
 
 function LevelAllAbility(hero)
-    local x = 14
-    if hero:GetName() == "npc_dota_hero_ember_spirit" then x = 15 end
-    for i=0, x do
+    for i=0, 23 do
         local ability = hero:GetAbilityByIndex(i)
         if ability == nil then return end
         local level0 = false -- whether ability should be kept level 0 or not
@@ -608,6 +642,8 @@ end
 
 function CheckItemCombination(hero)
     local bIsMatchingFound = false
+
+    --print("Checking item combination")
 
     -- loop through stash
     for i=0,5 do
@@ -652,6 +688,8 @@ function CheckItemCombinationInStash(hero)
         if currentItem then
             local currentItemName1 = currentItem:GetName()
             local currentItemIndex1 = i
+            --print("Current")
+            --print(currentItemIndex1, currentItemName1)
             if GetMatchingItem(currentItemName1) then
                 -- first component found, find second component
                 for j=9,14 do
@@ -659,11 +697,15 @@ function CheckItemCombinationInStash(hero)
 
                     if j == currentItemIndex1 then goto continue end -- just continue if we are looking at the same slot as first component
                     local currentItem2 = hero:GetItemInSlot(j)
+                    --local currentItemIndex2 = j
                     if currentItem2 then
                         local currentItemName2 = currentItem2:GetName()
                         -- match found, combine item 1 and item 2
                         if currentItemName1 == currentItemName2 then
+                            
                             bIsMatchingFound = true
+                            --print("Match with")
+                            --print(currentItemIndex2 ,currentItemName2)
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
                             CreateItemAtSlot(hero, tItemComboTable[currentItemName1], 9, -1, false, true)
@@ -787,11 +829,13 @@ function IsFemaleServant(target)
 end
 
 function IsImmuneToSlow(target)
-    if target:GetName() == "npc_dota_hero_sven" then
+    if target:GetName() == "npc_dota_hero_sven" and target.IsEternalImproved == true then
         EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
         ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
         return true 
-    else 
+    elseif target:HasModifier("modifier_forward") then
+        return true
+    else
         return false
     end
 end
@@ -857,6 +901,21 @@ function CalculateDamagePreReduction(eDamageType, fDamage, hUnit)
 	if eDamageType == DAMAGE_TYPE_MAGICAL then
 		local fMagicRes = hUnit:GetMagicalArmorValue()
 		return fDamage * (1 + fMagicRes)
+	end
+	
+	return fDamage
+end
+
+function CalculateDamagePostReduction(eDamageType, fDamage, hUnit)
+	if eDamageType == DAMAGE_TYPE_PHYSICAL then
+		local fArmor = hUnit:GetPhysicalArmorValue()
+		local multiplier = 1 - 0.06 * fArmor / (1 + 0.06 * math.abs(fArmor))
+		return fDamage * multiplier
+	end
+	
+	if eDamageType == DAMAGE_TYPE_MAGICAL then
+		local fMagicRes = hUnit:GetMagicalArmorValue()
+		return fDamage * (1 - fMagicRes)
 	end
 	
 	return fDamage
@@ -966,6 +1025,8 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
     local MR = target:GetMagicalArmorValue() 
     dmg_flag = bit.bor(dmg_flag, DOTA_DAMAGE_FLAG_NO_SPELL_AMPLIFICATION)
 
+    if target:GetName() == "npc_dota_ward_base" then return end
+
     -- Records skill damage PRE-REDUCTION. For the rest, refer to OnHeroTakeDamage() below.
     if isLoop == false then
         if not source:IsHero() then --Account for neutral attacker
@@ -984,10 +1045,10 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
             targetHero = target
         end
         --print("Before reductions", dmg)
-        --[[sourceHero.ServStat:doDamageBeforeReduction(dmg)
+        sourceHero.ServStat:doDamageBeforeReduction(dmg)
         if not targetHero:IsIllusion() then -- band aid for NR's shapeshift.
 	        targetHero.ServStat:takeDamageBeforeReduction(dmg)
-	    end]]
+	    end
     end
     -- END
 
@@ -1138,7 +1199,6 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
             damage_flags = dmg_flag,
             ability = abil
         }
-
         
         -- if target is linked, distribute damages 
         if target:HasModifier("modifier_share_damage")
@@ -1150,41 +1210,24 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
         then
             -- Calculate the damage to secondary targets separately, in order to prevent MR from being twice as effective on primary target.
             local damageToAllies =  dmgtable.damage
-
-            --[[if dmg_type == DAMAGE_TYPE_PHYSICAL then
-                local AR = GetPhysicalDamageReduction(target:GetPhysicalArmorValue())
-                damageToAllies = dmgtable.damage * (1-AR)
-            elseif dmg_type == DAMAGE_TYPE_MAGICAL then
-                damageToAllies = dmgtable.damage * (1-MR)
-            end]]
-            damageToAllies = damageToAllies/#target.linkTable * (1 + 0.1 * #target.linkTable - (#target.linkTable == 1 and 1 or 0) * 0.1) --damage/person is now 100/60/43.3/35/30 after instead of 100/50/33.3/25/20
-            dmgtable.damage = dmgtable.damage/#target.linkTable * (1 + 0.1 * #target.linkTable - (#target.linkTable == 1 and 1 or 0) * 0.1)
-            --print(damageToAllies, dmgtable.damage, (1 + 0.1 * #target.linkTable - (#target.linkTable == 1 and 1 or 0) * 0.1))
+            damageToAllies = damageToAllies/#target.linkTable -- * (1 + 0.1 * #target.linkTable - (#target.linkTable == 1 and 1 or 0) * 0.1) --damage/person is now 100/60/43.3/35/30 after instead of 100/50/33.3/25/20
+            dmgtable.damage = dmgtable.damage/#target.linkTable -- * (1 + 0.1 * #target.linkTable - (#target.linkTable == 1 and 1 or 0) * 0.1)
             -- Loop through linked heroes
             for i=#target.linkTable,1,-1 do
+                local hLinkTarget = target.linkTable[i]
                 -- do ApplyDamage if it's primary target since the shield processing is already done
                 if target.linkTable[i] == target then
-                    --print("Damage dealt to primary target : " .. dmgtable.damage .. " dealt by " .. dmgtable.attacker:GetName())
                     ApplyDamage(dmgtable)
-                    --[[if dmgtable.damage_type == DAMAGE_TYPE_MAGICAL then
-                        print("Actual damage:", dmgtable.damage*(1-MR))
-                        --dmgtable.attacker.ServStat:doActualDamage(dmgtable.damage*(1-MR))
-                        --dmgtable.victim.ServStat:takeActualDamage(dmgtable.damage*(1-MR))
-                    elseif dmgtable.damage_type == DAMAGE_TYPE_PHYSICAL then
-                        print("Actual damage:", dmgtable.damage*GetPhysicalDamageReduction(dmgtable.victim:GetPhysicalArmorValue()))
-                        --dmgtable.attacker.ServStat:doActualDamage(dmgtable.damage*GetPhysicalDamageReduction(dmgtable.victim:GetPhysicalArmorValue()))
-                        --dmgtable.victim.ServStat:takeActualDamage(dmgtable.damage*GetPhysicalDamageReduction(dmgtable.victim:GetPhysicalArmorValue()))
-                    else
-                        print("Actual damage:", dmgtable.damage)
-                        --dmgtable.attacker.ServStat:doActualDamage(dmgtable.damage)
-                        --dmgtable.victim.ServStat:takeActualDamage(dmgtable.damage)
-                    end]]
-
                 -- for other linked targets, we need DoDamage
                 else
-                    if target.linkTable[i] ~= nil then 
-                        --print("Damage dealt to " .. target.linkTable[i]:GetName() .. " by link : " .. damageToAllies )
-                        DoDamage(source, target.linkTable[i], damageToAllies,  DAMAGE_TYPE_MAGICAL, 0, abil, true)
+                    if target.linkTable[i] ~= nil then
+                        if hLinkTarget:GetHealth() >= CalculateDamagePostReduction(DAMAGE_TYPE_MAGICAL, damageToAllies, hLinkTarget) then
+                            DoDamage(source, hLinkTarget, damageToAllies,  DAMAGE_TYPE_MAGICAL, 0, abil, true)
+                        else
+                            hLinkTarget:SetHealth(1)
+                            hLinkTarget:RemoveModifierByName("modifier_share_damage")
+                            RemoveHeroFromLinkTables(hLinkTarget)
+                        end
                     end 
                 end
             end
@@ -1192,23 +1235,7 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
         else 
             dmgtable.victim = target
             ApplyDamage(dmgtable)
-            --[[if dmgtable.damage_type == DAMAGE_TYPE_MAGICAL then
-                print("Actual damage:", dmgtable.damage*(1-MR))
-                --dmgtable.attacker.ServStat:doActualDamage(dmgtable.damage*(1-MR))
-                --dmgtable.victim.ServStat:takeActualDamage(dmgtable.damage*(1-MR))
-            elseif dmgtable.damage_type == DAMAGE_TYPE_PHYSICAL then
-                print("Actual damage:", dmgtable.damage*GetPhysicalDamageReduction(dmgtable.victim:GetPhysicalArmorValue()))
-                --dmgtable.attacker.ServStat:doActualDamage(dmgtable.damage*GetPhysicalDamageReduction(dmgtable.victim:GetPhysicalArmorValue()))
-                --dmgtable.victim.ServStat:takeActualDamage(dmgtable.damage*GetPhysicalDamageReduction(dmgtable.victim:GetPhysicalArmorValue()))
-            else
-                print("Actual damage:", dmgtable.damage)
-                --dmgtable.attacker.ServStat:doActualDamage(dmgtable.damage)
-                --dmgtable.victim.ServStat:takeActualDamage(dmgtable.damage)
-            end]]
-
-            --print(dmgtable.attacker:GetName() .. " dealt " .. dmgtable.damage .. " damage to " .. dmgtable.victim:GetName())
-        end
-        
+        end        
     end
 
 end
@@ -1694,30 +1721,30 @@ local substitutions = {
 }
 
 local heroNames = {
-    ["npc_dota_hero_legion_commander"] = "Saber",
-    ["npc_dota_hero_phantom_lancer"] = "Lancer(5th)",
-    ["npc_dota_hero_spectre"] = "Saber Alter(5th)",
-    ["npc_dota_hero_ember_spirit"] = "Archer(5th)",
-    ["npc_dota_hero_templar_assassin"] = "Rider(5th)",
-    ["npc_dota_hero_doom_bringer"] = "Berserker(5th)",
-    ["npc_dota_hero_juggernaut"] = "Assassin(5th)",
-    ["npc_dota_hero_bounty_hunter"] = "True Assassin(5th)",
-    ["npc_dota_hero_crystal_maiden"] = "Caster(5th)",
-    ["npc_dota_hero_skywrath_mage"] = "Archer(4th)",
-    ["npc_dota_hero_sven"] = "Berserker(4th)",
-    ["npc_dota_hero_vengefulspirit"] = "Avenger",
-    ["npc_dota_hero_huskar"] = "Lancer(4th)",
-    ["npc_dota_hero_chen"] = "Rider(4th)",
-    ["npc_dota_hero_shadow_shaman"] = "Caster(4th)",
-    ["npc_dota_hero_lina"] = "Saber(Extra), Nero",
-    ["npc_dota_hero_omniknight"] = "Saber(Extra), Gawain",
-    ["npc_dota_hero_enchantress"] = "Caster(Extra), Tamamo",
-    ["npc_dota_hero_bloodseeker"] = "Assassin(Extra)",
-    ["npc_dota_hero_mirana"] = "Ruler(Apocrypha)",
-    ["npc_dota_hero_queenofpain"] = "Rider of Black(Apocrypha)",
-    ["npc_dota_hero_windrunner"] = "Caster(Extra), N.R",
-    ["npc_dota_hero_drow_ranger"] = "Archer of Red(Apocrypha)",
-    ["npc_dota_hero_tidehunter"] = "Lancer(Extra)",
+    ["npc_dota_hero_legion_commander"] = "Arturia Pendragon",
+    ["npc_dota_hero_phantom_lancer"] = "Cu Chulain",
+    ["npc_dota_hero_spectre"] = "Arturia Alter",
+    ["npc_dota_hero_ember_spirit"] = "Emiya",
+    ["npc_dota_hero_templar_assassin"] = "Medusa",
+    ["npc_dota_hero_doom_bringer"] = "Heracles",
+    ["npc_dota_hero_juggernaut"] = "Sasaki Kojiro",
+    ["npc_dota_hero_bounty_hunter"] = "Hassan-i-Sabbah",
+    ["npc_dota_hero_crystal_maiden"] = "Medea",
+    ["npc_dota_hero_skywrath_mage"] = "Gilgamesh",
+    ["npc_dota_hero_sven"] = "Lancelot",
+    ["npc_dota_hero_vengefulspirit"] = "Angra Mainyu",
+    ["npc_dota_hero_huskar"] = "Diarmuid",
+    ["npc_dota_hero_chen"] = "Iskander",
+    ["npc_dota_hero_shadow_shaman"] = "Gilles de Rais",
+    ["npc_dota_hero_lina"] = "Nero Claudius",
+    ["npc_dota_hero_omniknight"] = "Gawain",
+    ["npc_dota_hero_enchantress"] = "Tamamo no Mae",
+    ["npc_dota_hero_bloodseeker"] = "Li Shuwen",
+    ["npc_dota_hero_mirana"] = "Jeanne",
+    ["npc_dota_hero_queenofpain"] = "Astolfo",
+    ["npc_dota_hero_windrunner"] = "Nursery Rhyme",
+    ["npc_dota_hero_drow_ranger"] = "Atalanta",
+    ["npc_dota_hero_tidehunter"] = "Vlad",
 }
 
 
@@ -1744,7 +1771,7 @@ local heroCombos = {
     ["npc_dota_hero_doom_bringer"] = "berserker_5th_madmans_roar",
     ["npc_dota_hero_juggernaut"] = "false_assassin_tsubame_mai",
     ["npc_dota_hero_bounty_hunter"] = "true_assassin_combo",
-    ["npc_dota_hero_crystal_maiden"] = "caster_5th_hecatic_graea_powered",
+    ["npc_dota_hero_crystal_maiden"] = "medea_hecatic_graea_combo",
     ["npc_dota_hero_skywrath_mage"] = "gilgamesh_max_enuma_elish",
     ["npc_dota_hero_sven"] = "lancelot_nuke",
     ["npc_dota_hero_vengefulspirit"] = "avenger_endless_loop",
@@ -1818,12 +1845,12 @@ function OnHeroTakeDamage(keys)
 
     if attacker:GetAttackTarget() == hero then
         --print("Right click before armor reductions", damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
-        --[[attackerHero.ServStat:doDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
-        hero.ServStat:takeDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))]]
+        attackerHero.ServStat:doDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
+        hero.ServStat:takeDamageBeforeReduction(damageTaken * 1/(1-GetPhysicalDamageReduction(hero:GetPhysicalArmorValue())))
     end
     --print("Actual damage from KV:", damageTaken)
-    --[[attackerHero.ServStat:doActualDamage(damageTaken)
-    hero.ServStat:takeActualDamage(damageTaken)]]
+    attackerHero.ServStat:doActualDamage(damageTaken)
+    hero.ServStat:takeActualDamage(damageTaken)
 end
 
 function FxDestroyer(PIndex,instant)
@@ -1862,6 +1889,23 @@ function FxCreator(effectname,pattach,target,cp,attach,amount)
   end
 end
 
+
+function WrapAttributes(ability, attributeName, callback)
+    function ability:OnSpellStart()
+        local caster = self:GetCaster()
+        local player = caster:GetPlayerOwner()
+        local hero = caster:GetPlayerOwner():GetAssignedHero()
+
+        hero[attributeName] = true
+
+        local master = hero.MasterUnit
+        master:SetMana(master:GetMana() - self:GetManaCost(1))
+
+        if callback then
+            callback(self, hero)
+        end
+    end
+end
 
 -- Spaghetti and hax as fuck.
 function HotkeyPurchaseItem(iSource, args)
@@ -1913,3 +1957,61 @@ function HotkeyPurchaseItem(iSource, args)
     end
 end
 CustomGameEventManager:RegisterListener("hotkey_purchase_item", HotkeyPurchaseItem)
+
+function SpawnDummy(hCaster,vOrigin,vFacing)
+  local hDummy = CreateUnitByName("visible_dummy_unit", vOrigin or hCaster:GetAbsOrigin(), false, hCaster, hCaster, hCaster:GetTeamNumber())
+  hDummy:FindAbilityByName("dummy_visible_unit_passive"):SetLevel(1)
+  hDummy:SetDayTimeVisionRange(0)
+  hDummy:SetNightTimeVisionRange(0)
+  hDummy:SetAbsOrigin(vOrigin or hCaster:GetAbsOrigin())
+  hDummy:SetForwardVector(vFacing or hCaster:GetForwardVector())
+  return hDummy
+end
+
+--atr1's way to fix shooting arrows backward
+function ForwardVForPointGround(hCaster,vTarget)
+  local vOrigin = hCaster:GetAbsOrigin()
+  local vDisplacement, vFacing = vTarget - vOrigin
+  if math.abs(vDisplacement.x) < 0.05 then
+    vDisplacement.x = 0
+  end
+  if math.abs(vDisplacement.y) < 0.05 then
+    vDisplacement.y = 0
+  end
+  vDisplacement.z = 0
+  if vDisplacement == Vector(0, 0, 0) then
+    vFacing = hCaster:GetForwardVector()
+  else
+    vFacing = vDisplacement:Normalized()
+  end  
+  return vFacing
+end
+
+function UpdateAbilityLayout(hHero, tAbilities)
+    local tAbilities = tAbilities or hHero.AbilityLayout
+    for i = 1, hHero:GetAbilityCount() do
+        if hHero:GetAbilityByIndex(i - 1) == nil then
+        elseif i > #tAbilities then
+            hHero:GetAbilityByIndex(i - 1):SetHidden(true)
+        elseif hHero:GetAbilityByIndex(i - 1):GetAbilityName() ~= tAbilities[i] then
+            hHero:SwapAbilities(hHero:GetAbilityByIndex(i - 1):GetAbilityName(), tAbilities[i], true, true)
+        end
+    end
+end
+
+function CanBeDetected(hHero)
+    for i=1, #tCannotDetect do
+        if hHero:GetName() == tCannotDetect[i] then
+            return false
+        end
+    end
+    
+    return true
+end
+
+function RemoveDebuffsForRevival(hTarget)
+    for i=1, #tDangerousBuffs do
+        print(tDangerousBuffs[i])
+        hTarget:RemoveModifierByName(tDangerousBuffs[i])
+    end
+end

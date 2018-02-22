@@ -3,6 +3,15 @@ modifier_mana_essence = class({})
 function modifier_mana_essence:OnCreated(args)
 	self.fHealthRegen = args.fHealthRegen
 	self.fManaRegen = args.fManaRegen
+
+	if IsServer() then
+		if self:GetParent():GetName() == "npc_dota_hero_juggernaut" or self:GetParent:GetName() == "npc_dota_hero_shadow_shaman" then
+			self.fManaRegen = 0
+		end	
+		
+		CustomNetTables:SetTableValue("sync","mana_essence", { hp_regen = self.fHealthRegen,
+															   mana_regen = self.fManaRegen })
+	end
 end
 
 function modifier_mana_essence:DeclareFunctions()
@@ -15,11 +24,21 @@ function modifier_mana_essence:DeclareFunctions()
 end
 
 function modifier_mana_essence:GetModifierConstantHealthRegen()
-	return self.fHealthRegen
+	if IsServer() then
+		return self.fHealthRegen
+	elseif IsClient() then
+		local hp_regen = CustomNetTables:GetTableValue("sync","mana_essence").hp_regen
+        return hp_regen 
+	end
 end
 
 function modifier_mana_essence:GetModifierConstantManaRegen()
-	return self.fManaRegen
+	if IsServer() then
+		return self.fManaRegen
+	elseif IsClient() then
+		local mana_regen = CustomNetTables:GetTableValue("sync","mana_essence").mana_regen
+        return mana_regen 
+	end
 end
 
 function modifier_mana_essence:GetAttributes()
@@ -28,12 +47,12 @@ end
 
 function modifier_mana_essence:OnTakeDamage(args)
 	if args.unit == self:GetParent() then
-		if args.inflictor and args.inflictor:GetName() == "vlad_passive_rending" then
-			return true
-		else
-			self:Destroy()
-		end		
-	return true
+		--if args.inflictor and args.inflictor:GetName() == "vlad_passive_rending" then
+		--	return true
+		--else
+		self:Destroy()
+		--end		
+	--return true
 	end
 end
 

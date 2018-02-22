@@ -85,7 +85,7 @@ function OnGBAOEHit(keys, projectile)
 	local stun_duration = 0.1
 	
 	if caster.IsProjectionImproved then
-		damage = damage + 200
+		damage = damage + 100
 		stun_duration = 0.5
 	end
 

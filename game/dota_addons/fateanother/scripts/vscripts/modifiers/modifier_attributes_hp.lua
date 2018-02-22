@@ -17,6 +17,12 @@ function modifier_attributes_hp:GetModifierHealthBonus()
   if IsServer() then
     local parent = self:GetParent()
     self:SetStackCount(parent:GetStrength()*parent.hp_adjustment)
+
+    --CustomNetTables:SetTableValue("stats", parent:GetName(), { hp_stacks = self:GetStackCount() })
+    --return self:GetStackCount()
+  --elseif IsClient() then
+  --    local hp_stacks = CustomNetTables:GetTableValue("stats", parent:GetName()).hp_stacks
+  --    return hp_stacks 
   end
   return self:GetStackCount()
 end
