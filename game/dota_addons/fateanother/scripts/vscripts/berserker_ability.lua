@@ -39,7 +39,7 @@ function OnFissureHit(keys)
 	if not IsImmuneToSlow(target) then keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_fissure_strike_slow", {}) end
 
 	giveUnitDataDrivenModifier(keys.caster, keys.target, "pause_sealenabled", 0.01)
-	if not target:HasModifier("modifier_wind_protection_passive") then
+	if not IsKnockbackImmune(target) then
 	    local pushTarget = Physics:Unit(target)
 	    target:PreventDI()
 	    target:SetPhysicsFriction(0)
@@ -60,15 +60,15 @@ function OnFissureHit(keys)
 				unit:OnPhysicsFrame(nil)
 				FindClearSpaceForUnit(unit, unit:GetAbsOrigin(), true)
 			end
+		end)		
+		
+		target:OnPreBounce(function(unit, normal) -- stop the pushback when unit hits wall
+			unit:SetBounceMultiplier(0)
+			unit:PreventDI(false)
+			unit:SetPhysicsVelocity(Vector(0,0,0))
+			giveUnitDataDrivenModifier(caster, target, "stunned",  caster:FindAbilityByName("berserker_5th_fissure_strike"):GetSpecialValueFor("collide_duration"))
 		end)
 	end
-	
-	target:OnPreBounce(function(unit, normal) -- stop the pushback when unit hits wall
-		unit:SetBounceMultiplier(0)
-		unit:PreventDI(false)
-		unit:SetPhysicsVelocity(Vector(0,0,0))
-		giveUnitDataDrivenModifier(caster, target, "stunned",  caster:FindAbilityByName("berserker_5th_fissure_strike"):GetSpecialValueFor("collide_duration"))
-	end)
 end
 
 function OnCourageStart(keys)
@@ -219,6 +219,21 @@ function OnBerserkStart(keys)
 	caster.BerserkDamageTaken = 0
 
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_berserk_self_buff", {})
+
+	local casterHealth = caster:GetHealth()
+	if casterHealth - hplock > 0 then
+		local berserkDamage = math.min((casterHealth - hplock), hplock * 0.5)  
+		caster:EmitSound("Hero_Centaur.HoofStomp")
+
+		local berserkExp = ParticleManager:CreateParticle("particles/custom/berserker/berserk/eternal_rage_shockwave.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
+		ParticleManager:SetParticleControl(berserkExp, 1, Vector(radius,0,radius))
+
+		local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 400, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
+		for k,v in pairs(targets) do
+	        DoDamage(caster, v, berserkDamage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+		end
+	end
+
 	Timers:CreateTimer(function()
 		if caster:HasModifier("modifier_berserk_self_buff") == false then return end
 		if berserkCounter > duration then return end
@@ -495,7 +510,7 @@ function OnNineLanded(caster, ability)
 							giveUnitDataDrivenModifier(caster, v, "revoked", 0.5)
 						end]]
 						-- push enemies back
-						if not v:HasModifier("modifier_wind_protection_passive") then
+						if not IsKnockbackImmune(v) then
 							local pushback = Physics:Unit(v)
 							v:PreventDI()
 							v:SetPhysicsFriction(0)

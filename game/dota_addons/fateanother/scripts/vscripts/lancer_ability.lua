@@ -6,7 +6,11 @@ function OnPFAStart(keys)
 	local ability = keys.ability
 	caster:RemoveModifierByName("modifier_lancer_protection_from_arrows")
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_lancer_protection_from_arrows_active", {duration = 3})
-	caster:EmitSound("DOTA_Item.Buckler.Activate")
+	--caster:EmitSound("DOTA_Item.Buckler.Activate")
+
+	local soundQueue = math.random(1,4)
+	caster:EmitSound("Cu_Skill_" .. soundQueue)
+
 	StartAnimation(caster, {duration=1, activity=ACT_DOTA_CAST_ABILITY_1, rate=0.45})
 	Timers:CreateTimer(3.0, function()
 		ability:ApplyDataDrivenModifier(caster, caster, "modifier_lancer_protection_from_arrows", {})
@@ -433,8 +437,18 @@ function OnGBComboHit(keys)
 	Timers:CreateTimer(1.6, function()
 		StartAnimation(caster, {duration=3, activity=ACT_DOTA_RUN, rate=3})
 	end)
-	caster:EmitSound("Lancer.Heartbreak")
-	target:EmitSound("Lancer.Heartbreak")
+	local soundQueue = math.random(1,4)
+
+	if soundQueue ~= 4 then
+		caster:EmitSound("Cu_Combo_" .. soundQueue)
+		target:EmitSound("Cu_Combo_" .. soundQueue)
+	else
+		caster:EmitSound("Lancer.Heartbreak")
+		target:EmitSound("Lancer.Heartbreak")
+	end
+
+	--caster:EmitSound("Lancer.Heartbreak")
+	--target:EmitSound("Lancer.Heartbreak")
 	caster:FindAbilityByName("lancer_5th_gae_bolg"):StartCooldown(27.0)
 	if target:IsAlive() then
 	  	Timers:CreateTimer(1.8, function() 

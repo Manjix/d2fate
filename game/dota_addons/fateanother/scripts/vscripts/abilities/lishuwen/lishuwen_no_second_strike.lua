@@ -8,11 +8,6 @@ function lishuwen_no_second_strike:GetCastPoint()
 	return self:GetSpecialValueFor("cast_delay")
 end
 
---"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
---"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
---"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
---"AbilityUnitTargetFlags"		"DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES"
-
 function lishuwen_no_second_strike:GetBehavior()
 	return DOTA_ABILITY_BEHAVIOR_UNIT_TARGET
 end
@@ -43,7 +38,7 @@ function lishuwen_no_second_strike:OnAbilityPhaseStart()
     local delay = self:GetSpecialValueFor("cast_delay")
     local soundChance = math.random(1, 10)
 
-    if soundChance >= 8 then
+    if soundChance >= 5 then
 	    caster:EmitSound("Lishuwen_NP1")
 	end
 	
@@ -73,10 +68,13 @@ function lishuwen_no_second_strike:OnSpellStart()
 	local damage = self:GetSpecialValueFor("initial_damage")
 
 	if caster.bIsCirculatoryShockAcquired then
-		if target:GetName() ~= "npc_dota_hero_juggernaut" and target:GetName() ~= "npc_dota_hero_shadow_shaman" then
-			--DoDamage(caster, target, self:GetSpecialValueFor("shock_damage"), DAMAGE_TYPE_MAGICAL, 0, self, false)
+		if (target:GetName() ~= "npc_dota_hero_juggernaut" and target:GetName() ~= "npc_dota_hero_shadow_shaman") and target:IsHero() then			
 			target:SetMana(target:GetMana() - self:GetSpecialValueFor("shock_damage"))
+
+			local mana_shock_damage = (target:GetMaxMana() - target:GetMana()) * 0.3
+			DoDamage(caster, target, mana_shock_damage, DAMAGE_TYPE_MAGICAL, 0, self, false)
 		end
+
 		damage = damage + self:GetSpecialValueFor("shock_damage")
 		stunDuration = self:GetSpecialValueFor("attribute_stun_duration")
 	else
@@ -88,7 +86,7 @@ function lishuwen_no_second_strike:OnSpellStart()
 
 	target:AddNewModifier(caster, target, "modifier_stunned", {Duration = stunDuration})	
 
-	caster:AddNewModifier(caster, caster, "modifier_nss_anim", {Duration = 0.5})
+	--caster:AddNewModifier(caster, caster, "modifier_nss_anim", {Duration = 0.5})
 	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_nss_anim", {})
 	EmitGlobalSound("Lishuwen.NoSecondStrike")
     local groundFx1 = ParticleManager:CreateParticle( "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start_fallback_mid.vpcf", PATTACH_ABSORIGIN, target )

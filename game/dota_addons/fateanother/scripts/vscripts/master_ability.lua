@@ -2,6 +2,7 @@ LinkLuaModifier("modifier_charges", "modifiers/modifier_charges", LUA_MODIFIER_M
 
 LinkLuaModifier("modifier_tiger_strike_tracker", "abilities/lishuwen/modifiers/modifier_tiger_strike_tracker", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_vortigern_ferocity", "abilities/arturia_alter/modifiers/modifier_vortigern_ferocity", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_a_scroll_sated", "items/modifiers/modifier_a_scroll_sated.lua", LUA_MODIFIER_MOTION_NONE)
 
 SaberAttribute = {
 	"saber_attribute_improve_excalibur",
@@ -41,12 +42,12 @@ RiderAttribute = {
 }
 
 ArcherAttribute = {
-	"archer_5th_attribute_eagle_eye",
-	"archer_5th_attribute_hrunting",
-	"archer_5th_attribute_shroud_of_martin",
-	"archer_5th_attribute_improve_projection",
-	"archer_5th_attribute_overedge",
-	"archer_5th_arrow_rain",
+	"emiya_attribute_eagle_eye",
+	"emiya_attribute_hrunting",
+	"emiya_attribute_shroud_of_martin",
+	"emiya_attribute_projection",
+	"emiya_attribute_overedge",
+	"emiya_arrow_rain",
 	attrCount = 5
 }
 
@@ -74,8 +75,9 @@ TAAttribute = {
 	"true_assassin_attribute_protection_from_wind",
 	"true_assassin_attribute_weakening_venom",
 	"true_assassin_attribute_shadow_strike",
+	"true_assassin_attribute_shaytan_arm",
 	"true_assassin_combo",
-	attrCount = 4
+	attrCount = 5
 }
 
 GilgaAttribute = {
@@ -150,7 +152,7 @@ NeroAttribute = {
 	"nero_attribute_invictus_spiritus",
 	"nero_attribute_soverigns_glory",
 	--"nero_attribute_pavilion",
-	"nero_fiery_finale",	
+	"nero_laus_saint_claudius",	
 	attrCount = 5
 }
 
@@ -228,7 +230,8 @@ VladAttribute = {
 
 ChargeBasedBuffs = {
 	"modifier_tiger_strike_tracker",
-	"modifier_vortigern_ferocity"
+	"modifier_vortigern_ferocity",
+	"modifier_a_scroll_sated"
 }
 
 function OnSeal1Start(keys)
@@ -311,7 +314,7 @@ end
 
 function RemoveChargeModifiers(hero)
 	for i=1, #ChargeBasedBuffs do
-		print(ChargeBasedBuffs[i])
+		--print(ChargeBasedBuffs[i])
         hero:RemoveModifierByName(ChargeBasedBuffs[i])        
     end
 end

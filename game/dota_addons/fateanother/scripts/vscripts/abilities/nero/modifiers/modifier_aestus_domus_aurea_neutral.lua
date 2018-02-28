@@ -5,8 +5,8 @@ function modifier_aestus_domus_aurea_neutral:OnCreated(args)
 		--self.ResistReduc = args.ResistReduc
 		--self.ArmorReduc = args.ArmorReduc
 		--self.MovespeedReduc = args.MovespeedReduc
-		self.ThreatreCenter = args.ThreatreCenter
-		self.ThreatreSize = args.ThreatreSize
+		self.TheatreCenter = args.TheatreCenter
+		self.TheatreSize = args.TheatreSize
 
 		--[[CustomNetTables:SetTableValue("sync","aestus_domus_lock", { magic_resist = self.ResistReduc,
 															 		 armor_reduction = self.ArmorReduc,
@@ -58,11 +58,11 @@ function modifier_aestus_domus_aurea_neutral:OnUnitMoved()
 	if IsServer() then
 		local parent = self:GetParent()
 
-		if math.abs((parent:GetAbsOrigin() - self.ThreatreCenter):Length2D()) < self.ThreatreSize then
-			local diff = self.ThreatreCenter - parent:GetAbsOrigin()
+		if math.abs((parent:GetAbsOrigin() - self.TheatreCenter):Length2D()) < self.TheatreSize then
+			local diff = self.TheatreCenter - parent:GetAbsOrigin()
 			diff = diff:Normalized()
 
-			parent:SetAbsOrigin(self.ThreatreCenter + diff + self.ThreatreSize)
+			parent:SetAbsOrigin(self.TheatreCenter + diff + self.TheatreSize)
 			FindClearSpaceForUnit(parent, parent:GetAbsOrigin(), true)
 		end
 	end

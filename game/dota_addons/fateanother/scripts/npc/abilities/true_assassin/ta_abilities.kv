@@ -1,5 +1,8 @@
 #base "true_assassin_ambush.kv"
 #base "true_assassin_dirk.kv"
+#base "true_assassin_selfmod.kv"
+#base "true_assassin_snatch_strike.kv"
+#base "true_assassin_zabaniya.kv"
 
 "DOTAAbilities"
 {
@@ -245,286 +248,11 @@
 			}
 		}
 	}
-
-	//========================================
-	// True Assassin : Self Modification
-	//========================================
-	"true_assassin_self_modification"
-	{
-		"BaseClass"						"ability_datadriven"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
-		"AbilityTextureName"			"custom/true_assassin_self_modification"
-		"MaxLevel"						"5"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"1"
-		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_6"
-		"AnimationPlaybackRate" 		"1.0"
-		"precache"
-		{
-			"particle"				"particles/units/heroes/hero_bane/bane_fiendsgrip_ground_rubble.vpcf"
-			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_life_stealer.vsndevts"
-		}
-
-		// Time		
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"18"
-		"AbilityCastPoint"				"0.5"
-
-		// Cost
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"200"
-		
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"heal_amount"				"200 250 300 350 400"
-			}
-			"02"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"duration"					"5"
-			}
-			"03"
-			{
-				"var_type"					"FIELD_FLOAT"
-				"agi_increase"				"1 1.25 1.5 1.75 2"
-			}
-			"04"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"heal_over_time"			"40 50 60 70 80"
-			}
-			"05"
-			{
-				"var_type"					"FIELD_INTEGER"
-				"actual_heal_over_time"		"10 12 15 17 20"
-			}
-		}
-		
-		"OnSpellStart"
-		{
-			"FireSound"
-			{
-				"EffectName"		"Hero_LifeStealer.OpenWounds.Cast"
-				"Target"			"CASTER"
-			}
-			//"Heal"
-			//{
-			//	"Target"		"CASTER"
-			//	"HealAmount"	"%heal_amount"
-			//}
-			"RunScript"
-			{
-				"ScriptFile"		"ta_ability"
-				"Function"			"OnModStart"
-				"StatIncrease"		"%stat_increase"
-				"HealAmount"		"%heal_amount"
-			}
-		}
-
-		"OnUpgrade"
-		{
-			"RunScript"
-			{
-				"ScriptFile"		"ta_ability"
-				"Function"			"SelfModRefresh"
-			}
-		}
-		"Modifiers"
-		{
-			"modifier_ta_self_mod"
-			{
-				"IsPurgable"		"true"
-				"ThinkInterval"		"0.25"
-				"OnIntervalThink"
-				{
-					"Heal"
-					{
-						"Target"		"CASTER"
-						"HealAmount"	"%actual_heal_over_time"
-					}		
-				}	// Search
-
-
-				"Duration"		"5.0"
-			}
-			"modifier_ta_self_mod_passive"
-			{
-				"Passive"		"1"
-				"IsHidden"		"1"
-				"OnKill"
-				{
-					"RunScript"
-					{
-						"ScriptFile"		"ta_ability"
-						"Function"			"SelfModRefresh"
-					}					
-				}
-				"OnRespawn"
-				{
-					"RunScript"
-					{
-						"ScriptFile"		"ta_ability"
-						"Function"			"SelfModRefresh"
-					}					
-				}
-			}
-			"modifier_ta_agi_bonus"
-			{
-				"IsHidden"		"0"
-				"Attributes"	"MODIFIER_ATTRIBUTE_MULTIPLE | MODIFIER_ATTRIBUTE_PERMANENT"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%agi_increase"
-				}
-			}
-		}
-	}
-
-	//=====================================
-	// True Assassin : Snatch Strike
-	//=====================================
-	"true_assassin_snatch_strike"
-	{
-		// General		//------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"5"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"2"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET"
-		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
-		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
-		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
-		"AbilityTextureName"			"custom/true_assassin_snatch_strike"
-		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_3"
-		"AnimationPlaybackRate" 		"1.0"
-		
-		"AbilityCastPoint"				"0.3"
-		"AbilityCastRange"				"%range"
-		"AbilityCooldown"				"25"
-		"AbilityManaCost"				"400"
-		
-		"precache"
-		{
-			"particle"					"particles/units/heroes/hero_night_stalker/nightstalker_void.vpcf"
-			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_night_stalker.vsndevts"
-		}
-
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"damage"				"15 20 25 30 35"
-			}
-
-			"02"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"attack_ratio"			"100 150 200 250 300"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"duration"				"15"
-			}
-			"04"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"heal_ratio"			"50"
-			}
-			"05"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"range"					"400"
-			}
-			"06"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"visionDuration"		"5"
-			}
-			"07"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"set_vision"			"250"
-			}
-		}
-		"OnAbilityPhaseStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"			"ta_ability"
-				"Function"				"OnStealAbilityStart"
-			}
-		}
-
-		"OnSpellStart"
-		{
-			"FireSound"
-			{
-				"EffectName"			"Hero_Nightstalker.Void"
-				"Target"				"CASTER"
-			}
-			"RunScript"
-			{
-				"ScriptFile"			"ta_ability"
-				"Function"				"OnStealStart"
-				"Damage"				"%damage"
-				"StrSteal"				"%str_steal"
-				"Duration"				"%duration"
-			}
-		}
-		"Modifiers"
-		{
-			"modifier_steal_str_reduction"
-			{
-				"EffectName"			"particles/units/heroes/hero_night_stalker/nightstalker_void.vpcf"
-				"EffectAttachType"		"follow_origin"
-				"IsDebuff"				"1"
-				"Duration"				"%duration"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"		"%str_steal"
-				}
-			}
-			"modifier_steal_str_increase"
-			{
-				"Duration"		"%duration"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"			"%agi_gain"
-				}
-			}
-			"modifier_steal_vision"
-			{
-				"IsDebuff"		"1"
-				"Duration"		"%visionDuration"
-				"OnCreated"
-				{
-					"RunScript"
-					{
-						"ScriptFile"	"ta_ability"
-						"Function"		"ReduceVision"
-					}
-				}	
-				"OnDestroy"
-				{
-					"RunScript"
-					{
-						"ScriptFile"	"ta_ability"
-						"Function"		"RevertVision"
-					}
-				}
-			}
-		}
-	}
-
+	
 	//=====================================
 	// True Assassin : Zabaniya
 	//=====================================
-	"true_assassin_zabaniya"
+	"true_assassin_zabaniya_data"
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
@@ -688,7 +416,7 @@
 			"modifier_wind_protection_passive"
 			{
 				"passive"		"1"
-				"IsHidden"		"0"
+				"IsHidden"		"1"
 			}
 		}
 	}
@@ -708,7 +436,7 @@
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"13"
+		"AbilityManaCost"				"16"
 
 		"precache"
 		{
@@ -724,7 +452,7 @@
 			"02"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"reveal_duration"			"5.0"
+				"reveal_duration"		"5.0"
 			}
 		}
 		
@@ -752,7 +480,7 @@
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"12"
+		"AbilityManaCost"				"14"
 
 		"precache"
 		{
@@ -763,7 +491,12 @@
 			"01"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"chance"				"17"
+				"bonus_mr"				"50"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"penalty_mr"			"-30"
 			}
 		}
 		
@@ -791,7 +524,7 @@
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"15"
+		"AbilityManaCost"				"14"
 
 		"precache"
 		{
@@ -872,7 +605,7 @@
 			"02"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"zab_dmg_penalty"		"400"
+				"zab_dmg_penalty"		"100 175 250 325 400"
 			}
 			"03"
 			{
@@ -897,6 +630,70 @@
 			{
 				"ScriptFile"	"ta_ability"
 				"Function"		"OnShadowStrikeAcquired"
+			}
+		}
+	}
+
+	//=======================================
+	// TA Attribute : Arm of Shaytan
+	//=======================================
+	"true_assassin_attribute_shaytan_arm"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_datadriven"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/true_assassin_shaytan_arm"
+		
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"17"
+
+		"precache"
+		{
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"mod_str_cooldown"		"0.5"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"mod_agi_dmg"			"2"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"mod_int_heal"			"13"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"snatch_str_dmg"		"3"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"snatch_agi_dmg"		"2"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"snatch_int_dmg"		"5"
+			}
+		}
+		
+		"OnSpellStart"
+		{
+			"RunScript"
+			{
+				"ScriptFile"	"ta_ability"
+				"Function"		"OnShaytanArmAcquired"
 			}
 		}
 	}

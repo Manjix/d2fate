@@ -15,9 +15,9 @@ end
 
 function modifier_attributes_mp:GetModifierManaBonus()
 --math.abs(intellect * Attributes.mana_adjustment)
-  if IsServer() then
+    if IsServer() then
     local parent = self:GetParent()
-    self:SetStackCount(math.abs(parent:GetIntellect()*parent.mana_adjustment))
+    self:SetStackCount(math.abs(math.ceil(parent:GetIntellect())*parent.mana_adjustment))
   end
   return self:GetStackCount()
 end

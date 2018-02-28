@@ -689,7 +689,11 @@ function OnDragonStrike3Start(keys)
 	end)
 
 	caster:EmitSound("Hero_Earthshaker.Pick")
-	EmitGlobalSound("Lishuwen.Shout")
+	--EmitGlobalSound("Lishuwen.Shout")
+	local soundQueue = math.random(1,3)
+
+	EmitGlobalSound("Lishuwen_Combo_3_" .. soundQueue)
+
     local groundFx1 = ParticleManager:CreateParticle( "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start_fallback_mid.vpcf", PATTACH_ABSORIGIN, caster )
     ParticleManager:SetParticleControl( groundFx1, 1, caster:GetAbsOrigin())
     local groundFx2 = ParticleManager:CreateParticle( "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start_fallback_mid.vpcf", PATTACH_ABSORIGIN, caster )

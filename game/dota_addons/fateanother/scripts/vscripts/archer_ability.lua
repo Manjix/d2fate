@@ -6,6 +6,12 @@ ubwCenter = Vector(5600, -4398, 200)
 aotkCenter = Vector(500, -4800, 208)
 ATTR_PROJECTION_PASSIVE_WEAPON_DAMAGE = 55
 
+LinkLuaModifier("modifier_aestus_domus_aurea_enemy", "abilities/nero/modifiers/modifier_aestus_domus_aurea_enemy", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_aestus_domus_aurea_ally", "abilities/nero/modifiers/modifier_aestus_domus_aurea_ally", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_aestus_domus_aurea_nero", "abilities/nero/modifiers/modifier_aestus_domus_aurea_nero", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_eagle_eye", "abilities/emiya/modifiers/modifier_eagle_eye", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_overedge_attribute", "abilities/emiya/modifiers/modifier_overedge_attribute", LUA_MODIFIER_MOTION_NONE)
+
 function FarSightVision(keys)
 	local caster = keys.caster
 	local ply = caster:GetPlayerOwner()
@@ -19,10 +25,10 @@ function FarSightVision(keys)
 	end
 
 	if caster.IsHruntingAcquired then
-		caster:SwapAbilities("archer_5th_clairvoyance", "archer_5th_hrunting", false, true) 
+		caster:SwapAbilities("archer_5th_clairvoyance", "emiya_hrunting", false, true) 
 		Timers:CreateTimer(8, function() 
-			local hruntHidden = caster:FindAbilityByName("archer_5th_hrunting"):IsHidden()
-			caster:SwapAbilities("archer_5th_clairvoyance", "archer_5th_hrunting", true, false)
+			local hruntHidden = caster:FindAbilityByName("emiya_hrunting"):IsHidden()
+			caster:SwapAbilities("archer_5th_clairvoyance", "emiya_hrunting", true, false)
 			caster:FindAbilityByName("archer_5th_clairvoyance"):SetHidden(hruntHidden) --if hrunt is already hidden, it means it is hidden as a result of UBW, which means that we have to hide clair too. 
 		end)
 	end
@@ -551,7 +557,7 @@ function OnUBWStart(keys)
 
     --[[caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "archer_5th_sword_barrage", false, true) 
     caster:SwapAbilities("archer_5th_kanshou_bakuya", "archer_5th_sword_barrage_retreat_shot", false, true) 
-    caster:SwapAbilities("archer_5th_broken_phantasm", "archer_5th_sword_barrage_confine", false, true) 
+    caster:SwapAbilities("emiya_broken_phantasm", "archer_5th_sword_barrage_confine", false, true) 
     caster:SwapAbilities("archer_5th_overedge", "emiya_gae_bolg", false, true)
 
     if caster:GetAbilityByIndex(5):GetName() == "archer_5th_ubw" then
@@ -615,6 +621,7 @@ function OnUBWStart(keys)
 	local ubwdummy3 = CreateUnitByName("dummy_unit", ubwdummyLoc3, false, caster, caster, caster:GetTeamNumber())
 	local ubwdummy4 = CreateUnitByName("dummy_unit", ubwdummyLoc4, false, caster, caster, caster:GetTeamNumber())
 	ubwdummies = {ubwdummy1, ubwdummy2, ubwdummy3, ubwdummy4}
+
 	Timers:CreateTimer(function()
 		ubwdummy1:SetAbsOrigin(ubwdummyLoc1)
 		ubwdummy2:SetAbsOrigin(ubwdummyLoc2)
@@ -684,18 +691,24 @@ function OnUBWStart(keys)
 	--breakpoint
 	-- record location of units and move them into UBW(center location : 6000, -4000, 200)
 	for i=1, #ubwTargets do
-		if ubwTargets[i]:GetName() ~= "npc_dota_ward_base" then
-			ubwTargetPos = ubwTargets[i]:GetAbsOrigin()
-	        ubwTargetLoc[i] = ubwTargetPos
-	        diff = (ubwCasterPos - ubwTargetPos) -- rescale difference to UBW size(1200)
-	        ubwTargets[i]:SetAbsOrigin(ubwCenter - diff)
-	        ubwTargets[i]:Stop()
-			FindClearSpaceForUnit(ubwTargets[i], ubwTargets[i]:GetAbsOrigin(), true)
-			Timers:CreateTimer(0.1, function() 
-				if caster:IsAlive() and IsValidEntity(ubwTargets[i]) then
-					ubwTargets[i]:AddNewModifier(ubwTargets[i], ubwTargets[i], "modifier_camera_follow", {duration = 1.0})
-				end
-			end)
+		if IsValidEntity(ubwTargets[i]) then
+			if ubwTargets[i]:GetName() ~= "npc_dota_ward_base" then
+				ubwTargets[i]:RemoveModifierByName("modifier_aestus_domus_aurea_enemy")
+				ubwTargets[i]:RemoveModifierByName("modifier_aestus_domus_aurea_ally")
+				ubwTargets[i]:RemoveModifierByName("modifier_aestus_domus_aurea_nero")
+
+				ubwTargetPos = ubwTargets[i]:GetAbsOrigin()
+		        ubwTargetLoc[i] = ubwTargetPos
+		        diff = (ubwCasterPos - ubwTargetPos) -- rescale difference to UBW size(1200)
+		        ubwTargets[i]:SetAbsOrigin(ubwCenter - diff)
+		        ubwTargets[i]:Stop()
+				FindClearSpaceForUnit(ubwTargets[i], ubwTargets[i]:GetAbsOrigin(), true)
+				Timers:CreateTimer(0.1, function() 
+					if caster:IsAlive() and IsValidEntity(ubwTargets[i]) then
+						ubwTargets[i]:AddNewModifier(ubwTargets[i], ubwTargets[i], "modifier_camera_follow", {duration = 1.0})
+					end
+				end)
+			end
 		end
     end
 end
@@ -754,6 +767,11 @@ function EndUBW(caster)
     for i=1, #units do
     	print("removing units in UBW")
     	if IsValidEntity(units[i]) and not units[i]:IsNull() then
+
+    		units[i]:RemoveModifierByName("modifier_aestus_domus_aurea_enemy")
+			units[i]:RemoveModifierByName("modifier_aestus_domus_aurea_ally")
+			units[i]:RemoveModifierByName("modifier_aestus_domus_aurea_nero")
+
 	    	ProjectileManager:ProjectileDodge(units[i])
 	   		if units[i]:GetName() == "npc_dota_hero_chen" and units[i]:HasModifier("modifier_army_of_the_king_death_checker") then
 	   			units[i]:RemoveModifierByName("modifier_army_of_the_king_death_checker")
@@ -823,8 +841,8 @@ function ReturnNormalAbilities(caster, ability)
 	if caster:GetAbilityByIndex(0):GetName() ~= "archer_5th_kanshou_bakuya" then
 		caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "archer_5th_kanshou_bakuya", false, true) 
 	end
-	if caster:GetAbilityByIndex(1):GetName() ~= "archer_5th_broken_phantasm" then
-		caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "archer_5th_broken_phantasm", false, true)
+	if caster:GetAbilityByIndex(1):GetName() ~= "emiya_broken_phantasm" then
+		caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "emiya_broken_phantasm", false, true)
 	end
 	if caster:GetAbilityByIndex(2):GetName() ~= "archer_5th_overedge" then
 		caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "archer_5th_overedge", false, true)  
@@ -973,7 +991,7 @@ ARROWRAIN_BP_DAMAGE_RATE = 0.66
 function OnArrowRainBPHit(keys)
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
 	local caster = keys.caster
-	local ability = caster:FindAbilityByName("archer_5th_broken_phantasm")
+	local ability = caster:FindAbilityByName("emiya_broken_phantasm")
 	local targetdmg = ability:GetLevelSpecialValueFor("target_damage", ability:GetLevel()-1) * ARROWRAIN_BP_DAMAGE_RATE
 	local splashdmg = ability:GetLevelSpecialValueFor("splash_damage", ability:GetLevel()-1) * ARROWRAIN_BP_DAMAGE_RATE
 	local radius = ability:GetLevelSpecialValueFor("radius", ability:GetLevel())
@@ -1018,7 +1036,7 @@ function OnUBWBarrageStart(keys)
 	local forwardVec = ( targetPoint - caster:GetAbsOrigin() ):Normalized()
 
 	if caster.IsProjectionImproved then
-		keys.Damage = keys.Damage + 25
+		keys.Damage = keys.Damage + 35
 	end
 	
 	Timers:CreateTimer( function()
@@ -1278,7 +1296,7 @@ function OnHruntStart(keys)
 	end
 	ability:StartCooldown(ability:GetCooldown(1))
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_hrunting_cooldown", {duration = ability:GetCooldown(ability:GetLevel())})
-	caster.HruntDamage =  250 + caster:FindAbilityByName("archer_5th_broken_phantasm"):GetLevel() * 100  + (caster:GetMana() * 0.66)
+	caster.HruntDamage =  250 + caster:FindAbilityByName("emiya_broken_phantasm"):GetLevel() * 100  + (caster:GetMana() * 0.66)
 	caster:SetMana(caster:GetMana() * 0.33) 
 	
 	local info = {
@@ -1481,6 +1499,16 @@ function OnEagleEyeAcquired(keys)
 	hero:FindAbilityByName("archer_5th_clairvoyance"):SetLevel(2)
 	--hero:SetDayTimeVisionRange(hero:GetDayTimeVisionRange() + 200)
 	--hero:SetNightTimeVisionRange(hero:GetNightTimeVisionRange() + 200) 
+
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+			hero:AddNewModifier(hero, hero:FindAbilityByName("emiya_clairvoyance"), "modifier_eagle_eye", {})
+			return nil
+		else
+			return 1
+		end
+	end)
+	
 	hero.IsEagleEyeAcquired = true
 
 	-- Set master 1's mana 
@@ -1546,6 +1574,15 @@ function OnOveredgeAcquired(keys)
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsOveredgeAcquired = true
 	hero.OveredgeCount = 0
+
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+	    	hero:AddNewModifier(hero, hero:FindAbilityByName("emiya_kanshou_byakuya"), "modifier_overedge_attribute", {})
+			return nil
+		else
+			return 1
+		end
+	end)	
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit

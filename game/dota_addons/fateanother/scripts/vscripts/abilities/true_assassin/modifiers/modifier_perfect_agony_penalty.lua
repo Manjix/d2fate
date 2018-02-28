@@ -1,39 +1,16 @@
 modifier_perfect_agony_penalty = class({})
 
---[[function modifier_perfect_agony_penalty:OnCreated(args)
-	if IsServer() then
-		--local caster = self:GetParent()
-		--self.CasterAttackPenalty = caster:GetAverageTrueAttackDamage(caster) * -0.5
-
-		--self:StartIntervalThink(1)
-	end
-end]]
-
 function modifier_perfect_agony_penalty:DeclareFunctions()
 	return { MODIFIER_PROPERTY_BASEDAMAGEOUTGOING_PERCENTAGE }
-	--,
-	--		 MODIFIER_EVENT_ON_ATTACK_LANDED }
 end
 
 function modifier_perfect_agony_penalty:GetModifierBaseDamageOutgoing_Percentage()
 	if IsServer() then
-		--local casterAttack = self.CasterAttackPenalty
-		--CustomNetTables:SetTableValue("sync","perfect_agony_penalty", { penalty = casterAttack })
-
-		return -50 --casterAttack 
+		return -100
 	elseif IsClient() then
-		--local penalty = CustomNetTables:GetTableValue("sync","perfect_agony_penalty").penalty
-        return -50 --penalty 
+        return -100 
 	end
 end
-
---[[function modifier_perfect_agony_penalty:OnAttackLanded()
-	if IsServer() then
-		local caster = self:GetParent()
-
-		local ability = caster:FindAbilityByName("true_assassin_dirk")
-	end
-end]]
 
 function modifier_perfect_agony_penalty:IsHidden()
 	return false

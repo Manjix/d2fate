@@ -6,6 +6,7 @@ LinkLuaModifier("modifier_dirk_poison_slow", "abilities/true_assassin/modifiers/
 function modifier_dirk_poison_slow:OnCreated(table)
 	if IsServer() then
 		self.PoisonSlow	= table.PoisonSlow
+		CustomNetTables:SetTableValue("sync","dirk_poison_slow", {poison_slow = self.PoisonSlow})
 	end
 end
 
@@ -20,11 +21,9 @@ function modifier_dirk_poison_slow:DeclareFunctions()
 end
 
 function modifier_dirk_poison_slow:GetModifierMoveSpeedBonus_Percentage()
-	if IsServer() then
-        CustomNetTables:SetTableValue("sync","dirk_poison_slow", {poison_slow = self.PoisonSlow})
+	if IsServer() then        
     	return self.PoisonSlow
-    end
-    if IsClient() then
+    elseif IsClient() then
         local poison_slow = CustomNetTables:GetTableValue("sync","dirk_poison_slow").poison_slow
         return poison_slow 
     end

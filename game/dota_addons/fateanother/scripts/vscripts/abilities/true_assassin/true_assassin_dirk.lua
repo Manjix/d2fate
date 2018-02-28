@@ -47,15 +47,18 @@ function true_assassin_dirk:OnProjectileHit_ExtraData(hTarget, vLocation, tData)
     local ability = self
     local hCaster = self:GetCaster()
     local fDamage = self:GetSpecialValueFor("damage") 
+    local fPoisonDamage = self:GetSpecialValueFor("poison_dot")
     
     if IsSpellBlocked(hTarget) then return end
 
     if not hCaster.IsWeakeningVenomAcquired then
-    	fDamage = fDamage + hCaster:GetAverageTrueAttackDamage(hCaster)
+    	fDamage = fDamage + (hCaster:GetAverageTrueAttackDamage(hCaster) * 0.75)    	
+    else
+    	fPoisonDamage = fPoisonDamage + (math.ceil(hCaster:GetAgility()) * 0.5)
     end
 
-    hTarget:AddNewModifier(hCaster, ability, "modifier_dirk_poison", {	duration = self:GetSpecialValueFor("duration"),
-																		PoisonDamage = self:GetSpecialValueFor("poison_dot"),
+    hTarget:AddNewModifier(hCaster, ability, "modifier_dirk_poison", {	Duration = self:GetSpecialValueFor("duration"),
+																		PoisonDamage = fPoisonDamage,
 																		PoisonSlow = self:GetSpecialValueFor("poison_slow") })
     hTarget:EmitSound("Hero_PhantomAssassin.Dagger.Target")
 

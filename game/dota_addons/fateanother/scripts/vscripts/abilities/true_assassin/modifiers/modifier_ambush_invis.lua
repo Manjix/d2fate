@@ -14,7 +14,8 @@ function modifier_ambush_invis:OnCreated(table)
     end]]
 
     if IsServer() then
-        self.fixedMoveSpeed = table.fixedMoveSpeed
+        self.fixedMoveSpeed = 0
+        --table.fixedMoveSpeed
         CustomNetTables:SetTableValue("sync","ambush_movement", {movespeed_bonus = self.fixedMoveSpeed})
         self.bonusDamage = table.bonusDamage
 
@@ -23,7 +24,7 @@ function modifier_ambush_invis:OnCreated(table)
 end
 
 function modifier_ambush_invis:DeclareFunctions()
-    return { MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
+    return { MODIFIER_PROPERTY_MOVESPEED_ABSOLUTE,
              MODIFIER_EVENT_ON_ATTACK,
              MODIFIER_EVENT_ON_ATTACK_LANDED,
              MODIFIER_EVENT_ON_ABILITY_FULLY_CAST }
@@ -33,7 +34,7 @@ function modifier_ambush_invis:OnIntervalThink()
     if IsServer() then
     	local caster = self:GetParent()
 
-        self.fixedMoveSpeed = 100
+        self.fixedMoveSpeed = 550
         if caster.IsPCImproved then
     		self.state = { [MODIFIER_STATE_INVISIBLE] = true,
     					   [MODIFIER_STATE_NO_UNIT_COLLISION] = true,
@@ -45,6 +46,7 @@ function modifier_ambush_invis:OnIntervalThink()
     					 }
     	end
         
+        self.Faded = true
         self:StartIntervalThink(-1)
     end
 end
@@ -70,8 +72,8 @@ function modifier_ambush_invis:OnAttackLanded(args)
 
     if IsServer() then
         local caster = self:GetParent()
-
         if args.attacker ~= self:GetParent() then return end
+        if not self.Faded then return end
 
         local target = args.target
         if caster == target then return end
@@ -96,7 +98,8 @@ function modifier_ambush_invis:OnAbilityFullyCast(args)
 
     if IsServer() then
         if args.unit == self:GetParent() then
-            if args.ability:GetName() ~= "true_assassin_ambush" then
+            if not self.Faded then return end
+            if args.ability:GetName() ~= "true_assassin_ambush" and args.ability:GetName() ~= "true_assassin_combo" then
                 self:Destroy()
             end
         end
@@ -108,8 +111,9 @@ function modifier_ambush_invis:CheckState()
 	return self.state
 end
 
-function modifier_ambush_invis:GetModifierMoveSpeedBonus_Percentage()
-    if IsServer() then       
+function modifier_ambush_invis:GetModifierMoveSpeed_Absolute()
+    if IsServer() then
+        CustomNetTables:SetTableValue("sync","ambush_movement", {movespeed_bonus = self.fixedMoveSpeed})       
         return self.fixedMoveSpeed
     elseif IsClient() then
         local ambush_movement = CustomNetTables:GetTableValue("sync","ambush_movement").movespeed_bonus

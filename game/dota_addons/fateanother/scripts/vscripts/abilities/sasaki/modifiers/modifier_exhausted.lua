@@ -12,8 +12,12 @@ function modifier_exhausted:OnCreated(args)
 	end
 end
 
+function modifier_exhausted:OnRefresh(args)
+	self:OnCreated(args)
+end
+
 function modifier_exhausted:GetModifierConstantManaRegen()
-	return -49
+	return -69
 end
 
 function modifier_exhausted:IsHidden()

@@ -119,6 +119,7 @@ end
 function OnMurder(keys)
 	local caster = keys.caster
 	local target = keys.unit
+	local ability = keys.ability
 	local manareg = 0
 	if target:GetName() == "npc_dota_creature" then 
 		--print("Avenger killed a unit")
@@ -127,6 +128,10 @@ function OnMurder(keys)
 		--print("Avenger killed a hero")
 		manareg = caster:GetMaxMana() * keys.ManaRegenHero / 100
 		caster:RemoveModifierByName("modifier_dark_passage")
+
+		if caster:HasModifier("modifier_murderous_instinct") then
+			ability:ApplyDataDrivenModifier(caster, caster, "modifier_murderous_instinct", {})
+		end
 	end
 	caster:SetMana(caster:GetMana() + manareg)
 end

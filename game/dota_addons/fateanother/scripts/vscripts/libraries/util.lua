@@ -214,6 +214,7 @@ slowmodifier = {
     "modifier_cobweb_slow",
     "modifier_tauropolos_slow",
     "modifier_sex_scroll_slow",
+    "modifier_rosa_slow",
 }
 
 donotlevel = {
@@ -233,7 +234,8 @@ donotlevel = {
     "true_assassin_protection_from_wind",
     "avenger_overdrive",
     "berserker_5th_reincarnation",    
-    "archer_5th_rho_aias",    
+    --"archer_5th_rho_aias",  
+    "emiya_rho_aias",  
     "gawain_saint",
     "gawain_blessing_of_fairy"--,
 
@@ -250,7 +252,8 @@ CannotReset = {
     "rider_5th_bellerophon_2",
     "archer_5th_hrunting",
     --"archer_5th_overedge",
-    "archer_5th_arrow_rain",
+    --"archer_5th_arrow_rain",
+    "emiya_arrow_rain",
     "berserker_5th_madmans_roar",
     "false_assassin_quickdraw",
     "false_assassin_tsubame_mai",
@@ -306,6 +309,7 @@ CannotReset = {
     "vlad_protection_of_faith_cd",
     --"phoebus_catastrophe_barrage",
     "lancer_5th_soaring_spear",
+    "nero_laus_saint_claudius"
 }
 
 femaleservant = {
@@ -346,7 +350,12 @@ tItemComboTable = {
     item_b_scroll = "item_a_scroll",
     item_a_scroll = "item_s_scroll",
     item_s_scroll = "item_ex_scroll",
-    item_mana_essence = "item_condensed_mana_essence"
+    item_mana_essence = "item_condensed_mana_essence",
+    item_healing_scroll = "item_a_plus_scroll"
+}
+
+tModifierKBImmune = {
+    "modifier_avalon"
 }
 
 tipTable = { "<font color='#58ACFA'>Tip : C Scroll</font> is everyone's bread-and-butter item that you should be carrying at all times. Use it to guarantee your skill combo, or help your teammate by interrupting enemy.",
@@ -667,6 +676,12 @@ function CheckItemCombination(hero)
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
                             CreateItemAtSlot(hero, tItemComboTable[currentItemName1], 0, -1, true, false)
+                        elseif (currentItemName1 == "item_healing_scroll" or currentItemName2 == "item_healing_scroll") 
+                            and (currentItemName1 == "item_a_scroll" or currentItemName2 == "item_a_scroll") then
+                            bIsMatchingFound = true
+                            if not currentItem:IsNull() then currentItem:RemoveSelf() end
+                            if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
+                            CreateItemAtSlot(hero, tItemComboTable["item_healing_scroll"], 0, -1, true, false)
                         end
                     end
                     ::continue::
@@ -701,14 +716,19 @@ function CheckItemCombinationInStash(hero)
                     if currentItem2 then
                         local currentItemName2 = currentItem2:GetName()
                         -- match found, combine item 1 and item 2
-                        if currentItemName1 == currentItemName2 then
-                            
+                        if currentItemName1 == currentItemName2 then                            
                             bIsMatchingFound = true
                             --print("Match with")
                             --print(currentItemIndex2 ,currentItemName2)
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
                             CreateItemAtSlot(hero, tItemComboTable[currentItemName1], 9, -1, false, true)
+                        elseif (currentItemName1 == "item_healing_scroll" or currentItemName2 == "item_healing_scroll") 
+                            and (currentItemName1 == "item_a_scroll" or currentItemName2 == "item_a_scroll") then
+                            bIsMatchingFound = true
+                            if not currentItem:IsNull() then currentItem:RemoveSelf() end
+                            if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
+                            CreateItemAtSlot(hero, tItemComboTable["item_healing_scroll"], 9, -1, true, false)
                         end
                     end
                     ::continue::
@@ -775,13 +795,13 @@ function IsSpellBlocked(target)
         EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
         ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
         return true
-    elseif target:HasModifier("modifier_wind_protection_passive") then
+    --[[elseif target:HasModifier("modifier_wind_protection_passive") then
         if math.random() < 0.17 then
             EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
             local particle = ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
             ParticleManager:SetParticleControl(particle, 0, target:GetAbsOrigin())
             return true
-        end
+        end]]
     else
         return false
     end
@@ -1146,8 +1166,13 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
             incomingDmg = incomingDmg * (1-reduction) 
         end
 
-        if abil:GetAbilityName() == "false_assassin_tsubame_gaeshi" or abil:GetAbilityName() == "false_assassin_tsubame_mai" or abil:GetAbilityName() == "lancelot_tsubame_gaeshi" then
+        if abil:GetAbilityName() == "sasaki_tsubame_gaeshi" or abil:GetAbilityName() == "false_assassin_tsubame_mai" or abil:GetAbilityName() == "lancelot_tsubame_gaeshi" then
             target.IsAvalonPenetrated = true
+            if incomingDmg > 300 then 
+                target.IsAvalonProc = true
+            else 
+                target.IsAvalonProc = false
+            end
         else
             if incomingDmg > 300 then 
                 target.IsAvalonProc = true
@@ -1778,7 +1803,7 @@ local heroCombos = {
     ["npc_dota_hero_huskar"] = "diarmuid_rampant_warrior",
     ["npc_dota_hero_chen"] = "iskander_annihilate",
     ["npc_dota_hero_shadow_shaman"] = "gille_larret_de_mort",
-    ["npc_dota_hero_lina"] = "nero_fiery_finale",
+    ["npc_dota_hero_lina"] = "nero_laus_saint_claudius",
     ["npc_dota_hero_omniknight"] = "gawain_supernova",
     ["npc_dota_hero_enchantress"] = "tamamo_polygamist_castration_fist",
     ["npc_dota_hero_bloodseeker"] = "lishuwen_raging_dragon_strike",
@@ -2014,4 +2039,13 @@ function RemoveDebuffsForRevival(hTarget)
         print(tDangerousBuffs[i])
         hTarget:RemoveModifierByName(tDangerousBuffs[i])
     end
+end
+
+function IsKnockbackImmune(hTarget)
+    for i=1, #tModifierKBImmune do
+        if hTarget:HasModifier(tModifierKBImmune[i]) then
+            return true
+        end
+    end
+    return false
 end

@@ -1517,9 +1517,7 @@ function FateGameMode:OnItemPurchased( keys )
         end
 
         return
-    end]]
-
-    CheckItemCombinationInStash(hero)
+    end]]   
 
     local isPriceIncreased = true
     local isCStockMessage = false
@@ -1585,7 +1583,8 @@ function FateGameMode:OnItemPurchased( keys )
             end
         end
     end
-
+    CheckItemCombination(hero)
+    CheckItemCombinationInStash(hero)
     SaveStashState(hero)
 
     if PlayerResource:GetGold(plyID) < 200 and hero.bIsAutoGoldRequestOn then
@@ -2702,14 +2701,16 @@ function FateGameMode:InitializeRound()
             -- if remaining players are equal
             if nRadiantAlive == nDireAlive then
                 -- Default Radiant Win
-                if self.nRadiantScore < self.nDireScore
+                if self.nRadiantScore + 1 < self.nDireScore
                     then self:FinishRound(true,3)
                 -- Default Dire Win
-                elseif self.nRadiantScore > self.nDireScore
+                elseif self.nRadiantScore > self.nDireScore + 1
                     then  self:FinishRound(true,4)
                 -- Draw
-                elseif self.nRadiantScore == self.nDireScore
-                    then self:FinishRound(true, 2)
+                else
+                    --if self.nRadiantScore == self.nDireScore
+                    --then 
+                    self:FinishRound(true, 2)
                 end
             -- if remaining players are not equal
             elseif nRadiantAlive > nDireAlive then
@@ -2740,8 +2741,8 @@ function FateGameMode:FinishRound(IsTimeOut, winner)
         if playerHero:IsAlive() then
             giveUnitDataDrivenModifier(playerHero, playerHero, "round_pause", 5.0)
         end
-        if playerHero:GetName() == "npc_dota_hero_ember_spirit" and playerHero:HasModifier("modifier_ubw_death_checker") then
-            playerHero:RemoveModifierByName("modifier_ubw_death_checker")
+        if playerHero:GetName() == "npc_dota_hero_ember_spirit" and playerHero:HasModifier("modifier_unlimited_bladeworks") then
+            playerHero:RemoveModifierByName("modifier_unlimited_bladeworks")
         end
         if playerHero:GetName() == "npc_dota_hero_chen" and playerHero:HasModifier("modifier_army_of_the_king_death_checker") then
             playerHero:RemoveModifierByName("modifier_army_of_the_king_death_checker")

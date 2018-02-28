@@ -10,7 +10,7 @@ function modifier_dirk_poison:OnCreated(table)
 
 		local target = self:GetParent()
 		if not IsImmuneToSlow(target) then
-			target:AddNewModifier(self:GetCaster(), self:GetAbility(), "modifier_dirk_poison_slow", { PoisonSlow = self.PoisonSlow
+			target:AddNewModifier(self:GetCaster(), self:GetAbility(), "modifier_dirk_poison_slow", { PoisonSlow = self.PoisonSlow,
 																									  Duration = self:GetDuration() })
 		end
 

@@ -5,7 +5,7 @@ function modifier_mana_essence:OnCreated(args)
 	self.fManaRegen = args.fManaRegen
 
 	if IsServer() then
-		if self:GetParent():GetName() == "npc_dota_hero_juggernaut" or self:GetParent:GetName() == "npc_dota_hero_shadow_shaman" then
+		if self:GetParent():GetName() == "npc_dota_hero_juggernaut" or self:GetParent():GetName() == "npc_dota_hero_shadow_shaman" then
 			self.fManaRegen = 0
 		end	
 		

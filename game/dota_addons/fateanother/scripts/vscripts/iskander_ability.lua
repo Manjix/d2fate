@@ -1,5 +1,9 @@
 LinkLuaModifier("modifier_battle_horn_pct_armor_reduction","abilities/iskander/modifier_battle_horn_pct_armor_reduction", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_phalanx_soldier_wall","abilities/iskander/modifier_phalanx_soldier_wall", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_aestus_domus_aurea_enemy", "abilities/nero/modifiers/modifier_aestus_domus_aurea_enemy", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_aestus_domus_aurea_ally", "abilities/nero/modifiers/modifier_aestus_domus_aurea_ally", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_aestus_domus_aurea_nero", "abilities/nero/modifiers/modifier_aestus_domus_aurea_nero", LUA_MODIFIER_MOTION_NONE)
+
 
 function OnIskanderCharismaStart(keys)
 	local caster = keys.caster
@@ -54,10 +58,16 @@ function OnForwardStart(keys)
 	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, keys.Radius
         , DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, FIND_ANY_ORDER, false)
 
+	local soundQueue = math.random(1,5)
+
 	for k,v in pairs(targets) do
 		RemoveSlowEffect(v)
 		keys.ability:ApplyDataDrivenModifier(caster,v, "modifier_forward", {})
-		v:EmitSound("Hero_LegionCommander.Overwhelming.Location")
+		if v ~= caster then
+			v:EmitSound("Hero_LegionCommander.Overwhelming.Location")
+		else
+			v:EmitSound("Iskander_Charge_" .. soundQueue)
+		end
     end
 end
 
@@ -119,6 +129,10 @@ function OnPhalanxStart(keys)
 			table.insert(caster.PhalanxSoldiers, soldier)
 		end)
 	end
+
+	local soundQueue = math.random(1, 4)
+
+	caster:EmitSound("Iskander_Skill_" .. soundQueue)
 
 	--[[]
 	for i=1, #caster.PhalanxSoldiers do
@@ -209,6 +223,7 @@ function OnChariotStart(keys)
 		return 
 	end
 
+	local soundQueue = math.random(1,3)
 
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_gordius_wheel", {}) 
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_gordius_wheel_anim", {}) 
@@ -221,6 +236,7 @@ function OnChariotStart(keys)
     caster:SetModelScale(1.0)
     caster:EmitSound("Hero_Magnataur.Skewer.Cast")
     caster:EmitSound("Hero_Zuus.GodsWrath")
+    caster:EmitSound("Iskander_Wheel_" .. soundQueue)
 	local particle = ParticleManager:CreateParticle("particles/items_fx/aegis_respawn.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 	ParticleManager:SetParticleControl(particle, 3, caster:GetAbsOrigin())
 	local particle2 = ParticleManager:CreateParticle("particles/units/heroes/hero_zuus/zuus_thundergods_wrath_start.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
@@ -254,6 +270,7 @@ function OnChariotRide(keys)
 	if caster.IsVEAcquired then
 		if caster:FindAbilityByName("iskander_via_expugnatio"):IsHidden() then
 			caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "iskander_via_expugnatio", false, true) 
+			caster:FindAbilityByName("iskander_via_expugnatio"):EndCooldown()
 		end
 	else
 		caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "fate_empty3", false, true)
@@ -358,8 +375,18 @@ end
 
 function OnChariotChargeStart(keys)
 	local caster = keys.caster
-	caster:EmitSound("Iskander.Charge")
-	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 2.0)
+
+	local soundQueue = math.random(1,4)
+
+	if soundQueue == 4 then
+		caster:EmitSound("Iskander.Charge")
+	elseif soundQueue == 3 then
+		EmitGlobalSound("Iskander_Cart_Charge_3")
+		keys.ChargeDamage = keys.ChargeDamage * 1.25
+	else
+		caster:EmitSound("Iskander_Cart_Charge_" .. soundQueue)
+	end
+	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 1.5)
 	local currentMS = caster:GetMoveSpeedModifier(caster:GetBaseMoveSpeed())
 	--print(currentMS)
 
@@ -683,6 +710,10 @@ function OnAOTKStart(keys)
 	for i=1, #aotkTargets do
 		if IsValidEntity(aotkTargets[i]) and not aotkTargets[i]:IsNull() then
 			if aotkTargets[i]:GetName() ~= "npc_dota_ward_base" then
+				aotkTargets[i]:RemoveModifierByName("modifier_aestus_domus_aurea_enemy")
+				aotkTargets[i]:RemoveModifierByName("modifier_aestus_domus_aurea_ally")
+				aotkTargets[i]:RemoveModifierByName("modifier_aestus_domus_aurea_nero")
+				
 				aotkTargetPos = aotkTargets[i]:GetAbsOrigin()
 		        aotkTargetLoc[i] = aotkTargetPos
 		        diff = (aotkCasterPos - aotkTargetPos)
@@ -704,12 +735,12 @@ function OnAOTKStart(keys)
 		        aotkTargets[i]:SetAbsOrigin(aotkCenter - diff)
 				FindClearSpaceForUnit(aotkTargets[i], aotkTargets[i]:GetAbsOrigin(), true)
 				Timers:CreateTimer(0.1, function() 
-					if caster:IsAlive() then
+					if caster:IsAlive() and IsValidEntity(aotkTargets[i]) then
 						aotkTargets[i]:AddNewModifier(aotkTargets[i], aotkTargets[i], "modifier_camera_follow", {duration = 1.0})
 					end
 				end)
 				Timers:CreateTimer(0.033, function()
-					if caster:IsAlive() then
+					if caster:IsAlive() and IsValidEntity(aotkTargets[i]) then
 						ExecuteOrderFromTable({
 							UnitIndex = aotkTargets[i]:entindex(),
 							OrderType = DOTA_UNIT_ORDER_STOP,
@@ -788,8 +819,13 @@ function EndAOTK(caster)
 	    	-- Disjoint all projectiles
 	    	ProjectileManager:ProjectileDodge(units[i])
 	    	-- If unit is Archer and UBW is active, deactive it as well
-			if units[i]:GetName() == "npc_dota_hero_ember_spirit" and units[i]:HasModifier("modifier_ubw_death_checker") then
-				units[i]:RemoveModifierByName("modifier_ubw_death_checker")
+
+	    	units[i]:RemoveModifierByName("modifier_aestus_domus_aurea_enemy")
+			units[i]:RemoveModifierByName("modifier_aestus_domus_aurea_ally")
+			units[i]:RemoveModifierByName("modifier_aestus_domus_aurea_nero")
+
+			if units[i]:GetName() == "npc_dota_hero_ember_spirit" and units[i]:HasModifier("modifier_unlimited_bladeworks") then
+				units[i]:RemoveModifierByName("modifier_unlimited_bladeworks")
 			end
 			if units[i]:HasModifier("modifier_annihilate_mute") then
 				units[i]:RemoveModifierByName("modifier_annihilate_mute")

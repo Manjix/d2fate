@@ -17,7 +17,7 @@ function modifier_attributes_mp_regen:GetModifierConstantManaRegen()
 --math.abs(intellect * Attributes.mana_regen_adjustment * 100)
   if IsServer() then
     local parent = self:GetParent()
-    self:SetStackCount(math.abs(parent:GetIntellect()*parent.mana_regen_adjustment*100))
+    self:SetStackCount(math.abs(math.ceil(parent:GetIntellect())*parent.mana_regen_adjustment*100))
   end
   return self:GetStackCount()/100
 end

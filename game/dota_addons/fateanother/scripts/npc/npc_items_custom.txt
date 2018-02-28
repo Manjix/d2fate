@@ -495,20 +495,6 @@
 	    }
 	}
 
-	"item_recipe_condensed_mana_essence"
-	{
-	    "ID" "1101"
-	    "BaseClass"           	"item_datadriven"
-	    "ItemRecipe"         	"1" //destroyed after combine
-	    "ItemShopTags"			""
-	    "ItemCost"           	"0" //if its 0, it will combine without needing a recipe.
-	    "ItemResult"         	"item_condensed_mana_essence" //the result of combining the ItemRequirements
-	    "ItemRequirements"
-	    {
-	        "01" "item_mana_essence;item_mana_essence"
-	    }
-	}
-
 	"item_condensed_mana_essence" 
 	{
 	    "ID"           "1102"
@@ -1320,23 +1306,8 @@
 				"Function"		"CScroll"
 			}
 	    	"SpendCharge" {}
-	    }
-	    
-	}
-
-	"item_recipe_b_scroll"
-	{
-	    "ID" 					"1115"
-	    "BaseClass"           	"item_datadriven"
-	    "ItemRecipe"         	"1" //destroyed after combine
-	    "ItemShopTags"			""
-	    "ItemCost"           	"0" //if its 0, it will combine without needing a recipe.
-	    "ItemResult"         	"item_b_scroll" 
-	    "ItemRequirements"
-	   	{
-	        "01" "item_c_scroll;item_c_scroll"
-	    }
-	}
+	    }	    
+	}	
 
 	"item_b_scroll" 
 	{
@@ -1414,20 +1385,6 @@
 	    }
 	}
 
-	"item_recipe_a_scroll"
-	{
-	    "ID" 					"1117"
-	    "BaseClass"           	"item_datadriven"
-	    "ItemRecipe"         	"1" //destroyed after combine
-	    "ItemShopTags"			""
-	    "ItemCost"           	"0" //if its 0, it will combine without needing a recipe.
-	    "ItemResult"         	"item_a_scroll" 
-	    "ItemRequirements"
-	   	{
-	        "01" "item_b_scroll;item_b_scroll"
-	    }
-	}
-
 	"item_a_scroll" 
 	{
 	    "ID"           "1118"
@@ -1487,7 +1444,6 @@
 			}
 			"SpendCharge" {}
 	    }
-
 	    "Modifiers"
 	    {
 	    	"modifier_a_scroll"
@@ -1511,19 +1467,77 @@
 	    		}
 	    	}
 	    }
-	}
+	}	
 
-	"item_recipe_s_scroll"
+
+	"item_a_plus_scroll" 
 	{
-	    "ID" 					"1121"
-	    "BaseClass"           	"item_datadriven"
-	    "ItemRecipe"         	"1" //destroyed after combine
-	    "ItemShopTags"			""
-	    "ItemCost"           	"0" 
-	    "ItemResult"         	"item_s_scroll" 
-	    "ItemRequirements"
-	   	{
-	        "01" "item_a_scroll;item_a_scroll"
+	    "ID"           			"1120"
+	    "BaseClass"    			"item_datadriven"
+	    "AbilityTextureName" 	"custom/a_plus_scroll"
+	    "Model"        			"models/props_gameplay/tpscroll01.vmdl" 
+	    "Effect"       			"particles/generic_gameplay/dropped_item.vpcf"
+
+	    "ItemCost"    			"1350"
+	    "ItemKillable" 			"1" 
+	    "ItemSellable" 			"1"
+	    "ItemPurchasable" 		"1"
+	    "ItemDroppable" 		"1"
+	    "ItemShareability" 		"ITEM_FULLY_SHAREABLE"
+
+
+	    "SideShop"     			"1" 
+	    "SecretShop"   			"0"
+
+	    "ItemInitialCharges" 	"1"
+	    "ItemStackable" 		"0"
+	    "ItemPermanent" 		"0"
+	    "ItemDisassembleRule" 	"DOTA_ITEM_DISASSEMBLE_ALWAYS"
+
+	    "AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	    "AbilityCooldown"		"30"
+	    "precache"
+	    {
+	    	"particle"		"particles/units/heroes/hero_oracle/oracle_fatesedict_arc_pnt.vpcf"
+	    	"particle"		"particles/units/heroes/hero_oracle/oracle_false_promise_cast_enemy.vpcf"
+	    	"soundfile"		"soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts"
+	    	"soundfile" 	"soundevents/game_sounds_items.vsndevts"
+	    }
+	    "AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_mr"				"50"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_armor"			"25"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"					"10"
+			}
+		}
+	    "OnSpellStart"
+	    {
+	    	"FireSound"
+	    	{
+	    		"EffectName"	"DOTA_Item.Mekansm.Activate"
+	    		"Target"
+				{
+					"Center"	"CASTER"
+					"Flags"		"DOTA_UNIT_TARGET_FLAG_INVULNERABLE"
+				}
+	    	}
+	    	"RunScript"
+			{
+				"ScriptFile"	"items"
+				"Function"		"APlusScroll"
+			}
+			"SpendCharge" {}
 	    }
 	}
 
@@ -1636,20 +1650,6 @@
 	    			"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"-30"
 	    		}
 	    	}
-	    }
-	}
-
-	"item_recipe_ex_scroll"
-	{
-	    "ID" 					"1123"
-	    "BaseClass"           	"item_datadriven"
-	    "ItemRecipe"         	"1" //destroyed after combine
-	    "ItemShopTags"			""
-	    "ItemCost"           	"0" 
-	    "ItemResult"         	"item_ex_scroll" 
-	    "ItemRequirements"
-	   	{
-	        "01" "item_s_scroll;item_s_scroll"
 	    }
 	}
 
@@ -2633,6 +2633,31 @@
 	"item_dummy_item_unusable" 
 	{
 	    "ID"           "1136"
+	    "BaseClass"    "item_datadriven"
+	    "AbilityTextureName" ""
+	    "Model"        "models/props_gameplay/tpscroll01.vmdl" 
+	    "Effect"       "particles/generic_gameplay/dropped_item.vpcf"
+	    "ItemQuality"  "consumable"
+
+	    "ItemCost"     "1"
+	    "ItemKillable" "0" 
+	    "ItemSellable" "0"
+	    "ItemPurchasable" "0"
+	    "ItemDroppable" "1"
+	    "ItemShareability" "ITEM_FULLY_SHAREABLE"
+	    "ItemStackable" "0"
+	    "ItemPermanent" "1"
+	    "ItemDisassembleRule" "DOTA_ITEM_DISASSEMBLE_NEVER"
+
+	    "AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_PASSIVE"
+	    "precache"
+	    {
+	    }
+	}
+
+	"item_dummy_item_something_else" 
+	{
+	    "ID"           "3220"
 	    "BaseClass"    "item_datadriven"
 	    "AbilityTextureName" ""
 	    "Model"        "models/props_gameplay/tpscroll01.vmdl" 

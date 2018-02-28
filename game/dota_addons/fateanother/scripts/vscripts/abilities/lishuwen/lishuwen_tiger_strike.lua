@@ -167,7 +167,7 @@ function lishuwen_tiger_strike:TigerStrike1()
 
 	self:EndCooldown()
 	
-	--caster:EmitSound("Hero_EarthShaker.Attack")
+	target:EmitSound("Hero_EarthShaker.Attack")
 	self:PlayRandomSounds()
     local groundFx = ParticleManager:CreateParticle( "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start_f_fallback_low.vpcf", PATTACH_ABSORIGIN, target )
     ParticleManager:SetParticleControl( groundFx, 1, target:GetAbsOrigin())
@@ -217,7 +217,7 @@ function lishuwen_tiger_strike:TigerStrike2()
 
 	self:EndCooldown()
 
-	--caster:EmitSound("Hero_EarthShaker.Fissure")
+	target:EmitSound("Hero_EarthShaker.Fissure")
 	self:PlayRandomSounds()
 	local groundFx = ParticleManager:CreateParticle( "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start_fallback_mid.vpcf", PATTACH_ABSORIGIN, target )
 	ParticleManager:SetParticleControl( groundFx, 1, target:GetAbsOrigin())
@@ -270,7 +270,7 @@ function lishuwen_tiger_strike:TigerStrike3()
 		DoDamage(caster, target, damage/2, DAMAGE_TYPE_MAGICAL, 0, self, false)
 	end
 	
-	--caster:EmitSound("Hero_EarthShaker.Totem")
+	target:EmitSound("Hero_EarthShaker.Totem")
 	self:PlayRandomSounds()
 	local groundFx1 = ParticleManager:CreateParticle( "particles/units/heroes/hero_earthshaker/earthshaker_echoslam_start_fallback_mid.vpcf", PATTACH_ABSORIGIN, target )
 	ParticleManager:SetParticleControl( groundFx1, 1, target:GetAbsOrigin())

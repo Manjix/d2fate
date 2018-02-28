@@ -17,7 +17,7 @@ function modifier_attributes_hp_regen:GetModifierConstantHealthRegen()
 --math.abs(strength * Attributes.hp_regen_adjustment * 100)
   if IsServer() then
     local parent = self:GetParent()
-    self:SetStackCount(math.abs(parent:GetStrength()*parent.hp_regen_adjustment*100))
+    self:SetStackCount(math.abs(math.ceil(parent:GetStrength())*parent.hp_regen_adjustment*100))
   end
   return self:GetStackCount()/100
 end

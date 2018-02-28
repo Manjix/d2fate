@@ -61,6 +61,13 @@ function archer_5th_broken_phantasm:OnProjectileHit_ExtraData(hTarget, vLocation
     if hTarget == nil then
         return 
     end
+
+    print('something')
+
+    for k,v in pairs(tData) do
+        print(k,v)
+    end
+
     local hCaster = self:GetCaster()
     local fTargetDamage = self:GetSpecialValueFor("target_damage")
     local fSplashDamage = self:GetSpecialValueFor("splash_damage")

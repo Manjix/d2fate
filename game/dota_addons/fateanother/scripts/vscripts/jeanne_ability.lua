@@ -253,6 +253,10 @@ function OnPurgeStart(keys)
 	ParticleManager:SetParticleControl( markFx, 0, targetPoint)
 	EmitSoundOnLocationWithCaster(targetPoint, "Hero_Chen.PenitenceImpact", caster)	
 
+	local soundQueue = math.random(1,6)
+
+	caster:EmitSound("Jeanne_Skill_" .. soundQueue)
+
 	Timers:CreateTimer(delay, function()
 		if caster:HasModifier("modifier_saint_buff") then
 			local nDeadTeam = CountDeadTeammates(caster:GetTeam()==DOTA_TEAM_GOODGUYS)
@@ -323,6 +327,9 @@ function OnGodResolutionStart(keys)
 	local elapsedTime = 0
 	local tickPeriod = 0.2
 
+	local soundQueue = math.random(9,12)
+
+	caster:EmitSound("Jeanne_Skill_" .. soundQueue)
 	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", duration)
 	ability:ApplyDataDrivenModifier(caster, caster, "modifier_gods_resolution_active_buff", {duration = duration})
 	Timers:CreateTimer(0.1, function()

@@ -8,7 +8,7 @@ function modifier_aestus_domus_aurea_ally:OnCreated(args)
 		self.TheatreCenterX = args.TheatreCenterX
 		self.TheatreCenterY = args.TheatreCenterY
 		self.TheatreCenterZ = args.TheatreCenterZ
-		self.ThreatreSize = args.ThreatreSize
+		self.TheatreSize = args.TheatreSize
 
 		--[[CustomNetTables:SetTableValue("sync","aestus_domus_lock", { magic_resist = self.ResistReduc,
 															 		 armor_reduction = self.ArmorReduc,
@@ -60,15 +60,15 @@ function modifier_aestus_domus_aurea_ally:OnUnitMoved()
 	if IsServer() then
 		local parent = self:GetParent()
 		local TheatreCenter = Vector(self.TheatreCenterX, self.TheatreCenterY, self.TheatreCenterZ)
-		print("Parent Origin Ally: ", parent:GetAbsOrigin())
-		print("Theatre Center: ", TheatreCenter)
+		--print("Parent Origin Ally: ", parent:GetAbsOrigin())
+		--print("Theatre Center: ", TheatreCenter)
 
-		if math.abs((parent:GetAbsOrigin() - TheatreCenter):Length2D()) > self.ThreatreSize then
+		if math.abs((parent:GetAbsOrigin() - TheatreCenter):Length2D()) > self.TheatreSize then
 			local diff = parent:GetAbsOrigin() - TheatreCenter
 			diff = diff:Normalized()
 
-			parent:SetAbsOrigin(TheatreCenter + diff * self.ThreatreSize)
-			print("Abs Origin To Set", (TheatreCenter + diff * self.ThreatreSize))
+			parent:SetAbsOrigin(TheatreCenter + diff * self.TheatreSize)
+			--print("Abs Origin To Set", (TheatreCenter + diff * self.TheatreSize))
 			FindClearSpaceForUnit(parent, parent:GetAbsOrigin(), true)
 		end
 	end

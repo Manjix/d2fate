@@ -1,6 +1,8 @@
 LinkLuaModifier("modifier_weakening_venom", "abilities/true_assassin/modifiers/modifier_weakening_venom", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_perfect_agony_penalty", "abilities/true_assassin/modifiers/modifier_perfect_agony_penalty", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_zabaniya_curse", "abilities/true_assassin/modifiers/modifier_zabaniya_curse", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_prot_wind_resist", "abilities/true_assassin/modifiers/modifier_prot_wind_resist", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_shadow_strike_upgrade", "abilities/true_assassin/modifiers/modifier_shadow_strike_upgrade", LUA_MODIFIER_MOTION_NONE)
 
 function OnDirkStart(keys)
 	local caster = keys.caster
@@ -318,7 +320,7 @@ function OnDIZabHit(keys)
 	local caster = keys.caster
 	local ply = keys.caster:GetPlayerOwner()
 	local hero = ply:GetAssignedHero()
-	local damage = hero:FindAbilityByName("true_assassin_ambush"):GetLevel() * 80 + 120
+	local damage = hero:FindAbilityByName("true_assassin_zabaniya"):GetLevel() * 25 + 500
 	if caster.IsShadowStrikeAcquired then 
 		damage = damage + 100
 	end
@@ -329,7 +331,7 @@ function DIBleed(keys)
 	local caster = keys.caster
 	local ply = keys.caster:GetPlayerOwner()
 	local hero = ply:GetAssignedHero()
-	local damage = hero:FindAbilityByName("true_assassin_ambush"):GetLevel() * 10 + 10
+	local damage = hero:FindAbilityByName("true_assassin_zabaniya"):GetLevel() * 10 + 10
 	local bleedCounter = 0
 
 	Timers:CreateTimer(function() 
@@ -585,30 +587,30 @@ function OnZabHit(keys)
 	local damage_type = DAMAGE_TYPE_MAGICAL
 
 	if caster.IsShadowStrikeAcquired then
-		curseDuration = 3.0
+		curseDuration = 2.5
 		damage_type = DAMAGE_TYPE_PURE
-		keys.Damage = keys.Damage - 400
+		keys.Damage = keys.Damage - keys.damage * 0.25
 	end
 	
-	if not keys.target:IsMagicImmune() then
-		DoDamage(keys.caster, keys.target, keys.Damage, damage_type, 0, keys.ability, false)
-		target:AddNewModifier(caster, keys.ability, "modifier_zabaniya_curse", { Duration = curseDuration })
-		local cursedHealth = target:GetHealth()
+	--if not keys.target:IsMagicImmune() then
+	DoDamage(keys.caster, keys.target, keys.Damage, damage_type, 0, keys.ability, false)
+	target:AddNewModifier(caster, keys.ability, "modifier_zabaniya_curse", { Duration = curseDuration })
+	local cursedHealth = target:GetHealth()
 
-		Timers:CreateTimer(function()
-			if not target:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
-				
-	  		if target:GetHealth() <= 0 then
-				target:Execute(keys.ability, caster)
-			elseif target:GetHealth() > cursedHealth then
-				target:SetHealth(cursedHealth)
-			end
+	Timers:CreateTimer(function()
+		if not target:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
+			
+  		if target:GetHealth() <= 0 then
+			target:Execute(keys.ability, caster)
+		elseif target:GetHealth() > cursedHealth then
+			target:SetHealth(cursedHealth)
+		end
 
-			cursedHealth = target:GetHealth()
+		cursedHealth = target:GetHealth()
 
-			return 0.033
-		end)
-	end
+		return 0.033
+	end)
+	--end
 
 	--keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_zabaniya_curse", {duration = curseDuration})
 
@@ -657,8 +659,18 @@ function OnProtectionFromWindAcquired(keys)
 	local caster = keys.caster
 	local ply = caster:GetPlayerOwner()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
+	local ability = keys.ability
 	hero.IsPFWAcquired = true
-	hero:FindAbilityByName("true_assassin_protection_from_wind"):SetLevel(1) 
+	hero:FindAbilityByName("true_assassin_protection_from_wind"):SetLevel(1) 	
+
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+	    hero:AddNewModifier(hero, ability, "modifier_prot_wind_resist",	{})
+			return nil
+		else
+			return 1
+		end
+	end)
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
@@ -689,7 +701,18 @@ function OnWeakeningVenomAcquired(keys)
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))
+end
 
+function OnShaytanArmAcquired(keys)
+	local caster = keys.caster
+	local ply = caster:GetPlayerOwner()
+	local ability = keys.ability
+	local hero = caster:GetPlayerOwner():GetAssignedHero()
+	hero.ShaytanArmAcquired = true
+	
+	-- Set master 1's mana 
+	local master = hero.MasterUnit
+	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))
 end
 
 function OnShadowStrikeAcquired(keys)
@@ -697,6 +720,8 @@ function OnShadowStrikeAcquired(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsShadowStrikeAcquired = true
+
+	hero:AddNewModifier(caster, keys.ability, "modifier_shadow_strike_upgrade", {})
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit

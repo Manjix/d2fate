@@ -2,6 +2,9 @@ cdummy = nil
 itemKV = LoadKeyValues("scripts/npc/npc_items_custom.txt")
 
 LinkLuaModifier("modifier_sex_scroll_root","items/modifiers/modifier_sex_scroll_root.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_a_scroll", "items/modifiers/modifier_a_scroll.lua", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_a_scroll_sated", "items/modifiers/modifier_a_scroll_sated.lua", LUA_MODIFIER_MOTION_NONE)
+
 
 function ParseCombinationKV()
 	for k,v in pairs(itemKV) do
@@ -616,6 +619,35 @@ function AScroll(keys)
 	local caster = keys.caster
 	local ability = keys.ability
 	local hero = keys.caster:GetPlayerOwner():GetAssignedHero()
+	local mres = 50
+	local satedCooldown = ability:GetCooldown(1)
+
+	if caster:HasModifier("jump_pause_nosilence") then
+		RefundItem(caster, ability)
+		return
+	end
+
+	print(caster:FindAbilityByName(ability:GetName()))
+
+	hero.ServStat:useA()
+	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_a_scroll", {})
+	if caster:HasModifier("modifier_a_scroll_sated") then
+		mres = 25
+	end
+
+	caster:AddNewModifier(caster, ability, "modifier_a_scroll", { MagicResistance = mres,
+																  Armor = 0,
+																  Duration = 10 })
+	caster:AddNewModifier(caster, ability, "modifier_a_scroll_sated", { Duration = satedCooldown})
+	caster:EmitSound("Hero_Oracle.FatesEdict.Cast")
+end
+
+function APlusScroll(keys)
+	local caster = keys.caster
+	local ability = keys.ability
+	local hero = keys.caster:GetPlayerOwner():GetAssignedHero()
+	local mres = 50
+	local satedCooldown = ability:GetCooldown(1)
 
 	if caster:HasModifier("jump_pause_nosilence") then
 		RefundItem(caster, ability)
@@ -623,8 +655,20 @@ function AScroll(keys)
 	end
 
 	hero.ServStat:useA()
-	ability:ApplyDataDrivenModifier(caster, caster, "modifier_a_scroll", {})
+
+	hero:Heal(500, hero)
+	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_a_scroll", {})
+	if caster:HasModifier("modifier_a_scroll_sated") then
+		mres = 25
+	end
+
+	caster:AddNewModifier(caster, ability, "modifier_a_scroll", { MagicResistance = mres,
+																  Armor = 25,
+																  Duration = 10 })
+	caster:AddNewModifier(caster, ability, "modifier_a_scroll_sated", { Duration = satedCooldown})
+
 	caster:EmitSound("Hero_Oracle.FatesEdict.Cast")
+	caster:EmitSound("DOTA_Item.Mekansm.Activate")
 end
 
 

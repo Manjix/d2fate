@@ -1,0 +1,63 @@
+"DOTAAbilities"
+{
+	
+	//=================================================================================================================
+	// Archer : Chant Unlimited Blade Works
+	//=================================================================================================================
+	"emiya_unlimited_blade_works"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/emiya/emiya_unlimited_blade_works"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"2"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET"
+		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY" 
+		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
+		"AbilityUnitDamageType"			"DAMAGE_TYPE_MAGICAL"
+		"AbilityTextureName"			"custom/archer_5th_ubw"
+		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_4"
+		"AbilityType"					"DOTA_ABILITY_TYPE_ULTIMATE"
+		"AnimationPlaybackRate" 		"1.0"
+		
+		//"precache"
+		//{						
+		//	"soundfile"					"soundevents/hero_archer.vsndevts"
+		//}
+		
+		"AbilityCastPoint"				"0.3"
+		"AbilityCooldown"				"4"
+		"AbilityManaCost"				"100"
+		"AbilityCastRange"				"1150"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"cast_delay"			"0.3"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"1150"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"duration"				"7.0 7.5 8.0 8.5 9.0"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"cooldown_set"			"7 9 11 13 15"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"movespeed_bonus"		"5 5 5 10 10"
+			}
+		}		
+	}	
+}

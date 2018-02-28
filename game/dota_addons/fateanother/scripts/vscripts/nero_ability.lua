@@ -12,6 +12,8 @@ function OnIPRespawn(keys)
 	print("respawned")
 	local caster = keys.caster
  	keys.ability:EndCooldown()
+
+
 end
 
 PassiveModifiers = {
@@ -167,8 +169,9 @@ end
 
 function OnIPClose(keys)
 	local caster = keys.caster
-	caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "nero_gladiusanus_blauserum", false, true)
-	caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "nero_tres_fontaine_ardent", false, true)
+	
+	caster:SwapAbilities(caster:GetAbilityByIndex(0):GetName(), "nero_tres_fontaine_ardent", false, true)
+	caster:SwapAbilities(caster:GetAbilityByIndex(1):GetName(), "nero_gladiusanus_blauserum", false, true)
 	caster:SwapAbilities(caster:GetAbilityByIndex(2):GetName(), "nero_rosa_ichthys", false, true)
 	caster:SwapAbilities(caster:GetAbilityByIndex(4):GetName(), "nero_imperial_privilege", false, true)
 	caster:SwapAbilities(caster:GetAbilityByIndex(5):GetName(), "nero_aestus_domus_aurea", false, true)
@@ -343,7 +346,7 @@ function OnRIStart(keys)
 					caster:SwapAbilities("nero_rosa_ichthys","nero_rosa_ichthys2",true,false)
 					return nil
 				end)
-			end			
+			end
 		end
 	end)	
 end
@@ -741,9 +744,8 @@ function NeroTakeDamage(keys)
 	local damageTaken = keys.damageTaken
 	local healCounter = 0
 
-
 	if caster:GetHealth() == 0 and IsRevivePossible(caster) and caster.IsISAcquired and not caster:HasModifier("modifier_invictus_spiritus_cooldown") and not IsRevoked(caster) then
-		RemoveDebuffsForRevival(caster)
+		--RemoveDebuffsForRevival(caster)
 		caster:SetHealth(caster:GetMaxHealth()*0.33)
 		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_invictus_spiritus",{})
 		
@@ -760,8 +762,8 @@ function NeroTakeDamage(keys)
 			return 1.0
 		end)
 		caster:EmitSound("Hero_SkeletonKing.Reincarnate")
-		giveUnitDataDrivenModifier(keys.caster, keys.caster, "rb_sealdisabled", 4.5)
-		caster:FindAbilityByName("nero_invictus_spiritus"):ApplyDataDrivenModifier(caster, caster, "modifier_invictus_spiritus_cooldown", {duration = 60})
+		--giveUnitDataDrivenModifier(keys.caster, keys.caster, "rb_sealdisabled", 4.5)
+		caster:FindAbilityByName("nero_invictus_spiritus"):ApplyDataDrivenModifier(caster, caster, "modifier_invictus_spiritus_cooldown", {duration = 120})
 	end
 end
 

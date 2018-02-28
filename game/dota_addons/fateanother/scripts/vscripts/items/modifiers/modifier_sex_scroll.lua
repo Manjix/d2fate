@@ -17,6 +17,10 @@ function modifier_sex_scroll:OnCreated(args)
     self:StartIntervalThink(args.rootDur)
 end
 
+function modifier_sex_scroll:DeclareFunctions()
+    return { MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE }
+end
+
 function modifier_sex_scroll:GetModifierMoveSpeedBonus_Percentage()
     return self.slowPerc
 end
@@ -29,6 +33,7 @@ function modifier_sex_scroll:OnIntervalThink()
     if not self.slowPortion then
         self:StartIntervalThink(0.1)
         self.state = {}
+        self.slowPortion = true
     end
 
     if self:GetParent():GetName() == "npc_dota_hero_sven" then
@@ -46,14 +51,14 @@ function modifier_sex_scroll:OnIntervalThink()
     end
 end
 
-function modifier_sex_scroll:OnDestroy()
+--[[function modifier_sex_scroll:OnDestroy()
     if self:GetParent():GetName() == "npc_dota_hero_sven" then
         self:GetParent():EmitSound("DOTA_Item.LinkensSphere.Activate")
         ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, self:GetParent())
     else
         self:GetParent():AddNewModifier(self:GetCaster(), self:GetAbility(), "modifier_sex_scroll_slow", {duration = 3.0})        
     end
-end
+end]]
 
 -----------------------------------------------------------------------------------
 function modifier_sex_scroll:GetEffectName()
