@@ -747,7 +747,7 @@ function NeroTakeDamage(keys)
 	if caster:GetHealth() == 0 and IsRevivePossible(caster) and caster.IsISAcquired and not caster:HasModifier("modifier_invictus_spiritus_cooldown") and not IsRevoked(caster) then
 		--RemoveDebuffsForRevival(caster)
 		caster:SetHealth(caster:GetMaxHealth()*0.33)
-		keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_invictus_spiritus",{})
+		caster:FindAbilityByName("nero_invictus_spiritus"):ApplyDataDrivenModifier(caster, caster, "modifier_invictus_spiritus",{})
 		
 		caster:EmitSound("Hero_SkeletonKing.Reincarnate")
 		--caster:SetHealth(1)

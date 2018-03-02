@@ -70,7 +70,7 @@ function emiya_nine_lives:NineLivesHits()
 	local bonus_damage = 0
 	local caster = self:GetCaster()
 
-	if caster.IsProjectionImproved then
+	if caster:HasModifier("modifier_projection_attribute") then
 		bonus_damage = caster:GetAverageTrueAttackDamage(caster)
 	end
 

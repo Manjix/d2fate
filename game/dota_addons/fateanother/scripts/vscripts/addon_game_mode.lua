@@ -1371,6 +1371,7 @@ function FateGameMode:OnItemPickedUp(keys)
     if keys.HeroEntityIndex ~= nil then
         heroEntity = EntIndexToHScript(keys.HeroEntityIndex)
         player = PlayerResource:GetPlayer(keys.PlayerID)
+        CheckItemCombination(heroEntity)
     end
     local itemname = keys.itemname
     if itemname == "item_shard_drop" then
@@ -1378,6 +1379,8 @@ function FateGameMode:OnItemPickedUp(keys)
         UTIL_Remove( item ) -- otherwise it pollutes the player inventory
         if heroEntity then AddRandomShard(heroEntity) end
     end
+
+
 end
 
 
@@ -2760,6 +2763,10 @@ function FateGameMode:FinishRound(IsTimeOut, winner)
         end
         if playerHero:HasModifier("modifier_story_for_someones_sake_enemy") then
             playerHero:RemoveModifierByName("modifier_story_for_someones_sake_enemy")
+        end
+        if playerHero:HasModifier("modifier_gae_buidhe") or playerHero:HasModifier("modifier_gae_dearg") then
+            playerHero:RemoveModifierByName("modifier_gae_buidhe")
+            playerHero:RemoveModifierByName("modifier_gae_dearg")
         end
     end)
 

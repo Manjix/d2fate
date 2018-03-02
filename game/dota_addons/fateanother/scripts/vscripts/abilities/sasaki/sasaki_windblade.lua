@@ -17,8 +17,12 @@ function sasaki_windblade:OnSpellStart()
 
 	if caster:GetMana() > 99 then		
 		empowered = true
+		caster:EmitSound("Sasaki_Windblade_2")
+	else
+		caster:EmitSound("Sasaki_Windblade_1")
 	end
 
+	--caster:EmitSound("Sasaki_Windblade_" .. math.random(1,2))
 	caster:AddNewModifier(caster, self, "modifier_exhausted", { Duration = self:GetSpecialValueFor("exhausted_duration") })
 
 	for i=1, #targets do

@@ -6,6 +6,17 @@ if not IsServer() then
   return
 end
 
+function vlad_rebellious_intent:GetManaCost(iLevel)
+	local caster = self:GetCaster()
+	local condition_free_mana = 25
+	
+	if caster:GetHealthPercent() <= condition_free_mana then
+		return 0
+	else
+		return 100
+	end
+end
+
 function vlad_rebellious_intent:OnToggle()
   local caster = self:GetCaster()
 	caster:AddNewModifier(caster, self, "modifier_q_used",{duration = 5}) -- both toggle and untoggle count toward combo

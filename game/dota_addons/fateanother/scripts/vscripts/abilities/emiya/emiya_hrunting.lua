@@ -63,19 +63,11 @@ function emiya_hrunting:OnChannelFinish(bInterrupted)
     hCaster:StopSound("Hero_Invoker.EMP.Charge")
     hCaster:EmitSound("Emiya_Hrunt2")
 
-    local tProjectile = {
-        Target = hTarget,
-        Source = hCaster,
-        Ability = self,
-        EffectName = "particles/custom/archer/archer_hrunting_orb.vpcf",
-        iMoveSpeed = 3000,
-        vSourceLoc = hCaster:GetAbsOrigin(),
-        bDodgeable = false,
-        flExpireTime = GameRules:GetGameTime() + 10,
-        iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_1,
-        ExtraData = {max_bounce = self:GetSpecialValueFor("max_bounce"), bounce_damage = self:GetSpecialValueFor("bounce_damage"), bounces = 0 }
-    }
-    ProjectileManager:CreateTrackingProjectile(tProjectile)
+    local tExtraData = { max_bounce = self:GetSpecialValueFor("max_bounce"), 
+                         bounce_damage = self:GetSpecialValueFor("bounce_damage"), 
+                         bounces = 0 }
+
+    self:FireProjectile(hTarget, hCaster, tExtraData)
 end
 
 function emiya_hrunting:OnProjectileHit_ExtraData(hTarget, vLocation, tData)
@@ -115,21 +107,30 @@ function emiya_hrunting:OnProjectileHit_ExtraData(hTarget, vLocation, tData)
         end
 
         if hBounceTarget ~= nil then
-            local tProjectile = {
-                Target = hBounceTarget,
-                Source = hTarget,
-                Ability = self,
-                EffectName = "particles/custom/archer/archer_hrunting_orb.vpcf",
-                iMoveSpeed = 3000,
-                vSourceLoc = hTarget:GetAbsOrigin(),
-                bDodgeable = true,
-                bIsAttack = true,
-                flExpireTime = GameRules:GetGameTime() + 10,
-                iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_1,
-                ExtraData = {max_bounce = self:GetSpecialValueFor("max_bounce"), bounce_damage = self:GetSpecialValueFor("bounce_damage"), bounces = (tData["bounces"] + 1) }
-            }
+            local tExtraData = { max_bounce = self:GetSpecialValueFor("max_bounce"), 
+                                 bounce_damage = self:GetSpecialValueFor("bounce_damage"), 
+                                 bounces = (tData["bounces"] + 1) }
 
-            ProjectileManager:CreateTrackingProjectile(tProjectile)
+            self:FireProjectile(hBounceTarget, hTarget, tExtraData)
         end
     end
+end
+
+function emiya_hrunting:FireProjectile(hTarget, hSource, tExtraData)
+    local hCaster = self:GetCaster()
+
+    local tProjectile = {
+        Target = hTarget,
+        Source = hCaster,
+        Ability = self,
+        EffectName = "particles/custom/archer/archer_hrunting_orb.vpcf",
+        iMoveSpeed = 3000,
+        vSourceLoc = hCaster:GetAbsOrigin(),
+        bDodgeable = false,
+        flExpireTime = GameRules:GetGameTime() + 10,
+        iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_1,
+        ExtraData = tExtraData
+    }
+
+    ProjectileManager:CreateTrackingProjectile(tProjectile)
 end

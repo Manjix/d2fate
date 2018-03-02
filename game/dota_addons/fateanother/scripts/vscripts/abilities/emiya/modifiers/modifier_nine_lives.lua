@@ -15,7 +15,12 @@ function modifier_nine_lives:OnIntervalThink()
 	local caster = self:GetParent()
 	local particle = ParticleManager:CreateParticle("particles/custom/berserker/nine_lives/hit.vpcf", PATTACH_ABSORIGIN, caster)
 
-	StartAnimation(caster, { duration=1, activity=ACT_DOTA_ATTACK, rate=5})
+	if self.HitNumber % 2 == 0 then
+		StartAnimation(caster, { duration=0.1, activity=ACT_DOTA_ATTACK, rate=5})
+	else
+		StartAnimation(caster, { duration=0.1, activity=ACT_DOTA_ATTACK2, rate=5})
+	end
+
 	if self.HitNumber < 9 then
 		caster:EmitSound("Hero_EarthSpirit.StoneRemnant.Impact") 		
 		local targets = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), caster, self.LargeRadius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 1, false)

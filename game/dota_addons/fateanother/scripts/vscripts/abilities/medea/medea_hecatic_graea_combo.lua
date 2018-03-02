@@ -110,12 +110,14 @@ function medea_hecatic_graea_combo:OnSpellStart()
   	  	ParticleManager:SetParticleControl(particle, 0, GetGroundPosition(caster:GetAbsOrigin(), caster)) 
 	    ParticleManager:SetParticleControl(particle, 1, Vector(barrageRadius * 2.5, 1, 1))
 	    ParticleManager:SetParticleControl(particle, 2, Vector(barrageRadius * 75, 1, 1))
+	    EmitGlobalSound("Medea_Combo_1")
 	    caster:EmitSound("Hero_ObsidianDestroyer.SanityEclipse.Cast")
 		return
     end
     )
 
 	Timers:CreateTimer(1.0, function() 
+		EmitGlobalSound("Caster.Hecatic")
 		EmitGlobalSound("Caster.Hecatic_Spread") 
 		caster:EmitSound("Misc.Crash") 
 	return end)

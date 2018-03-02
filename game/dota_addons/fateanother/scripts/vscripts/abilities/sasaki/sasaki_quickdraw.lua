@@ -33,6 +33,8 @@ function sasaki_quickdraw:OnSpellStart()
 		caster:AddNewModifier(caster, self, "modifier_quickdraw_empowered_tracker", { Duration = 2 })
 	end
 
+	caster:EmitSound("Sasaki_Quickdraw_" .. math.random(1,2))
+
 	caster:AddNewModifier(caster, self, "modifier_exhausted", { Duration = self:GetSpecialValueFor("exhausted_duration") })
 
 	local projectile = ProjectileManager:CreateLinearProjectile(qdProjectile)

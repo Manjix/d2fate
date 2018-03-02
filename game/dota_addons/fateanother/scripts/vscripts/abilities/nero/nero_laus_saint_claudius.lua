@@ -67,6 +67,7 @@ function nero_laus_saint_claudius:OnSpellStart()
 	Timers:CreateTimer(self:GetSpecialValueFor("stun_duration"), function()
 		if caster:IsAlive() then			
 			target:EmitSound("Hero_Lion.FingerOfDeath")
+			StartAnimation(caster, {duration = 0.4, activity = ACT_DOTA_ATTACK_EVENT, rate = 3})
 			local slashFx = ParticleManager:CreateParticle("particles/custom/nero/nero_scorched_earth_child_embers_rosa.vpcf", PATTACH_ABSORIGIN, target )
 			ParticleManager:SetParticleControl( slashFx, 0, target:GetAbsOrigin() + Vector(0,0,300))
 

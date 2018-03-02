@@ -13,7 +13,13 @@ function emiya_rho_aias:OnSpellStart()
 	rhoTarget = target 
 	target.rhoShieldAmount = self:GetSpecialValueFor("shield_amount")
 
-	caster:EmitSound("Archer.RhoAias" ) 
+	local soundQueue = math.random(1,2)
+
+	if soundQueue == 1 then
+		caster:EmitSound("Archer.RhoAias" ) 
+	else
+		caster:EmitSound("Emiya_Rho_Aias_Alt")
+	end
 	caster:EmitSound("Hero_EmberSpirit.FlameGuard.Cast")
 
 	target:AddNewModifier(caster, self, "modifier_rho_aias", { Duration = self:GetSpecialValueFor("duration") })

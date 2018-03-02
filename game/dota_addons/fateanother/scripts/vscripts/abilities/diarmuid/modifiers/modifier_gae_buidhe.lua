@@ -2,24 +2,32 @@ modifier_gae_buidhe = class({})
 
 function modifier_gae_buidhe:OnCreated(args)
 	if IsServer() then
-		self:SetStackCount(args.StackCount)
-		self:StartIntervalThink(0.03)
+		print("buff created")
+		self:SetStackCount(args.Stacks or 1)
+		self:StartIntervalThink(0.033)
+		print("started thinking")
+	end
+end
+
+function modifier_gae_buidhe:OnRefresh(args)
+	if IsServer() then
+		--args.Stacks = self:GetStackCount() + args.Stacks
+		self:OnCreated(args)		
 	end
 end
 
 function modifier_gae_buidhe:OnIntervalThink()
-	if IsServer() then
-		local target = self:GetParent()
-		local max_health = target:GetMaxHealth() - (10 * self:GetStackCount())
+	--print("thinking buidhe")
+	local target = self:GetParent()
+	local max_health = target:GetMaxHealth() - (10 * self:GetStackCount())
 
-		if target:GetHealth() > max_health then
-			target:SetHealth(max_health)
-		end
+	if target:GetHealth() > max_health and not (target:GetHealth() == 0) then
+		--print("naughty")
+		target:SetHealth(max_health)
+	elseif target:GetMaxHealth() < max_health or (target:GetHealth() == 0) or (not target:IsAlive()) then
+		target:Kill(self:GetAbility(), self:GetCaster())		
+		self:Destroy()
 	end
-end
-
-function modifier_gae_buidhe:OnDestroy()
-	self:StartIntervalThink(-1)
 end
 
 function modifier_gae_buidhe:IsHidden()

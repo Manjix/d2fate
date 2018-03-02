@@ -113,7 +113,8 @@ locks = {
     "jump_pause_postlock",
     "modifier_aestus_domus_aurea_enemy",
     "modifier_aestus_domus_aurea_ally",
-    "modifier_aestus_domus_aurea_nero"
+    "modifier_aestus_domus_aurea_nero",
+    "modifier_rho_aias",
 }
 
 
@@ -269,6 +270,7 @@ CannotReset = {
     "diarmuid_love_spot",
     "diarmuid_double_spear_strike",
     "diarmuid_rampant_warrior",
+    "diarmuid_minds_eye",
     "iskander_annihilate",
     "gille_spellbook_of_prelati",
     "gille_larret_de_mort",
@@ -332,7 +334,8 @@ tCannotDetect = {
 
 tDangerousBuffs = {
     "modifier_gae_buidhe",
-    "modifier_zabaniya_curse"
+    "modifier_zabaniya_curse",
+    "modifier_gae_buidhe"
 }
 
 itemComp = {
@@ -351,11 +354,16 @@ tItemComboTable = {
     item_a_scroll = "item_s_scroll",
     item_s_scroll = "item_ex_scroll",
     item_mana_essence = "item_condensed_mana_essence",
-    item_healing_scroll = "item_a_plus_scroll"
+    item_a_plus_recipe = "item_a_plus_scroll"
 }
 
 tModifierKBImmune = {
     "modifier_avalon"
+}
+
+tManalessHero = {
+    "npc_dota_hero_juggernaut",
+    "npc_dota_hero_shadow_shaman"
 }
 
 tipTable = { "<font color='#58ACFA'>Tip : C Scroll</font> is everyone's bread-and-butter item that you should be carrying at all times. Use it to guarantee your skill combo, or help your teammate by interrupting enemy.",
@@ -676,12 +684,12 @@ function CheckItemCombination(hero)
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
                             CreateItemAtSlot(hero, tItemComboTable[currentItemName1], 0, -1, true, false)
-                        elseif (currentItemName1 == "item_healing_scroll" or currentItemName2 == "item_healing_scroll") 
-                            and (currentItemName1 == "item_a_scroll" or currentItemName2 == "item_a_scroll") then
+                        elseif (currentItemName1 == "item_a_plus_recipe" and currentItemName2 == "item_a_scroll") 
+                            or (currentItemName1 == "item_a_scroll" and currentItemName2 == "item_a_plus_recipe") then
                             bIsMatchingFound = true
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
-                            CreateItemAtSlot(hero, tItemComboTable["item_healing_scroll"], 0, -1, true, false)
+                            CreateItemAtSlot(hero, tItemComboTable["item_a_plus_recipe"], 0, -1, true, false)
                         end
                     end
                     ::continue::
@@ -723,12 +731,12 @@ function CheckItemCombinationInStash(hero)
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
                             CreateItemAtSlot(hero, tItemComboTable[currentItemName1], 9, -1, false, true)
-                        elseif (currentItemName1 == "item_healing_scroll" or currentItemName2 == "item_healing_scroll") 
-                            and (currentItemName1 == "item_a_scroll" or currentItemName2 == "item_a_scroll") then
+                        elseif (currentItemName1 == "item_a_plus_recipe" and currentItemName2 == "item_a_scroll") 
+                            or (currentItemName1 == "item_a_scroll" and currentItemName2 == "item_a_plus_recipe") then
                             bIsMatchingFound = true
                             if not currentItem:IsNull() then currentItem:RemoveSelf() end
                             if not currentItem2:IsNull() then currentItem2:RemoveSelf() end
-                            CreateItemAtSlot(hero, tItemComboTable["item_healing_scroll"], 9, -1, true, false)
+                            CreateItemAtSlot(hero, tItemComboTable["item_a_plus_recipe"], 9, -1, true, false)
                         end
                     end
                     ::continue::
@@ -802,6 +810,10 @@ function IsSpellBlocked(target)
             ParticleManager:SetParticleControl(particle, 0, target:GetAbsOrigin())
             return true
         end]]
+    elseif target:HasModifier("modifier_diarmuid_minds_eye") then
+        EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
+        ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
+        return true
     else
         return false
     end
@@ -1201,6 +1213,10 @@ function DoDamage(source, target , dmg, dmg_type, dmg_flag, abil, isLoop)
             dmg = 0
             IsAbsorbed = true
         end
+    end
+
+    if IsFemaleServant(source) and target:HasModifier("modifier_love_spot") and source:HasModifier("modifier_love_spot_charmed") then
+        dmg = dmg * 0.5
     end
 
     -- if damage was not fully absorbed by shield, deal residue damage 
@@ -2047,5 +2063,15 @@ function IsKnockbackImmune(hTarget)
             return true
         end
     end
+    return false
+end
+
+function IsManaLess(hTarget)
+    for i = 1, #tManalessHero do
+        if hTarget:GetName() == tManalessHero[i] then
+            return true
+        end
+    end
+    
     return false
 end

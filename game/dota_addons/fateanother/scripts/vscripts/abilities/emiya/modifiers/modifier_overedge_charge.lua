@@ -33,6 +33,8 @@ function modifier_overedge_charge:OnAttackLanded(args)
 			local ability = self:GetAbility()
 			local target = args.target
 
+			args.target:EmitSound("Hero_TrollWarlord.BerserkersRage.Stun")
+
 			DoDamage(caster, target, self.OnHitDamage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 			target:AddNewModifier(caster, ability, "modifier_stunned", { Duration = 1.0 })
 		end

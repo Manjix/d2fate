@@ -11,5 +11,6 @@
 		"item"		"item_spirit_link"
 		"item"		"item_healing_scroll"
 		"item"		"item_teleport_scroll"
+		"item"		"item_a_plus_recipe"
 	}
 }

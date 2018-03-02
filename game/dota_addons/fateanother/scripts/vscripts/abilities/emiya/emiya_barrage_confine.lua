@@ -1,6 +1,6 @@
 emiya_barrage_confine = class({})
 
-LinkLuaModifier("modifier_sword_barrage_confine", "abilities/emiya/modifier_sword_barrage_confine", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_sword_barrage_confine", "abilities/emiya/modifiers/modifier_sword_barrage_confine", LUA_MODIFIER_MOTION_NONE)
 
 function emiya_barrage_confine:OnSpellStart()
 	local caster = self:GetCaster()
@@ -45,8 +45,9 @@ function emiya_barrage_confine:OnSpellStart()
 	        DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
 	        v:AddNewModifier(caster, v, "modifier_stunned", {duration = 0.1})
 	        --v:EmitSound("FA.Quickdraw")
-	        if caster.IsProjectionImproved then 
-				giveUnitDataDrivenModifier(caster, v, "locked",3.0)
+	        if caster:HasModifier("modifier_projection_attribute") then 
+	        	v:AddNewModifier(caster, self, "modifier_sword_barrage_confine", { Duration = 2.5 })
+				giveUnitDataDrivenModifier(caster, v, "locked", 2.5)
 			end
 	    end
 	end)

@@ -1,5 +1,7 @@
 emiya_barrage_moonwalk = class({})
 
+LinkLuaModifier("modifier_moonwalk_root_cooldown", "abilities/emiya/modifiers/modifier_moonwalk_root_cooldown", LUA_MODIFIER_MOTION_NONE)
+
 function emiya_barrage_moonwalk:OnSpellStart()
 	local caster = self:GetCaster()
 	local ability = self
@@ -12,6 +14,8 @@ function emiya_barrage_moonwalk:OnSpellStart()
 	local casterPos = caster:GetAbsOrigin()
 	local counter  = 1
 	local archer = Physics:Unit(caster)
+
+	ProjectileManager:ProjectileDodge(caster)
 
 	caster:PreventDI()
 	caster:SetPhysicsFriction(0)
@@ -54,11 +58,18 @@ function emiya_barrage_moonwalk:OnSpellStart()
 		Timers:CreateTimer(0.25, function()
 			local targets = FindUnitsInRadius(caster:GetTeamNumber(), targetPoint, caster, 200, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 1, false)
 			for k,v in pairs(targets) do
-				DoDamage(caster, v, damage , DAMAGE_TYPE_MAGICAL, 0, ability, false)
+				if v:HasModifier("modifier_sword_barrage_confine") then
+					DoDamage(caster, v, damage * 1.25 , DAMAGE_TYPE_MAGICAL, 0, ability, false)
+				else
+					DoDamage(caster, v, damage , DAMAGE_TYPE_MAGICAL, 0, ability, false)
+				end
+
 				giveUnitDataDrivenModifier(caster, v, "stunned", 0.1)
-				--[[if caster.IsProjectionImproved and not IsImmuneToSlow(v) then 
-					ability:ApplyDataDrivenModifier(caster, v, "modifier_barrage_retreat_shot_slow", {})
-				end]]
+				
+				if caster:HasModifier("modifier_projection_attribute") and not v:HasModifier("modifier_moonwalk_root_cooldown") then 
+					giveUnitDataDrivenModifier(caster, v, "rooted", 1.5)
+					v:AddNewModifier(caster, self, "modifier_moonwalk_root_cooldown", { Duration = 4 })
+				end
 			end
 			-- Particles on impact
 			local explosionFxIndex = ParticleManager:CreateParticle( "particles/units/heroes/hero_gyrocopter/gyro_guided_missile_explosion.vpcf", PATTACH_CUSTOMORIGIN, caster )

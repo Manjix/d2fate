@@ -998,6 +998,8 @@ function OnSilenceStart(keys)
 	ParticleManager:SetParticleControl(particle, 1 , Vector(300,0,0))
 	ParticleManager:SetParticleControl(particle, 3 , Vector(300,0,0))
 
+	caster:EmitSound("Medea_Skill_" .. math.random(4,6))
+
 	Timers:CreateTimer(2.0, function()
 		ParticleManager:DestroyParticle(particle, false)
 		return nil
@@ -1009,6 +1011,8 @@ function OnDWStart(keys)
 	local targetPoint = keys.target_points[1]
 	local rainCount = 0
 	if caster.IsHGImproved then keys.Damage = keys.Damage + caster:GetIntellect()*ATTRIBUTE_HG_INT_MULTIPLIER*3 end
+
+	caster:EmitSound("Medea_Skill_" .. math.random(1,3))
 
     Timers:CreateTimer(0.5, function()
     	if rainCount == 3 then return end
@@ -1041,6 +1045,8 @@ function OnSacrificeStart(keys)
 	caster.SacFx = ParticleManager:CreateParticle("particles/custom/caster/sacrifice/caster_sacrifice_indicator.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster )
 	ParticleManager:SetParticleControl( caster.SacFx, 0, caster:GetAbsOrigin())
 	ParticleManager:SetParticleControl( caster.SacFx, 1, Vector(keys.Radius,0,0))
+
+	caster:EmitSound("Medea_Skill_" .. math.random(7,8))
 end
 
 function RemoveSacrificeModifier(keys)
@@ -1150,6 +1156,7 @@ function OnRBStart(keys)
 	if IsSpellBlocked(keys.target) then return end -- Linken effect checker
 	ApplyStrongDispel(target)
 	if caster:GetName() == "npc_dota_hero_crystal_maiden" then
+		caster:EmitSound("Medea_Rule_Breaker_" .. math.random(1,2))
 		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_c_rule_breaker", {}) 
 
 		if caster.IsRBImproved then
@@ -1171,7 +1178,7 @@ function OnRBStart(keys)
 	else
 		keys.ability:ApplyDataDrivenModifier(caster, target, "modifier_l_rule_breaker", {}) 
 	end
-	EmitGlobalSound("Caster.RuleBreaker") 
+	--EmitGlobalSound("Caster.RuleBreaker") 
 	CasterCheckCombo(keys.caster,keys.ability)	
 	
 	print(caster:GetName())
@@ -1185,6 +1192,7 @@ function OnRBSealStolen(keys)
 	local caster = keys.caster
 
 	victim:EmitSound("Hero_Silencer.LastWord.Cast")
+	caster:EmitSound("Medea_Steal_" .. math.random(1,2))
 
 	if victim.MasterUnit:GetMana() > 1 then
 		victim.MasterUnit:SetMana(victim.MasterUnit:GetMana() - 1) 

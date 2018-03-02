@@ -10,7 +10,7 @@
 #base "emiya_kanshou_byakuya.kv"
 #base "emiya_nine_lives.kv"
 #base "emiya_rho_aias.kv"
-#base "emiya_unlimited_blade_works.kv"
+#base "emiya_unlimited_bladeworks.kv"
 
 "DOTAAbilities"
 {
@@ -152,6 +152,16 @@
 				"var_type"			"FIELD_FLOAT"
 				"str_bonus"			"20"
 			}
+			"04"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"shield"			"2000"
+			}
+			"05"
+			{
+				"var_type"			"FIELD_INTEGER"
+				"duration"			"4"
+			}
 		}
 	}
 
@@ -211,7 +221,7 @@
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"12"
+		"AbilityManaCost"				"14"
 
 		"precache"
 		{
@@ -227,17 +237,27 @@
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"17"
-			}
+				"mana_reduced"			"50"
+			}			
 			"03"
 			{
-				"var_type"				"FIELD_FLOAT"
-				"mana_refunded"			"17.5"
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"10"
 			}
 			"04"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"duration"				"10"
+				"attack_speed"			"25"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bash_chance"			"30"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bash_damage"			"250"
 			}
 		}
 	}

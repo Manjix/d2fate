@@ -1,5 +1,23 @@
 excalibur_galatine_combo = class({})
 
+function excalibur_galatine_combo:GetBehavior()
+	local caster = self:GetCaster()
+	if not caster:HasModifier("modifier_galatine_tracker") then
+		return DOTA_ABILITY_BEHAVIOR_POINT
+	else
+		return DOTA_ABILITY_BEHAVIOR_NO_TARGET + DOTA_ABILITY_BEHAVIOR_IMMEDIATE
+	end
+end
+
+function excalibur_galatine_combo:GetManaCost(iLevel)
+	local caster = self:GetCaster()
+	if not caster:HasModifier("modifier_galatine_tracker") then
+		return 800
+	else
+		return 0
+	end
+end
+
 function excalibur_galatine_combo:GetCastAnimation()
 	return ACT_DOTA_CAST_ABILITY_2
 end
@@ -13,6 +31,10 @@ function excalibur_galatine_combo:GetAbilityTextureName()
 end
 
 function excalibur_galatine_combo:OnSpellStart()	
+	
+end
+
+function excalibur_galatine_combo:StartGalatine()
 	local caster = self:GetCaster()
 	local ability = self
 	local casterLoc = caster:GetAbsOrigin()
@@ -27,8 +49,7 @@ function excalibur_galatine_combo:OnSpellStart()
 	local fireTrailDuration = 3
 	local damage = self:GetSpecialValueFor("damage")
 
-	local InFirstLoop = true
-	caster.IsGalatineActive = true
+	caster:AddNewModifier(caster, self, "modifier_galatine_tracker", { Duration = 5.5 })
 
 	local masterCombo = caster.MasterUnit2:FindAbilityByName(ability:GetAbilityName())
 	masterCombo:EndCooldown()
@@ -38,7 +59,7 @@ function excalibur_galatine_combo:OnSpellStart()
 
 	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 4.1)
 
-	caster:AddNewModifier(caster, ability, "modifier_excalibur_galatine_anim", {duration = 4})
+	StartAnimation(caster, {duration=4, activity=ACT_DOTA_CAST_ABILITY_2, rate=0.2})
 
 	EmitGlobalSound("Gawain_Galatine_Combo")
 
@@ -47,7 +68,7 @@ function excalibur_galatine_combo:OnSpellStart()
 	local particle = ParticleManager:CreateParticle("particles/custom/gawain/gawain_combo.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 	ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin())
 	ParticleManager:SetParticleControl(particle, 1, Vector(1000, 1000, 1000))
-	Timers:CreateTimer( 3.0, function()
+	Timers:CreateTimer(3.0, function()
 		ParticleManager:DestroyParticle( particle, false )
 		ParticleManager:ReleaseParticleIndex( particle )
 	end)
@@ -59,26 +80,24 @@ function excalibur_galatine_combo:OnSpellStart()
 	local flameFx1 = ParticleManager:CreateParticle("particles/custom/gawain/gawain_excalibur_galatine_orb.vpcf", PATTACH_ABSORIGIN_FOLLOW, galatineDummy )
 	ParticleManager:SetParticleControl( flameFx1, 0, galatineDummy:GetAbsOrigin())
 
-	galatineDummy:SetDayTimeVisionRange(300)
-	galatineDummy:SetNightTimeVisionRange(300)
-
-	if caster.IsSoVAcquired then
+	if caster:HasModifier("modifier_sov_attribute") then
 		damage = damage + 1500
 		fireTrailDuration = fireTrailDuration + 3
 	end
 
 	Timers:CreateTimer(4.0, function()
-		if caster:IsAlive() and timeElapsed < 1.5 and caster.IsGalatineActive and flyingDist < dist then
-
+		if caster:IsAlive() then
 			EmitGlobalSound("Gawain_Galatine_Combo_Launch")
-			-- Need to initialize the variables and put in Gawain's detonate Galatine ability
-			if InFirstLoop then
-				casterLoc = caster:GetAbsOrigin()
-				orbLoc = caster:GetAbsOrigin()
-				diff = caster:GetForwardVector()
-				caster:SwapAbilities("gawain_excalibur_galatine_combo", "gawain_excalibur_galatine_detonate_combo", false, true)
-				InFirstLoop = false
-			end
+			
+			casterLoc = caster:GetAbsOrigin()
+			orbLoc = caster:GetAbsOrigin()
+			diff = caster:GetForwardVector()
+			caster:AddNewModifier(caster, self, "modifier_galatine_tracker", { Duration = 1.5 })
+
+			
+
+
+
 			-- Move the ball, reduce the remaining flight distance, reduce the remaining timer and increase the AoE gradually
 			orbLoc = orbLoc + diff * orbVelocity
 			galatineDummy:SetAbsOrigin(orbLoc)
@@ -139,10 +158,19 @@ function excalibur_galatine_combo:OnSpellStart()
 	end)
 end
 
+function excalibur_galatine_combo:LaunchOrb()
+end
+
+function excalibur_galatine_combo:DetonateOrb()
+	local caster = self:GetCaster()
+
+	caster:RemoveModifierByName("modifier_galatine_tracker")
+end
+
 function excalibur_galatine_combo:LeaveFireTrail(location, fireTrailDuration)
 	local caster = self:GetCaster()
 	local ability = self
-	--local damage = self:GetSpecialValueFor("fire_trail_damage")
+	local damage = self:GetSpecialValueFor("fire_trail_damage")
 
 	local fireFx = ParticleManager:CreateParticle("particles/custom/gawain/gawain_galetine_flametrail_parent.vpcf", PATTACH_CUSTOMORIGIN, nil)
 	ParticleManager:SetParticleControl(fireFx, 0, location)
@@ -156,23 +184,14 @@ function excalibur_galatine_combo:LeaveFireTrail(location, fireTrailDuration)
 		local targets = FindUnitsInRadius(caster:GetTeam(), location, nil, 325, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_CLOSEST, false)
 		
 		for k,v in pairs(targets) do
-			v:AddNewModifier(caster, ability, "modifier_excalibur_galatine_burn", { Duration = fireTrailDuration})
+			v:AddNewModifier(caster, ability, "modifier_excalibur_galatine_burn", { Duration = fireTrailDuration,
+																					Damage = damage })
 		end
 
 		return period
 	end)
 end
 
-function excalibur_galatine_combo:ReorderAbilities()
-	local caster = self:GetCaster()
-
-	caster.IsGalatineActive = false
-
-	if caster:GetAbilityByIndex(5):GetName() ~= "gawain_excalibur_galatine" then
-		caster:SwapAbilities("gawain_excalibur_galatine", caster:GetAbilityByIndex(5):GetName(), true, false)
-	end
-end
-
-function excalibur_galatine_combo:OnOwnerDied()
-	self:ReorderAbilities()
+function excalibur_galatine_combo:GetTexture()
+	return "custom/gawain_galatine_combo"
 end

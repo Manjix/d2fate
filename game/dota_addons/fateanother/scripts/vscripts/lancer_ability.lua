@@ -49,6 +49,7 @@ function LancerOnTakeDamage(keys)
 		RemoveDebuffsForRevival(caster)
 		caster:SetHealth(health)
 		keys.ability:StartCooldown(cd) 
+		caster:EmitSound("Cu_Battlecont")
 		ability:ApplyDataDrivenModifier(caster, caster, "modifier_battle_continuation_cooldown", {duration = cd})
 		local reviveFx = ParticleManager:CreateParticle("particles/items_fx/aegis_respawn.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
 		ParticleManager:SetParticleControl(reviveFx, 3, caster:GetAbsOrigin())
@@ -672,6 +673,8 @@ function OnImrpoveBCAcquired(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsBCImproved = true
+
+	hero:FindAbilityByName("lancer_5th_battle_continuation"):SetLevel(2)
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))

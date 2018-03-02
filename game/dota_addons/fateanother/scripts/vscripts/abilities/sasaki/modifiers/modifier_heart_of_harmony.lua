@@ -99,8 +99,10 @@ function modifier_heart_of_harmony:OnTakeDamage(args)
             FindClearSpaceForUnit(caster, position, true) 
 
             if caster:GetMana() > self.ManaThreshold then
-                target:EmitSound("FA.Omigoto")
+                target:EmitSound("Sasaki_Counter_Success_" .. math.random(1,2))
                 target:AddNewModifier(caster, target, "modifier_stunned", {Duration = self.StunDuration})
+            else
+                caster:EmitSound("Sasaki_Counter_Fail_" .. math.random(1,2))
             end
 
             caster:RemoveModifierByName("modifier_heart_of_harmony_invis")

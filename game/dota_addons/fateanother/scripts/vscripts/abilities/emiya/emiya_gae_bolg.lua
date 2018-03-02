@@ -54,8 +54,7 @@ function emiya_gae_bolg:OnSpellStart()
 
 	Timers:CreateTimer('gb_throw', {
 		endTime = 0.45,
-		callback = function()
-		StartAnimation(caster, {duration=0.2, activity=ACT_DOTA_ATTACK_EVENT, rate=2})
+		callback = function()		
 
 		local projectileOrigin = caster:GetAbsOrigin() + Vector(0,0,300)
 		local projectile = CreateUnitByName("dummy_unit", projectileOrigin, false, caster, caster, caster:GetTeamNumber())
@@ -77,7 +76,10 @@ function emiya_gae_bolg:OnSpellStart()
 	Timers:CreateTimer('gb_ascend', {
 		endTime = 0,
 		callback = function()
-	   	if ascendCount == 15 then return end
+	   	if ascendCount == 15 then 
+	   		StartAnimation(caster, {duration=0.5, activity=ACT_DOTA_CAST_ABILITY_4, rate=4})
+		   	return 
+		end
 		caster:SetAbsOrigin(Vector(caster:GetAbsOrigin().x,caster:GetAbsOrigin().y,caster:GetAbsOrigin().z+50))
 		ascendCount = ascendCount + 1;
 		return 0.033
@@ -103,7 +105,7 @@ function emiya_gae_bolg:OnGaeBolgHit(position, projectile)
 	
 	local stun_duration = 0.1
 	
-	if caster.IsProjectionImproved then
+	if caster:HasModifier("modifier_projection_attribute") then
 		damage = damage + self:GetSpecialValueFor("attribute_damage")
 		stun_duration = 0.5
 	end

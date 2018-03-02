@@ -19,34 +19,7 @@ end
 
 function modifier_gladiusanus:OnRefresh(args)
 	if IsServer() then
-		self:OnCreated(args)
-		--[[local caster = self:GetParent()
-		local stacks = self:GetStackCount()
-		if caster:HasModifier("modifier_aestus_domus_aurea_nero") then
-			local aoeTargets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 600, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false)
-			caster:EmitSound("Hero_Clinkz.DeathPact")
-
-			local flameFx = ParticleManager:CreateParticle("particles/units/heroes/hero_lion/lion_spell_finger_of_death_fire.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
-			ParticleManager:SetParticleControl(flameFx, 2, caster:GetAbsOrigin())
-
-			local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_phoenix/phoenix_fire_spirit_ground.vpcf", PATTACH_ABSORIGIN, caster)
-			ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin()) 
-			ParticleManager:SetParticleControl(particle, 1, Vector(300, 300, 300)) 
-			ParticleManager:SetParticleControl(particle, 3, Vector(300, 300, 300)) 
-
-			Timers:CreateTimer( 2.0, function()
-				ParticleManager:DestroyParticle( flameFx, false )
-				ParticleManager:ReleaseParticleIndex( flameFx )
-				ParticleManager:DestroyParticle( particle, false )
-				ParticleManager:ReleaseParticleIndex( particle )
-			end)
-
-	        for k, v in pairs(aoeTargets) do
-	        	DoDamage(caster, v, stacks * args.Damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
-	        end
-		end]]
-
-		
+		self:OnCreated(args)		
 	end
 end
 
@@ -69,7 +42,7 @@ end
 
 function modifier_gladiusanus:OnAttackLanded(args)
 	if IsServer() then
-		if args.attacker ~= self:GetParent() then return end
+		if args.attacker ~= self:GetParent() or not args.target:IsHero() then return end
 
 		self:SetStackCount(self:GetStackCount() + 1)
 

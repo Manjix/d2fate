@@ -21,6 +21,15 @@ function nero_rosa_ichthys:GetCustomCastError()
     return "#Invalid_Target"
 end
 
+function nero_rosa_ichthys:GetCooldown(iLevel)
+	local caster = self:GetCaster()
+	if caster:HasModifier("modifier_aestus_domus_aurea_nero") and caster:HasModifier("modifier_sovereign_attribute") then
+		return self:GetSpecialValueFor("aestus_cooldown")
+	else
+		return self:GetSpecialValueFor("cooldown")
+	end
+end
+
 function nero_rosa_ichthys:GetManaCost(iLevel)
 	local caster = self:GetCaster()
 
@@ -62,7 +71,7 @@ function nero_rosa_ichthys:OnSpellStart()
 	
 	target:EmitSound("Hero_Lion.FingerOfDeath")
 
-	if caster.IsPTBAcquired then
+	if caster:HasModifier("modifier_ptb_attribute") then
 		target:AddNewModifier(caster, target, "modifier_rosa_slow", {Duration = 3})
 	end
 
@@ -74,10 +83,7 @@ function nero_rosa_ichthys:OnSpellStart()
 		ParticleManager:ReleaseParticleIndex( slashFx )
 	end)
 
-	if caster.IsGloryAcquired and caster:HasModifier("modifier_aestus_domus_aurea_nero") then
-        self:EndCooldown()
-        self:StartCooldown(1)
-        
+	if caster:HasModifier("modifier_sovereign_attribute") and caster:HasModifier("modifier_aestus_domus_aurea_nero") then               
         if not target:HasModifier("modifier_rosa_buffer") then
         	target:AddNewModifier(caster, self, "modifier_rosa_buffer", { Duration = 5 })
         end

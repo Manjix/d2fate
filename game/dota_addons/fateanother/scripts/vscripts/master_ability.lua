@@ -118,12 +118,12 @@ AvengerAttribute = {
 }
 
 DiarmuidAttribute = {
-	"diarmuid_attribute_improve_love_spot",
+	"diarmuid_attribute_love_spot",
 	"diarmuid_attribute_minds_eye",
-	"diarmuid_attribute_golden_rose_of_mortality",
-	"diarmuid_attribute_crimson_rose_of_exorcism",
-	"diarmuid_attribute_double_spear_strike",
-	"diarmuid_rampant_warrior",
+	"diarmuid_attribute_golden_rose",
+	"diarmuid_attribute_crimson_rose",
+	"diarmuid_attribute_doublespear",
+	"diarmuid_rampant_warrior_proxy",
 	attrCount = 5
 }
 
@@ -269,6 +269,7 @@ function OnSeal1Start(keys)
 
 
 	keys.ability:ApplyDataDrivenModifier(keys.caster, hero, "modifier_command_seal_1",{})
+	keys.ability:ApplyDataDrivenModifier(keys.caster, keys.caster, "modifier_command_seal_1",{})
 	caster.IsFirstSeal = true
 
 	caster:FindAbilityByName("cmd_seal_1"):StartCooldown(60)

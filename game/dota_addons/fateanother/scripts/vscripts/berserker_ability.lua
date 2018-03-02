@@ -24,6 +24,8 @@ function OnFissureStart(keys)
 	caster.FissureTarget = keys.target_points[1]
 	projectile = ProjectileManager:CreateLinearProjectile(fiss)
 	BerCheckCombo(caster, keys.ability)
+
+	caster:EmitSound("Heracles_Roar_" .. math.random(1,6))
 end
 
 function OnFissureHit(keys)
@@ -92,6 +94,7 @@ function OnCourageStart(keys)
 		currentStack = currentStack-1 
 	end
 
+	caster:EmitSound("Heracles_Roar_" .. math.random(1,6))
 	caster:RemoveModifierByName("modifier_courage_stackable_buff") 
 	keys.ability:ApplyDataDrivenModifier(caster, caster, "modifier_courage_stackable_buff", {}) 
 	caster:SetModifierStackCount("modifier_courage_stackable_buff", keys.ability, currentStack + 1)
@@ -161,17 +164,26 @@ function OnRoarStart(keys)
 
 	--Reset berserk buff with double health lock
 	if caster:HasModifier("modifier_berserk_self_buff") == false then
-	caster:RemoveModifierByName("modifier_berserk_self_buff")
-	local newKeys = keys
-	newKeys.ability = caster:FindAbilityByName("berserker_5th_berserk")
-	newKeys.Duration = newKeys.ability:GetSpecialValueFor("duration")
-	newKeys.Health = newKeys.ability:GetSpecialValueFor("health_constant")
-	OnBerserkStart(newKeys, false)
+		caster:RemoveModifierByName("modifier_berserk_self_buff")
+		local newKeys = keys
+		newKeys.ability = caster:FindAbilityByName("berserker_5th_berserk")
+		newKeys.Duration = newKeys.ability:GetSpecialValueFor("duration")
+		newKeys.Health = newKeys.ability:GetSpecialValueFor("health_constant")		
+
+		OnBerserkStart(newKeys, false)
 	end
 
 	--caster:FindAbilityByName("berserker_5th_berserk"):ApplyDataDrivenModifier(caster, caster, "modifier_berserk_self_buff", {hplock = hplock * 2})		
 	--caster:SetRenderColor(255, 127, 127)
 
+	local soundQueue = math.random(1,100)
+
+	--newKeys.PlaySound = true
+
+	if soundQueue < 25 then		
+		EmitGlobalSound("Heracles_Combo_Easter_" .. math.random (2,3))
+		--newKeys.PlaySound = false
+	end
 
 
 	local casterloc = caster:GetAbsOrigin()
@@ -278,7 +290,7 @@ function OnBerserkStart(keys)
 	BerCheckCombo(caster, keys.ability)
 	--prevents double sound on combo
 	if caster:HasModifier("modifier_madmans_roar_silence") == false then
-	EmitGlobalSound("Berserker.Roar")
+		EmitGlobalSound("Berserker.Roar")
 	end
 
 	-- hi i'm definitely not a hacky replacement for not being able to get status effect particles to work
@@ -464,7 +476,7 @@ function OnNineLanded(caster, ability)
 	-- swap animation
 	if caster:GetName() == "npc_dota_hero_doom_bringer" then 
 		if caster:IsAlive() then
-			StartAnimation(caster, {duration=3.5, activity=ACT_DOTA_CAST_ABILITY_6, rate=1.0})
+			StartAnimation(caster, {duration=3.5, activity=ACT_DOTA_CAST_ABILITY_6, rate=1.0})			
 		end
 	end
 
@@ -528,7 +540,7 @@ function OnNineLanded(caster, ability)
 				end
 
 				if caster:GetName() == "npc_dota_hero_doom_bringer" then
-					EmitGlobalSound("Berserker.Roar")
+					--EmitGlobalSound("Berserker.Roar")
 				elseif caster:GetName() == "npc_dota_hero_sven" then
 					EmitGlobalSound("Lancelot.Roar1" )
 					StartAnimation(caster, {duration=0.7, activity=ACT_DOTA_CAST_ABILITY_6, rate=3.0})
@@ -548,6 +560,11 @@ function OnNineLanded(caster, ability)
 					damage = damage + courageDamage/2
 					DeductCourageDamageStack(caster)
 				end 
+
+				if nineCounter == 4 and caster:GetName() == "npc_dota_hero_doom_bringer" then
+					EmitGlobalSound("Heracles_NineLives_" .. math.random(1,3))
+				end
+
 				local targets = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), caster, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 1, false)
 				for k,v in pairs(targets) do
 					if caster.IsProjectionImproved then 

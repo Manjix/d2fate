@@ -1,5 +1,25 @@
 emiya_barrage_rain = class({})
 
+function emiya_barrage_rain:GetManaCost(iLevel)
+	local caster = self:GetCaster()
+
+	if caster:HasModifier("modifier_projection_attribute") then
+		return 100
+	else
+		return 0
+	end
+end
+
+function emiya_barrage_rain:GetCooldown(iLevel)
+	local caster = self:GetCaster()
+
+	if caster:HasModifier("modifier_projection_attribute") then
+		return 2
+	else
+		return 5
+	end
+end
+
 function emiya_barrage_rain:GetAOERadius()
 	return self:GetSpecialValueFor("radius")
 end
@@ -10,10 +30,6 @@ function emiya_barrage_rain:OnSpellStart()
 	local targetPoint = self:GetCursorPosition()
 	local radius = self:GetAOERadius()
 	local damage = self:GetSpecialValueFor("damage")
-	
-	if caster.IsProjectionImproved then 
-		damage = damage + self:GetSpecialValueFor("attribute_damage")
-	end	
 	local forwardVec = ( targetPoint - caster:GetAbsOrigin() ):Normalized()
 	local duration = 0
 
@@ -51,7 +67,11 @@ function emiya_barrage_rain:OnSpellStart()
 					-- Delay damage
 					local targets = FindUnitsInRadius(caster:GetTeam(), targetPoint + swordVector, nil, 300, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, FIND_ANY_ORDER, false) 
 					for k,v in pairs(targets) do
-						DoDamage(caster, v, damage , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)						
+						if v:HasModifier("modifier_sword_barrage_confine") then
+							DoDamage(caster, v, damage * 1.25, DAMAGE_TYPE_MAGICAL, 0, self, false)
+						else
+							DoDamage(caster, v, damage , DAMAGE_TYPE_MAGICAL, 0, self, false)
+						end
 					end
 					
 					-- Particles on impact

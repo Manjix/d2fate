@@ -2,6 +2,15 @@ nero_gladiusanus_blauserum = class({})
 
 LinkLuaModifier("modifier_gladiusanus", "abilities/nero/modifiers/modifier_gladiusanus", LUA_MODIFIER_MOTION_NONE)
 
+function nero_gladiusanus_blauserum:GetCooldown(iLevel)
+	local caster = self:GetCaster()
+	if caster:HasModifier("modifier_aestus_domus_aurea_nero") and caster:HasModifier("modifier_sovereign_attribute") then
+		return self:GetSpecialValueFor("aestus_cooldown")
+	else
+		return self:GetSpecialValueFor("cooldown")
+	end
+end
+
 function nero_gladiusanus_blauserum:GetManaCost(iLevel)
 	local caster = self:GetCaster()
 
@@ -28,8 +37,8 @@ function nero_gladiusanus_blauserum:OnSpellStart()
 
 		local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_phoenix/phoenix_fire_spirit_ground.vpcf", PATTACH_ABSORIGIN, caster)
 		ParticleManager:SetParticleControl(particle, 0, caster:GetAbsOrigin()) 
-		ParticleManager:SetParticleControl(particle, 1, Vector(300, 300, 300)) 
-		ParticleManager:SetParticleControl(particle, 3, Vector(300, 300, 300)) 
+		ParticleManager:SetParticleControl(particle, 1, Vector(500, 500, 500)) 
+		ParticleManager:SetParticleControl(particle, 3, Vector(500, 500, 500)) 
 
 		Timers:CreateTimer( 2.0, function()
 			ParticleManager:DestroyParticle( flameFx, false )
@@ -41,11 +50,6 @@ function nero_gladiusanus_blauserum:OnSpellStart()
         for k, v in pairs(aoeTargets) do
         	DoDamage(caster, v, damage, DAMAGE_TYPE_MAGICAL, 0, ability, false)
         end
-
-        if caster.IsGloryAcquired then
-	        self:EndCooldown()
-	        self:StartCooldown(1)
-	    end
 	end
 
 	caster:AddNewModifier(caster, ability, "modifier_gladiusanus", { Duration = self:GetSpecialValueFor("duration"),

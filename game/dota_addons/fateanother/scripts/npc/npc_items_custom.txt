@@ -1469,6 +1469,40 @@
 	    }
 	}	
 
+	"item_a_plus_recipe" 
+	{
+	    "ID"           			"1119"
+	    "BaseClass"    			"item_datadriven"
+	    "AbilityTextureName" 	"custom/item_recipe_scroll"
+	    "Model"        			"models/props_gameplay/tpscroll01.vmdl" 
+	    "Effect"       			"particles/generic_gameplay/dropped_item.vpcf"
+
+	    "ItemCost"    			"800"
+	    "ItemKillable" 			"1" 
+	    "ItemSellable" 			"1"
+	    "ItemPurchasable" 		"1"
+	    "ItemDroppable" 		"1"
+	    "ItemShareability" 		"ITEM_FULLY_SHAREABLE"
+
+
+	    "SideShop"     			"1" 
+	    "SecretShop"   			"0"
+
+	    "ItemInitialCharges" 	"1"
+	    "ItemStackable" 		"0"
+	    "ItemPermanent" 		"0"
+	    "ItemDisassembleRule" 	"DOTA_ITEM_DISASSEMBLE_ALWAYS"
+
+	    "AbilityBehavior"		"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+	    "AbilityCooldown"		"30"
+	    "precache"
+	    {
+	    	"particle"		"particles/units/heroes/hero_oracle/oracle_fatesedict_arc_pnt.vpcf"
+	    	"particle"		"particles/units/heroes/hero_oracle/oracle_false_promise_cast_enemy.vpcf"
+	    	"soundfile"		"soundevents/game_sounds_heroes/game_sounds_oracle.vsndevts"
+	    	"soundfile" 	"soundevents/game_sounds_items.vsndevts"
+	    }
+	}
 
 	"item_a_plus_scroll" 
 	{
@@ -1478,7 +1512,7 @@
 	    "Model"        			"models/props_gameplay/tpscroll01.vmdl" 
 	    "Effect"       			"particles/generic_gameplay/dropped_item.vpcf"
 
-	    "ItemCost"    			"1350"
+	    "ItemCost"    			"1400"
 	    "ItemKillable" 			"1" 
 	    "ItemSellable" 			"1"
 	    "ItemPurchasable" 		"1"

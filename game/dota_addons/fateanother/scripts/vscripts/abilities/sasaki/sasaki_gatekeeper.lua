@@ -8,6 +8,8 @@ function sasaki_gatekeeper:OnSpellStart()
 	caster:EmitSound("Hero_TemplarAssassin.Refraction")
 	caster:RemoveModifierByName("modifier_gatekeeper")
 
+	caster:EmitSound("Sasaki_Gatekeeper_1")
+
 	local gkdummy = CreateUnitByName("dummy_unit", caster:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
 	local gkdummypassive = gkdummy:FindAbilityByName("dummy_unit_passive")
 	gkdummypassive:SetLevel(1)

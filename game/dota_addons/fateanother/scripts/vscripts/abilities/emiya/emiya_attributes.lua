@@ -4,9 +4,11 @@ emiya_attribute_shroud_of_martin = class({})
 emiya_attribute_projection = class({})
 emiya_attribute_overedge = class({})
 
+LinkLuaModifier("modifier_hrunting_attribute", "abilities/emiya/modifiers/modifier_hrunting_attribute", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_shroud_of_martin", "abilities/emiya/modifiers/modifier_shroud_of_martin", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_eagle_eye", "abilities/emiya/modifiers/modifier_eagle_eye", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_overedge_attribute", "abilities/emiya/modifiers/modifier_overedge_attribute", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_projection_attribute", "abilities/emiya/modifiers/modifier_projection_attribute", LUA_MODIFIER_MOTION_NONE)
 
 function emiya_attribute_eagle_eye:OnSpellStart()
 	local caster = self:GetCaster()
@@ -32,7 +34,16 @@ end
 function emiya_attribute_hrunting:OnSpellStart()
 	local caster = self:GetCaster()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()	
-	hero.IsHruntingAcquired = true
+	
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+	    	hero:AddNewModifier(hero, self, "modifier_hrunting_attribute", {})
+			return nil
+		else
+			return 1
+		end
+	end)
+
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
@@ -63,9 +74,15 @@ end
 function emiya_attribute_projection:OnSpellStart()
 	local caster = self:GetCaster()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
-	
-	hero.IsProjectionImproved = true
-	hero.IsProjection2Improved = true
+
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+	    	hero:AddNewModifier(hero, self, "modifier_projection_attribute", {})
+			return nil
+		else
+			return 1
+		end
+	end)
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit

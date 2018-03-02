@@ -51,6 +51,7 @@ function emiya_broken_phantasm:OnChannelFinish(bInterrupted)
 
     self:StartCooldown(self:GetCooldown(self:GetLevel()))
     hCaster:SpendMana(self:GetManaCost(-1), self)
+    hCaster:EmitSound("Emiya_Caladbolg_" .. math.random(1,2))
 
     local tProjectile = {
         Target = hTarget,

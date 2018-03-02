@@ -31,9 +31,9 @@ function modifier_aestus_domus_aurea_nero:OnIntervalThink()
 	--local duration = self:GetRemainingTime()
 	for i = 1, #enemies do
 		if enemies[i]:IsAlive() and not enemies[i]:HasModifier("modifier_aestus_domus_aurea_enemy") then
-			enemies[i]:AddNewModifier(caster, self, "modifier_aestus_domus_aurea_enemy", {  ResistReduc = self.Resist * -1,
-																							ArmorReduc = self.Armor * -1,
-																							MovespeedReduc = self.Movespeed * -1,
+			enemies[i]:AddNewModifier(caster, self, "modifier_aestus_domus_aurea_enemy", {  ResistReduc = self.Resist * -0.5,
+																							ArmorReduc = self.Armor * -0.5,
+																							MovespeedReduc = self.Movespeed * -0.5,
 																							TheatreCenterX = self.TheatreCenterX,
 																							TheatreCenterY = self.TheatreCenterY,
 																							TheatreCenterZ = self.TheatreCenterZ,

@@ -33,32 +33,37 @@
 		//-------------------------------------------------------------------------------------------------------------
 		"AbilityCastRange"				"275"
 		"AbilityCastRangeBuffer"		"75"
-		"AbilityCastPoint"				"0.7"
+		//"AbilityCastPoint"				"0.7"
 
 		// Time		
 		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"28"
+		//"AbilityCooldown"				"28"
 
 		// Cost
 		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"500"
+		//"AbilityManaCost"				"500"
 		
 		"AbilitySpecial"
-		{
+		{			
 			"01"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"cast_time"				"0.7"
-			}
-			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
 				"damage"				"500 600 700 800 900"
 			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"cooldown"				"28"
+			}
 			"03"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"range"					"250"
+				"combo_cooldown"		"2"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"doublespear_window"	"4"
 			}
 		}
 	}

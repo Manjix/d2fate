@@ -10,7 +10,12 @@ function nero_aestus_domus_aurea:OnAbilityPhaseStart()
 	local caster = self:GetCaster()
 	local soundQueue = math.random(1,3)
 
-	caster:EmitSound("Nero.NP1." .. soundQueue)
+	local enemies = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 2500, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_HERO, 0, FIND_ANY_ORDER, false)
+    if #enemies == 0 then 
+        caster:EmitSound("Nero.NP1." .. soundQueue)
+    else
+        EmitGlobalSound("Nero.NP1." .. soundQueue)
+    end
 
 	return true
 end
@@ -38,9 +43,11 @@ function nero_aestus_domus_aurea:OnSpellStart()
 		caster:RemoveModifierByName("modifier_laus_saint_ready_checker")
 	end
 
-	if caster.IsGloryAcquired then
+	if caster:HasModifier("modifier_sovereign_attribute") then
 		radius = radius + 150
 	end
+
+	giveUnitDataDrivenModifier(caster, caster, "locked", delay)
 
 	Timers:CreateTimer(delay, function()
 		if caster:IsAlive() then
@@ -85,9 +92,9 @@ function nero_aestus_domus_aurea:OnSpellStart()
 				end
 			end
 
-			caster:AddNewModifier(caster, ability, "modifier_aestus_domus_aurea_nero", { Resist = ability:GetSpecialValueFor("resist_reduc") * -1,
-																						 Armor = ability:GetSpecialValueFor("armor_reduc") * -1,
-																						 Movespeed = ability:GetSpecialValueFor("movespeed_reduc") * -1,
+			caster:AddNewModifier(caster, ability, "modifier_aestus_domus_aurea_nero", { Resist = ability:GetSpecialValueFor("resist_reduc") * -2,
+																						 Armor = ability:GetSpecialValueFor("armor_reduc") * -2,
+																						 Movespeed = ability:GetSpecialValueFor("movespeed_reduc") * -2,
 																						 TheatreCenterX = caster:GetAbsOrigin().x,
 																						 TheatreCenterY = caster:GetAbsOrigin().y,
 																						 TheatreCenterZ = caster:GetAbsOrigin().z,

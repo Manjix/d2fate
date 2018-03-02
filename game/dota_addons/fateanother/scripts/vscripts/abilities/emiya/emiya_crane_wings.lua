@@ -5,21 +5,13 @@ function emiya_crane_wings:GetAOERadius()
 end
 
 function emiya_crane_wings:GetManaCost(iLevel)
-	if IsServer() then
-		local cost = 400
-
-		if self:GetCaster():HasModifier("modifier_overedge_charge") then
-			local charge = self:GetCaster():FindModifierByName("modifier_overedge_charge"):GetStackCount() or 0
-			cost = cost - (charge * self:GetSpecialValueFor("cost_reduction"))
-		end
-
-		CustomNetTables:SetTableValue("sync","crane_wings", { mana_cost = cost })
-
-		return cost
-	elseif IsClient() then 
-		local mana_cost = CustomNetTables:GetTableValue("sync","crane_wings").mana_cost
-		return mana_cost
+	local caster = self:GetCaster()
+	local charge = 0
+	if caster:HasModifier("modifier_overedge_charge") then
+		charge = caster:GetModifierStackCount("modifier_overedge_charge", caster)
 	end
+
+	return 400 - (charge * 50)	
 end
 
 function emiya_crane_wings:CastFilterResultLocation(vLocation)
@@ -152,14 +144,15 @@ function emiya_crane_wings:FireExtraSwords(targetPoint, radius)
 				dummy:RemoveSelf()
 			end)
 
-			local projectileSpeed = (targetPoint - target:GetAbsOrigin()):Length2D() / 0.6
+			local projectileSpeed = (targetPoint - target:GetAbsOrigin()):Length2D() / 0.55
 			local info = {
 				Target = target, 
 				Source = dummy,
 				Ability = kbAbility,
 				EffectName = "particles/units/heroes/hero_queenofpain/queen_shadow_strike.vpcf",
 				vSpawnOrigin = dummy:GetAbsOrigin(),
-				iMoveSpeed = projectileSpeed
+				iMoveSpeed = projectileSpeed,
+				bDodgeable = false
 			}
 			ProjectileManager:CreateTrackingProjectile(info) 
 		end
