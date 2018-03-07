@@ -35,7 +35,7 @@ end
 
 function nero_aestus_domus_aurea:OnSpellStart()
 	local caster = self:GetCaster()
-	local delay = self:GetSpecialValueFor("delay")
+	local delay = self:GetSpecialValueFor("form_delay")
 	local ability = self	
 	local radius = self:GetSpecialValueFor("radius")
 
@@ -50,13 +50,14 @@ function nero_aestus_domus_aurea:OnSpellStart()
 	giveUnitDataDrivenModifier(caster, caster, "locked", delay)
 
 	Timers:CreateTimer(delay, function()
-		if caster:IsAlive() then
-			EmitGlobalSound("Nero.NP2.1")		
+		if caster:IsAlive() then					
 			caster:EmitSound("Hero_LegionCommander.Duel.Victory")
 			caster.CircleDummy = CreateUnitByName("sight_dummy_unit", caster:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
 			caster.CircleDummy:FindAbilityByName("dummy_unit_passive"):SetLevel(1)
 			caster.CircleDummy:SetDayTimeVisionRange(radius)
 			caster.CircleDummy:SetNightTimeVisionRange(radius)
+
+			caster.CircleDummy:SetAbsOrigin(GetGroundPosition(caster:GetAbsOrigin(), nil))
 			
 			ability.FxDestroyed = false	
 
@@ -108,6 +109,10 @@ function nero_aestus_domus_aurea:OnSpellStart()
 			return
 		end
 	end)
+
+	Timers:CreateTimer(delay + 0.5, function()
+		EmitGlobalSound("Nero.NP2.1")
+	end)	
 end
 
 function nero_aestus_domus_aurea:OnOwnerDied()	
@@ -116,7 +121,7 @@ function nero_aestus_domus_aurea:OnOwnerDied()
 	end
 
 	local caster = self:GetCaster()
-	local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 2500, DOTA_UNIT_TARGET_TEAM_BOTH, DOTA_UNIT_TARGET_HERO, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)
+	local units = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 3500, DOTA_UNIT_TARGET_TEAM_BOTH, DOTA_UNIT_TARGET_HERO, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)
 
 	for i = 1, #units do
 		if units[i]:HasModifier("modifier_aestus_domus_aurea_enemy") or units[i]:HasModifier("modifier_aestus_domus_aurea_ally") then
@@ -149,9 +154,9 @@ end
 
 function nero_aestus_domus_aurea:CreateBannerInCircle(handle, center, multiplier)
 	local bannerTable = {}
-	for i=1, 8 do
-		local x = math.cos(i*math.pi/4) * multiplier
-		local y = math.sin(i*math.pi/4) * multiplier
+	for i=1, 12 do
+		local x = math.cos(i*math.pi/6) * multiplier
+		local y = math.sin(i*math.pi/6) * multiplier
 		local location = Vector(center.x + x, center.y + y, 0)
 		location = GetGroundPosition(location, nil)
 		local banner = CreateUnitByName("nero_banner", location, true, nil, nil, handle:GetTeamNumber())

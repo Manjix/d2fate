@@ -137,6 +137,8 @@ function emiya_kanshou_byakuya:FireSword(origin, forwardVec)
 	}
 
     local projectile = ProjectileManager:CreateLinearProjectile(projectileTable)
+
+    self:GetCaster():EmitSound("Hero_Luna.Attack")
 end
 
 function emiya_kanshou_byakuya:CheckOveredge()

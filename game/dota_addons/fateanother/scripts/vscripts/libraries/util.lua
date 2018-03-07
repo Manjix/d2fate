@@ -33,11 +33,12 @@ softdispellable = {
     "modifier_jeanne_charisma_agi",
     "modifier_jeanne_charisma_int",
     "modifier_atalanta_last_spurt",
-    --"modifier_cursed_lance",
     "modifier_battle_continuation_heal",
     "modifier_argos_armor",
     "modifier_ambush_invis",
     "modifier_blade_devoted_self",
+    "modifier_true_assassin_selfmod",
+    "modifier_selfmod_agility",
 }
 
 strongdispellable = {
@@ -78,17 +79,20 @@ strongdispellable = {
     "modifier_argos_armor",
     "modifier_ambush_invis",
     "modifier_blade_devoted_self",
+    "modifier_true_assassin_selfmod",
+    "modifier_selfmod_agility",
 
     -- Strong Dispelable
     "modifier_b_scroll",
     "modifier_argos_shield",
-    "modifier_rho_aias_shield",
+    "modifier_rho_aias",
     "modifier_gordius_wheel_mitigation_tier1",
     "modifier_gordius_wheel_mitigation_tier2",
     "modifier_gordius_wheel_mitigation_tier3",
     "tamamo_mantra",
     "modifier_lishuwen_cosmic_orbit_momentary_resistance",
     "modifier_cursed_lance_bp",
+    "modifier_heracles_berserk"
 }
 
 revokes = {
@@ -238,8 +242,8 @@ donotlevel = {
     --"archer_5th_rho_aias",  
     "emiya_rho_aias",  
     "gawain_saint",
-    "gawain_blessing_of_fairy"--,
-
+    "gawain_blessing_of_fairy",
+    "diarmuid_minds_eye"
 }
 
 CannotReset = {
@@ -798,21 +802,16 @@ function IsSpellBlocked(target)
     if target:HasModifier("modifier_instinct_active") then  --This abililty is blocked by the active/targeted Linken's effect.
         EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
         ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
+        target:RemoveModifierByName("modifier_instinct_active")
         return true
     elseif target:HasModifier("modifier_arondite") then
         EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
         ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
         return true
-    --[[elseif target:HasModifier("modifier_wind_protection_passive") then
-        if math.random() < 0.17 then
-            EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
-            local particle = ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
-            ParticleManager:SetParticleControl(particle, 0, target:GetAbsOrigin())
-            return true
-        end]]
     elseif target:HasModifier("modifier_diarmuid_minds_eye") then
         EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
         ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
+        target:RemoveModifierByName("modifier_diarmuid_minds_eye")
         return true
     else
         return false
@@ -861,9 +860,9 @@ function IsFemaleServant(target)
 end
 
 function IsImmuneToSlow(target)
-    if target:GetName() == "npc_dota_hero_sven" and target.IsEternalImproved == true then
-        EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
-        ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
+    if target:GetName() == "npc_dota_hero_sven" and target:HasModifier("modifier_eternal_arms_attribute") then
+        --EmitSoundWithCooldown("DOTA_Item.LinkensSphere.Activate", target, 1)
+        --ParticleManager:CreateParticle("particles/items_fx/immunity_sphere.vpcf", PATTACH_ABSORIGIN, target)
         return true 
     elseif target:HasModifier("modifier_forward") then
         return true

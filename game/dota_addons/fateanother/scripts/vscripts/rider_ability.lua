@@ -61,7 +61,7 @@ function NailPull(keys)
 		print(v:GetName())
 		if v:GetName() == "npc_dota_ward_base" then goto excludetarget end
 		DoDamage(caster, v, keys.Damage , DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-		if not v:HasModifier("modifier_wind_protection_passive") then
+		if not IsKnockbackImmune(v) then
 			giveUnitDataDrivenModifier(caster, v, "stunned", 0.033)
 			giveUnitDataDrivenModifier(caster, v, "dragged", 0.5)
 			

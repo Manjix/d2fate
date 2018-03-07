@@ -7,7 +7,7 @@ function lancelot_knight_of_honor_close:OnSpellStart()
         "lancelot_smg_barrage",
         "lancelot_double_edge",
         "lancelot_knight_of_honor",
-        "rubick_empty1",
+        "fate_empty1",
         "lancelot_arms_mastership",
         "lancelot_arondite",
         "attribute_bonus_custom",

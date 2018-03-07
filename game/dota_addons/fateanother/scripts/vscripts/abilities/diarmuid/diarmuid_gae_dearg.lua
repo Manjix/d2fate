@@ -100,7 +100,7 @@ function diarmuid_gae_dearg:OnSpellStart()
 	elseif maxDamageDist < distance and distance < minDamageDist then
 		damage = min_damage + damageDiff * (minDamageDist - distance) / distDiff
 	elseif minDamageDist <= distance then
-		damage = MinDamage
+		damage = min_damage
 	end
 
 	local diff = (target:GetAbsOrigin() - caster:GetAbsOrigin()):Normalized()
@@ -141,11 +141,16 @@ end
 function diarmuid_gae_dearg:DoubleSpearRefresh()
 	local current_cooldown = self:GetCooldownTimeRemaining()
 	local caster = self:GetCaster()
+	local window = self:GetSpecialValueFor("doublespear_window")
 
 	self:EndCooldown()
 
-	caster:AddNewModifier(caster, self, "modifier_doublespear_dearg", { Duration = self:GetSpecialValueFor("doublespear_window"),
-																		RemainingCooldown = current_cooldown - self:GetSpecialValueFor("doublespear_window")})
+	if caster:HasModifier("modifier_doublespear_attribute") then
+		window = window + self:GetSpecialValueFor("attribute_window")
+	end
+
+	caster:AddNewModifier(caster, self, "modifier_doublespear_dearg", { Duration = window,
+																		RemainingCooldown = current_cooldown - window})
 end
 
 function diarmuid_gae_dearg:StartRemainingCooldown(flCooldown)

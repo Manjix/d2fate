@@ -6,46 +6,19 @@ function sasaki_gatekeeper:OnSpellStart()
 	local caster = self:GetCaster()
 
 	caster:EmitSound("Hero_TemplarAssassin.Refraction")
-	caster:RemoveModifierByName("modifier_gatekeeper")
-
-	caster:EmitSound("Sasaki_Gatekeeper_1")
-
-	local gkdummy = CreateUnitByName("dummy_unit", caster:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
-	local gkdummypassive = gkdummy:FindAbilityByName("dummy_unit_passive")
-	gkdummypassive:SetLevel(1)
+	caster:RemoveModifierByName("modifier_gatekeeper")		
 
 	local radius = self:GetSpecialValueFor("leash_range")
-
-	local circleFxIndex = ParticleManager:CreateParticle( "particles/custom/archer/archer_clairvoyance_circle.vpcf", PATTACH_CUSTOMORIGIN, gkdummy )
-	ParticleManager:SetParticleControl( circleFxIndex, 0, gkdummy:GetAbsOrigin() )
-	ParticleManager:SetParticleControl( circleFxIndex, 1, Vector( radius, radius, radius ) )
-	ParticleManager:SetParticleControl( circleFxIndex, 2, Vector( self:GetSpecialValueFor("duration"), 0, 0 ) )
-	ParticleManager:SetParticleControl( circleFxIndex, 3, Vector( 255, 1, 255 ) )
-
+	
 	if caster.IsEyeOfSerenityAcquired then caster.IsEyeOfSerenityActive = true end
 
 	caster:AddNewModifier(caster, self, "modifier_gatekeeper", { Anchor = caster:GetAbsOrigin(),
 																 LeashDistance = self:GetSpecialValueFor("leash_range"),
 																 BonusAttack = self:GetSpecialValueFor("bonus_damage"),
 																 Duration = self:GetSpecialValueFor("duration")--,
-																 --EyeOfSerenity = caster.IsEyeOfSerenityAcquired
-																 --,
-																 --CircleDummy = gkdummy,
+																 --CircleDummy = gkdummy:GetEntityHandle(),
 																 --CircleFx = circleFxIndex
 	})
-
-	Timers:CreateTimer(function()
-		if not caster:HasModifier("modifier_gatekeeper") or not caster:IsAlive() then
-			ParticleManager:DestroyParticle(circleFxIndex, false)
-		    ParticleManager:ReleaseParticleIndex(circleFxIndex)
-			gkdummy:RemoveSelf()
-			caster.IsEyeOfSerenityActive = false
-
-			return 
-		end	
-
-		return 0.25
-	end)
 
 	if caster.IsQuickdrawAcquired then 
 		caster:SwapAbilities("sasaki_gatekeeper", "sasaki_quickdraw", false, true) 

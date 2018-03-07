@@ -43,14 +43,15 @@ function cmd_seal_2:OnSpellStart()
 	local currentMana = caster:GetMana()
 
 	if caster:GetHealth() == 1 then
-		--keys.ability:EndCooldown() 
-		caster:SetMana(caster:GetMana() + 1)
+		self:EndCooldown() 
+		caster:SetMana(caster:GetMana() + self:GetManaCost(1))
 		SendErrorMessage(caster:GetPlayerOwnerID(), "#Master_Not_Enough_Health")
 		return 
 	end
 
 	if not hero:IsAlive() or IsRevoked(hero) then
-		self:EndCooldown() 		
+		self:EndCooldown()
+		caster:SetMana(caster:GetMana() + self:GetManaCost(1))
 		SendErrorMessage(caster:GetPlayerOwnerID(), "#Revoked_Error")
 		return
 	end

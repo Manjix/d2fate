@@ -74,6 +74,9 @@ function emiya_unlimited_bladeworks:StartUBW()
 
     EmitGlobalSound("emiya_ubw7")
     caster:RemoveModifierByName("modifier_ubw_chant_count")
+    caster:RemoveModifierByName("modifier_hrunting_window")
+    caster:RemoveModifierByName("modifier_aestus_domus_aurea_ally")
+    caster:RemoveModifierByName("modifier_aestus_domus_aurea_enemy")
     giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", castDelay)
     StartAnimation(caster, {duration=2, activity=ACT_DOTA_CAST_ABILITY_4, rate=2})
 

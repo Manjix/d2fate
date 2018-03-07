@@ -9,21 +9,27 @@ end
 function modifier_true_assassin_selfmod:OnCreated(args)
 	if IsServer() then
 		local caster = self:GetParent()
-		local casterStr = math.ceil(caster:GetStrength()) 
-		local casterAgi = math.ceil(caster:GetAgility())
-		local casterInt = math.ceil(caster:GetIntellect())
+		local casterStr = math.floor(caster:GetStrength() + 0.5) 
+		local casterAgi = math.floor(caster:GetAgility() + 0.5)
+		local casterInt = math.floor(caster:GetIntellect() + 0.5)
+
+		print("Normal")
+		print(caster:GetStrength(), caster:GetAgility(), caster:GetIntellect())
+
+		print("Ceilings")
+		print(casterStr, casterAgi, casterInt)
 
 		self.HealAmt = args.HealAmt
 		print(casterStr, casterAgi, casterInt)
 
-		if casterStr == casterAgi and casterStr == casterInt then
+		if casterStr == casterAgi and casterStr == casterInt and casterAgi == casterInt then
 			CustomNetTables:SetTableValue("sync","self_mod_stats", { str_bonus = (args.BonusStats / 2),
 																	 agi_bonus = (args.BonusStats / 2),
 																	 int_bonus = (args.BonusStats / 2) })
 			self.BonusStr = args.BonusStats / 2
 			self.BonusAgi = args.BonusStats / 2
 			self.BonusInt = args.BonusStats / 2
-		elseif casterStr >= casterAgi and casterStr >= casterInt then
+		elseif casterStr >= casterAgi and casterStr > casterInt then
 			CustomNetTables:SetTableValue("sync","self_mod_stats", { str_bonus = args.BonusStats,
 																	 agi_bonus = 0,
 																	 int_bonus = 0 })

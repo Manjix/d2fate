@@ -1,0 +1,70 @@
+"DOTAAbilities"
+{
+	//========================================
+	// Lancelot : Arondite
+	//========================================
+	"lancelot_arondite"
+	{
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/lancelot/lancelot_arondite"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
+		"AbilityTextureName"			"custom/lancelot_arondite"
+		"AbilityType"					"DOTA_ABILITY_TYPE_ULTIMATE"
+		"MaxLevel"						"5"
+		"RequiredLevel"					"1"
+		"LevelsBetweenUpgrades"			"2"
+		"precache"
+		{
+			"particle"			"particles/custom/lancelot/lancelot_arondite.vpcf"
+			"particle"			"particles/custom/lancelot/lancelot_arondite_aoe_warp.vpcf"
+			"particle"			"particles/custom/lancelot/lancelot_arondite_ambient.vpcf"
+			"particle"			"particles/units/heroes/hero_brewmaster/brewmaster_thunder_clap.vpcf"
+			"particle"			"particles/units/heroes/hero_dragon_knight/dragon_knight_breathe_fire.vpcf"
+			"soundfile"			"soundevents/game_sounds_heroes/game_sounds_phoenix.vsndevts"
+			"soundfile"			"soundevents/game_sounds_heroes/game_sounds_sven.vsndevts"
+		}
+
+		// Time		
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityCooldown"				"50"
+		"AbilityCastPoint"				"0.0"
+
+		// Cost
+		//-------------------------------------------------------------------------------------------------------------
+		"AbilityManaCost"				"800"
+		
+		"AbilitySpecial"
+		{
+			"01"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"400 450 500 550 600"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_damage"			"15 20 25 30 35"
+			}
+			"03"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"bonus_allstat"			"5 10 15 20 25"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"duration"				"10"
+			}
+			"05"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"fire_damage"			"25 50 75 100 125"
+			}
+			"06"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"ef_dur"				"5"
+			}
+		}
+	}
+}

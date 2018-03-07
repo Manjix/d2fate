@@ -14,7 +14,7 @@ function atalanta_crossing_arcadia:OnUpgrade()
 end
 
 function atalanta_crossing_arcadia:GetCastRange()
-    return self:GetSpecialValueFor("range")
+    return self:GetSpecialValueFor("cast_range")
 end
 
 function atalanta_crossing_arcadia:GetAOERadius()
@@ -150,8 +150,17 @@ function atalanta_crossing_arcadia:OnSpellStart()
     local position = self:GetCursorPosition()
     local origin = caster:GetOrigin()
 
+    if (position - caster:GetAbsOrigin()):Length2D() > self:GetSpecialValueFor("range") then
+        local diff = position - caster:GetAbsOrigin()
+        local length_diff = (position - caster:GetAbsOrigin()):Length2D()
+
+        position = position - diff:Normalized() * (length_diff - self:GetSpecialValueFor("range"))
+    end
+
     local retreatDist = 500
     local forwardVec = caster:GetForwardVector()
+    --position - caster:GetAbsOrigin()
+    --caster:GetForwardVector()
     local archer = Physics:Unit(caster)
 
     local duration = self:GetSpecialValueFor("jump_duration")
@@ -159,6 +168,8 @@ function atalanta_crossing_arcadia:OnSpellStart()
     local aoe = self:GetAOERadius()
     local effect = "particles/units/heroes/hero_enchantress/enchantress_impetus.vpcf"
     local facing = caster:GetForwardVector() + Vector(0, 0, -2)
+    --position - caster:GetAbsOrigin()
+    --caster:GetForwardVector() + Vector(0, 0, -2)
     self.bFirstHit = true
     caster:PreventDI()
     caster:SetPhysicsFriction(0)

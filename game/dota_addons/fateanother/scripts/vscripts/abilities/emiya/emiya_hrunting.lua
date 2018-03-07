@@ -62,6 +62,7 @@ function emiya_hrunting:OnChannelFinish(bInterrupted)
     hCaster:SpendMana(hCaster:GetMana() * self:GetSpecialValueFor("mana_used") / 100, self)
     hCaster:StopSound("Hero_Invoker.EMP.Charge")
     hCaster:EmitSound("Emiya_Hrunt2")
+    hCaster:RemoveModifierByName("modifier_hrunting_window")
 
     local tExtraData = { max_bounce = self:GetSpecialValueFor("max_bounce"), 
                          bounce_damage = self:GetSpecialValueFor("bounce_damage"), 
@@ -121,11 +122,11 @@ function emiya_hrunting:FireProjectile(hTarget, hSource, tExtraData)
 
     local tProjectile = {
         Target = hTarget,
-        Source = hCaster,
+        Source = hSource,
         Ability = self,
         EffectName = "particles/custom/archer/archer_hrunting_orb.vpcf",
         iMoveSpeed = 3000,
-        vSourceLoc = hCaster:GetAbsOrigin(),
+        vSourceLoc = hSource:GetAbsOrigin(),
         bDodgeable = false,
         flExpireTime = GameRules:GetGameTime() + 10,
         iSourceAttachment = DOTA_PROJECTILE_ATTACHMENT_ATTACK_1,

@@ -1304,14 +1304,14 @@ function FateGameMode:OnHeroInGame(hero)
         hero.MasterUnit:SetMana(hero.MasterUnit:GetMaxMana())
         hero.MasterUnit2:SetMana(hero.MasterUnit2:GetMaxMana())
 
-        if hero:GetName() ~= "npc_dota_hero_juggernaut" then
+        --[[if hero:GetName() ~= "npc_dota_hero_juggernaut" then
             hero:SetBaseStrength(20)
             hero:SetBaseAgility(20)
             hero:SetBaseIntellect(20)
         else
             hero:SetBaseStrength(25)
             hero:SetBaseAgility(25)
-        end
+        end]]
     end
 
 
@@ -2754,6 +2754,9 @@ function FateGameMode:FinishRound(IsTimeOut, winner)
             if playerHero.RespawnPos then
                 playerHero:SetRespawnPosition(playerHero.RespawnPos)
             end
+        end
+        if playerHero:GetName() == "npc_dota_hero_lina" then
+            playerHero:RemoveModifierByName("modifier_aestus_domus_aurea_nero")
         end
         if playerHero:HasModifier("modifier_saint_debuff") then
             playerHero:RemoveModifierByName("modifier_saint_debuff")

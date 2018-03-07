@@ -17,15 +17,15 @@ function true_assassin_snatch_strike:OnSpellStart()
 	local totalDamage = damage
 
 	if caster.ShaytanArmAcquired then
-		local casterStr = math.ceil(caster:GetStrength()) 
-		local casterAgi = math.ceil(caster:GetAgility())
-		local casterInt = math.ceil(caster:GetIntellect())
+		local casterStr = math.floor(caster:GetStrength() + 0.5) 
+		local casterAgi = math.floor(caster:GetAgility() + 0.5)
+		local casterInt = math.floor(caster:GetIntellect() + 0.5)
 
-		if (casterStr > casterAgi and casterStr > casterInt)   then
+		if (casterStr >= casterAgi and casterStr > casterInt)   then
 			--print("Strength")
 			DoDamage(caster, target, casterStr * 3, DAMAGE_TYPE_PHYSICAL, 0, ability, false)
 			totalDamage = totalDamage + casterStr * 3
-		elseif casterAgi > casterStr and casterAgi > casterInt then
+		elseif casterAgi > casterStr and casterAgi >= casterInt then
 			--print("Agility")
 			DoDamage(caster, target, casterAgi * 2, DAMAGE_TYPE_PURE, 0, ability, false)
 			totalDamage = totalDamage + casterAgi * 2

@@ -1,54 +1,16 @@
 #base "lancelot_knight_of_honor.kv"
-#base "lancelot_durandal.kv"
-#base "lancelot_vajra.kv"
-#base "lancelot_harpe.kv"
-#base "lancelot_hrunt_naeg.kv"
-#base "lancelot_minigun.kv"
+//#base "lancelot_durandal.kv"
+//#base "lancelot_vajra.kv"
+//#base "lancelot_harpe.kv"
+//#base "lancelot_hrunt_naeg.kv"
+//#base "lancelot_minigun.kv"
 #base "eternal_arms.kv"
+#base "lancelot_smg_barrage.kv"
+#base "lancelot_arondite.kv"
+#base "lancelot_double_edge.kv"
 
 "DOTAAbilities"
-{
-	//=================================================================================================================
-	// Lancelot : Eternal Arms Mastership
-	//=================================================================================================================
-	"lancelot_arms_mastership_data"
-	{
-		"BaseClass"						"ability_datadriven"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE"
-		"AbilityTextureName"			"custom/lancelot_arms_mastership"
-		"MaxLevel"						"1"
-		"AbilityCooldown"				"45"
-		"precache"
-		{
-			"particle"					"particles/prototype_fx/item_linkens_buff.vpcf"
-			"particle"					"particles/custom/abaddon_death_coil_explosion.vpcf"
-			"soundfile"					"soundevents/game_sounds_heroes/game_sounds_abaddon.vsndevts"
-		}
-		
-		"AbilitySpecial"
-		{
-		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"		"lancelot_ability"
-				"Function"			"OnEternalStart"
-			}
-		}
-		
-		"Modifiers"
-		{
-			"modifier_eternal_arms_mastership_cooldown"
-			{
-				"IsDebuff"	"1"
-				"Attributes"		"MODIFIER_ATTRIBUTE_PERMANENT | MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE"
-			}
-
-		}
-	}
-	
+{	
 	//=================================================================================================================
 	// Lancelot : Blessing of Fairy
 	//=================================================================================================================
@@ -110,330 +72,11 @@
 	    	}
 	    	"modifier_blessing_of_fairy_cooldown"
 			{
-				"IsDebuff"	"1"
+				"IsDebuff"			"1"
 				"Attributes"		"MODIFIER_ATTRIBUTE_PERMANENT | MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE"
 			}
 		}
 	}
-
-
-	//=====================================
-	// Lancelot : SMG Barrage
-	//=====================================
-	"lancelot_smg_barrage"
-	{
-		// General
-		//-------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"ability_datadriven"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT"
-		"AbilityUnitTargetTeam"			"DOTA_UNIT_TARGET_TEAM_ENEMY"
-		"AbilityUnitTargetType"			"DOTA_UNIT_TARGET_ALL"
-		"AbilityUnitDamageType"			"DAMAGE_TYPE_PHYSICAL"
-		"AbilityTextureName"			"custom/lancelot_smg_barrage"
-		"AbilityCastAnimation" 			"ACT_DOTA_CAST_ABILITY_1" // Change the animation from "ACT_DOTA_CAST_ABILITY_1" to match the timing of the ability
-		"AnimationPlaybackRate" 		"2.0"
-		"MaxLevel"						"5"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"1"
-
-		"precache"
-		{
-			"particle"		"particles/custom/lancelot/lancelot_smg.vpcf"
-		}
-
-		// Casting
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCastRange"				"750"
-		"AbilityCastPoint"				"0.1"
-
-		// Time		
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"4 4 3 3 1"
-
-		// Damage.
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityDamage"					"140 180 220 260 300"
-
-		// Cost
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"100"
-		
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"			"FIELD_INTEGER"
-				"damage"			"140 180 220 260 300"
-			}
-			
-			"02"
-			{
-				"var_type"			"FIELD_INTEGER"
-				"start_radius"		"100"
-			}
-			"03"
-			{
-				"var_type"			"FIELD_INTEGER"
-				"end_radius"		"200 225 250 275 300"
-			}
-			"04"
-			{
-				"var_type"			"FIELD_INTEGER"
-				"speed"				"2000"
-			}
-			"05"
-			{
-				"var_type"			"FIELD_INTEGER"
-				"range"				"750"
-			}
-			"06"
-			{
-				"var_type"			"FIELD_FLOAT"
-				"duration"			"8.0"
-			}
-			"07"
-			{
-				"var_type"			"FIELD_INTEGER"
-				"armor_reduction"	"-2 -3 -4 -5 -6"
-			}
-		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-			 	"ScriptFile"	"lancelot_ability"
-			 	"Function"		"OnSMGStart"
-			 	"Target"		"POINT"
-			 	"EndRadius"		"%end_radius"
-			}
-			"FireSound"
-			{
-				"EffectName"	"Lancelot.SMG" 
-				"Target"		"CASTER"
-			}
-			"LinearProjectile"
-			{
-				"Target"			"POINT"
-				"EffectName"		""
-				"StartRadius"		"100"
-				"EndRadius"			"%end_radius"
-				"MoveSpeed"			"%speed"
-				"TargetTeams"		"DOTA_UNIT_TARGET_TEAM_ENEMY"
-				"TargetTypes"		"DOTA_UNIT_TARGET_ALL"
-				"FixedDistance"		"%range"
-				"ProvidesVision"	"0"
-				"HasFrontalCone"	"0"
-			}
-		}
-
-		"OnProjectileHitUnit"
-		{
-			"DeleteOnHit"			"false"
-			"RunScript"
-			{
-				"ScriptFile"	"lancelot_ability"
-				"Function"		"OnSMGHit"
-				"Damage"		"%damage"
-				"ArmorShred"	"%armor_reduction_percentage"
-				"Duration"		"%duration"
-			}
-		}
-
-		"Modifiers"
-		{
-			"modifier_smg_armor_reduction"
-			{
-				"Duration"		"%duration"
-				"Attributes"	"MODIFIER_ATTRIBUTE_MULTIPLE"
-				"IsDebuff"		"1"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_PHYSICAL_ARMOR_BONUS"     	"%armor_reduction"
-				}
-			}
-		}
-	}
-
-	//========================================
-	// Lancelot : Double Edge
-	//========================================
-	"lancelot_double_edge"
-	{
-		"BaseClass"						"ability_datadriven"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
-		"AbilityTextureName"			"custom/lancelot_double_edge"
-		"MaxLevel"						"5"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"1"
-
-		"precache"
-		{
-			"particle"			"particles/items2_fx/satanic_buff.vpcf"
-			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_sven.vsndevts"
-		}
-
-		// Time		
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"17"
-		"AbilityCastPoint"				"0.0"
-
-		// Cost
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"200"
-		
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_speed"			"10 20 30 40 50"
-			}
-			"02"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_ms"				"15 20 25 30 35"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"slow"					"80"
-			}
-			"04"
-			{
-				"var_type"				"FIELD_FLOAT"
-				"mana_burn"				"30 40 50 60 70"
-			}
-			"05"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"extra_damage_taken"	"25"
-			}
-			"06"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_ms_halved"		"25"
-			}
-
-			"07"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"duration"				"10"
-			}
-		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"		"lancelot_ability"
-				"Function"			"OnDEStart"
-			}
-			"FireSound"
-			{
-				"EffectName"	"Hero_Sven.WarCry"
-				"Target"		"CASTER"
-			}
-		}
-
-		"Modifiers"
-		{
-			"modifier_double_edge"
-			{
-				"Duration"		"%duration"
-				"EffectName" "particles/items2_fx/satanic_buff.vpcf"
-	            "EffectAttachType" "follow_origin"				
-				"OnAttackLanded"
-				{
-					"RunScript"
-					{
-						"ScriptFile"	"lancelot_ability"
-						"Function"		"OnDEAttack"
-						"ManaBurn"		"%mana_burn"
-					}
-				}
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_ATTACKSPEED_BONUS_CONSTANT"	"%bonus_speed"
-					"MODIFIER_PROPERTY_INCOMING_DAMAGE_PERCENTAGE"	"%extra_damage_taken"
-				}
-			}
-
-			"modifier_double_edge_ms"
-			{
-				"Duration"		"10.0"
-				"IsHidden"		"1"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"%bonus_ms"
-				}
-			}
-			"modifier_double_edge_ms_tier2"
-			{
-				"Duration"		"2.5"
-				"IsHidden"		"1"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"%bonus_ms_halved"
-				}
-			}
-			"modifier_double_edge_slow"
-			{
-				"Duration"		"0.8"
-				"IsHidden"		"1"
-				"EffectName" "particles/items3_fx/silver_edge_slow.vpcf"
-	            "EffectAttachType" "follow_origin"	
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE"	"-80"
-				}
-			}
-		}
-	}
-
-	//========================================
-	// Lancelot : Knight of Honor
-	//========================================
-	"lancelot_knight_of_honor_old"
-	{
-		"BaseClass"						"ability_datadriven"
-		"AbilityTextureName"			"custom/lancelot_knight_of_honor"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
-		"MaxLevel"						"5"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"2"
-		
-		
-		"AbilityCastPoint"				"0.0"
-		"AbilityCooldown"				"0"
-		"AbilityManaCost"				"0"
-
-		"precache"
-		{
-		}
-
-		"AbilitySpecial"
-		{
-		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"	"lancelot_ability"
-				"Function"		"OnKnightStart"
-			}
-		}
-		"OnUpgrade"
-		{
-			"RunScript"
-			{
-				"ScriptFile"	"lancelot_ability"
-				"Function"		"KnightInitialize"
-			}
-		}
-	}
-
 
 	//=================================================================================================================
 	// Lancelot : Caliburn
@@ -441,7 +84,7 @@
 	"lancelot_caliburn"
 	{
 		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"3"
+		"MaxLevel"						"4"
 		"RequiredLevel"					"25"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
@@ -483,43 +126,43 @@
 		{
 			"01"
 			{
-				"var_type"			"FIELD_INTEGER"
-				"damage"			"480 580 680"
+				"var_type"				"FIELD_INTEGER"
+				"damage"				"380 480 580 680"
 			}
 			"02"
 			{
-				"var_type"			"FIELD_FLOAT"
+				"var_type"				"FIELD_FLOAT"
 				"aoe_damage_percent"	"0.5"
 			}
 			"03"
 			{
-				"var_type"			"FIELD_INTEGER"
-				"radius"			"200"
+				"var_type"				"FIELD_INTEGER"
+				"radius"				"200"
 			}
 			"04"
 			{
-				"var_type"			"FIELD_INTEGER"
-				"range"				"200"
+				"var_type"				"FIELD_INTEGER"
+				"range"					"200"
 			}
 			"05"
 			{
-				"var_type"			"FIELD_INTEGER"
-				"speed"				"700"
+				"var_type"				"FIELD_INTEGER"
+				"speed"					"700"
 			}
 			"06"
 			{
-				"var_type"			"FIELD_INTEGER"
+				"var_type"						"FIELD_INTEGER"
 				"aoe_damage_percent_tooltip"	"50"
 			}
 			"07"
 			{
-				"var_type"			"FIELD_FLOAT"
-				"slow_amount"		"-40 -45 -50"
+				"var_type"				"FIELD_FLOAT"
+				"slow_amount"			"-35 -40 -45 -50"
 			}
 			"08"
 			{
-				"var_type"			"FIELD_FLOAT"
-				"slow_duration"		"3"
+				"var_type"				"FIELD_FLOAT"
+				"slow_duration"			"3"
 			}
 		}
 		
@@ -594,7 +237,7 @@
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"3"
+		"MaxLevel"						"4"
 		"RequiredLevel"					"25"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_HIDDEN"
@@ -626,7 +269,7 @@
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"damage"				"470 540 610"
+				"damage"				"450 550 650 750"
 			}
 			"03"
 			{
@@ -689,7 +332,7 @@
 		// General
 		//-------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"3"
+		"MaxLevel"						"4"
 		"RequiredLevel"					"25"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_HIDDEN"
@@ -722,7 +365,7 @@
 
 		// Damage.
 		//-------------------------------------------------------------------------------------------------------------
-		"AbilityDamage"					"550 660 770"
+		"AbilityDamage"					"550 660 770 880"
 
 		// Cost
 		//-------------------------------------------------------------------------------------------------------------
@@ -733,12 +376,12 @@
 			"01"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"damage"			"550 660 770"
+				"damage"			"550 660 770 880"
 			}
 			"03"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"heartbreak_threshold"		"200 240 280"
+				"heartbreak_threshold"		"200 240 280 320"
 			}
 		}
 		
@@ -781,7 +424,7 @@
 		// General
 		//-------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"3"
+		"MaxLevel"						"4"
 		"RequiredLevel"					"25"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_POINT | DOTA_ABILITY_BEHAVIOR_AOE | DOTA_ABILITY_BEHAVIOR_HIDDEN"
@@ -833,12 +476,12 @@
 			"03"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"damage"			"70 80 100"
+				"damage"			"70 80 90 100"
 			}
 			"04"
 			{
 				"var_type"			"FIELD_INTEGER"
-				"damage_lasthit"	"400 625 1025"
+				"damage_lasthit"	"450 625 800 1025"
 			}
 			"05"
 			{
@@ -928,7 +571,7 @@
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"3"
+		"MaxLevel"						"4"
 		"RequiredLevel"					"25"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_HIDDEN"
@@ -955,12 +598,12 @@
 			"01"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"stun_duration"			"1.2 1.45 1.7"
+				"stun_duration"			"1.3 1.45 1.6 1.75"
 			}
 			"02"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"duration"				"3.0 4.0 5.0"
+				"duration"				"3.0 4.0 5.0 6.0"
 			}
 		}
 
@@ -1021,7 +664,7 @@
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
 		"BaseClass"						"ability_datadriven"
-		"MaxLevel"						"3"
+		"MaxLevel"						"4"
 		"RequiredLevel"					"25"
 		"LevelsBetweenUpgrades"			"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_UNIT_TARGET | DOTA_ABILITY_BEHAVIOR_HIDDEN"
@@ -1053,13 +696,13 @@
 			"01"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"damage"				"200 250 300"
+				"damage"				"250 275 300 350"
 			}
 
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"lasthit_damage"		"300 400 500"
+				"lasthit_damage"		"300 400 500 600"
 			}
 			"03"
 			{
@@ -1139,225 +782,21 @@
 		}
 	}
 
-
-	//========================================
-	// Lancelot : Arondite
-	//========================================
-	"lancelot_arondite"
-	{
-		"BaseClass"						"ability_datadriven"
-		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE"
-		"AbilityTextureName"			"custom/lancelot_arondite"
-		"AbilityType"					"DOTA_ABILITY_TYPE_ULTIMATE"
-		"MaxLevel"						"5"
-		"RequiredLevel"					"1"
-		"LevelsBetweenUpgrades"			"2"
-		"precache"
-		{
-			"particle"		"particles/custom/lancelot/lancelot_arondite.vpcf"
-			"particle"		"particles/custom/lancelot/lancelot_arondite_aoe_warp.vpcf"
-			"particle"		"particles/custom/lancelot/lancelot_arondite_ambient.vpcf"
-			"particle"		"particles/units/heroes/hero_brewmaster/brewmaster_thunder_clap.vpcf"
-			"particle"		"particles/units/heroes/hero_dragon_knight/dragon_knight_breathe_fire.vpcf"
-			"soundfile"		"soundevents/game_sounds_heroes/game_sounds_phoenix.vsndevts"
-			"soundfile"				"soundevents/game_sounds_heroes/game_sounds_sven.vsndevts"
-		}
-
-		// Time		
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityCooldown"				"50"
-		"AbilityCastPoint"				"0.0"
-
-		// Cost
-		//-------------------------------------------------------------------------------------------------------------
-		"AbilityManaCost"				"800"
-		
-		"AbilitySpecial"
-		{
-			"01"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"damage"			"400 450 500 550 600"
-			}
-			"02"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_damage"			"12 14 16 18 20"
-			}
-			"03"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"bonus_allstat"			"4 8 12 16 20"
-			}
-			"04"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"duration"				"10"
-			}
-			"05"
-			{
-				"var_type"				"FIELD_INTEGER"
-				"radius"				"500"
-			}
-
-		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"		"lancelot_ability"
-				"Function"			"OnAronditeStart"
-				"Duration"			"%duration"
-				"Damage"			"%damage"
-				"Radius"			"%radius"
-			}
-			"FireSound"
-			{
-				"EffectName"	"Hero_Sven.GodsStrength"
-				"Target"		"CASTER"
-			}
-		}
-		
-		"OnProjectileHitUnit"
-		{
-			"DeleteOnHit"			"true"
-            "RunScript"
-            {
- 			 	"ScriptFile"	"lancelot_ability"
-			 	"Function"		"OnEternalFlameHit"           	
-            }
-		}
-		"Modifiers"
-		{
-			"modifier_arondite"
-			{
-				"Duration"	"%duration"
-				"OnCreated"
-				{
-					"AttachEffect"
-					{
-						"Target"			"CASTER"
-						"EffectName"		"particles/custom/lancelot/lancelot_arondite.vpcf"
-						"EffectAttachType"	"follow_customorigin"
-						"ControlPointEntities"
-						{
-							"CASTER"		"attach_sword"
-							"CASTER"		"attach_sword"
-							"CASTER"		"attach_sword"
-						}
-					}
-					"AttachEffect"
-					{
-						"Target"			"CASTER"
-						"EffectName"		"particles/custom/lancelot/lancelot_arondite.vpcf"
-						"EffectAttachType"	"follow_customorigin"
-						"ControlPointEntities"
-						{
-							"CASTER"		"attach_sword"
-							"CASTER"		"attach_sword"
-							"CASTER"		"attach_sword"
-						}
-					}
-					"AttachEffect"
-					{
-						"Target"			"CASTER"
-						"EffectName"		"particles/custom/lancelot/lancelot_arondite_ambient.vpcf"
-						"EffectAttachType"	"follow_customorigin"
-						"ControlPointEntities"
-						{
-							"CASTER"		"attach_origin"
-						}
-					}
-				}
-				"OnAttackLanded"
-				{	
-					"RunScript"
-					{
-						"ScriptFile"	"lancelot_ability"
-						"Function"		"OnAronditeAttackLanded"
-					}	
-				}
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_PREATTACK_BONUS_DAMAGE"	"%bonus_damage"
-					"MODIFIER_PROPERTY_STATS_AGILITY_BONUS"		"%bonus_allstat"
-					"MODIFIER_PROPERTY_STATS_STRENGTH_BONUS"	"%bonus_allstat"
-					"MODIFIER_PROPERTY_STATS_INTELLECT_BONUS"	"%bonus_allstat"
-				}
-				"States"
-				{
-					"MODIFIER_STATE_UNSELECTABLE" "MODIFIER_STATE_VALUE_ENABLED"
-				}
-			}
-			"modifier_arondite_crit"
-			{
-				"Duration"	"%duration"
-				"IsHidden"	"1"
-				"OnAttackStart"
-				{
-					"RemoveModifier"
-					{
-						"ModifierName"	"modifier_arondite_crit_hit"
-						"Target"		"CASTER"
-					}
-
-					"Random"
-					{
-						"Chance"	"25"
-						"OnSuccess"
-						{
-							"RunScript"
-							{
-								"ScriptFile"		"lancelot_ability"
-								"Function"			"OnAronditeCrit"
-							}
-						}
-					}
-				}
-			}
-
-			"modifier_arondite_crit_hit"
-			{
-				"IsHidden"		"1"
-				"Properties"
-				{
-					"MODIFIER_PROPERTY_PREATTACK_CRITICALSTRIKE" "250"
-				}
-				"OnAttackLanded"
-				{
-			    	"FireEffect"
-			    	{
-			    		"EffectName"		"particles/units/heroes/hero_juggernaut/jugg_crit_blur_impact.vpcf"
-			    		"EffectAttachType"	"attach_hitloc"
-			    		"Target"			"TARGET"
-			    	}
-			        "RemoveModifier"
-			        {
-			            "ModifierName"  	"modifier_arondite_crit_hit"
-			            "Target"   			"CASTER"    
-			        }			
-				}
-			}
-		}
-	}
-
-
 	//=======================================
 	// Lancelot Attribute : Improve Eternal Arms Mastership
 	//=======================================
 	"lancelot_attribute_improve_eternal"
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"ability_datadriven"
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/lancelot/lancelot_attributes"
 		"MaxLevel"						"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
-		"AbilityTextureName"			"custom/lancelot_attribute_improve_eternal"
-		
+		"AbilityTextureName"			"custom/lancelot_attribute_improve_eternal"		
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"8"
+		"AbilityManaCost"				"14"
 
 		"precache"
 		{
@@ -1368,22 +807,13 @@
 		{
 			"01"
 			{
-				"var_type"				"FIELD_INTEGER"
+				"var_type"						"FIELD_INTEGER"
 				"health_threshold"				"500"
 			}
 			"02"
 			{
-				"var_type"				"FIELD_FLOAT"
-				"magic_immune_duration"				"3.0"
-			}
-		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"	"lancelot_ability"
-				"Function"		"OnEternalImproved"
+				"var_type"						"FIELD_FLOAT"
+				"magic_immune_duration"			"3.0"
 			}
 		}
 	}
@@ -1438,7 +868,8 @@
 	"lancelot_attribute_improve_knight_of_honor"
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"ability_datadriven"
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/lancelot/lancelot_attributes"
 		"MaxLevel"						"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"AbilityTextureName"			"custom/lancelot_attribute_improve_knight_of_honor"
@@ -1455,15 +886,6 @@
 		"AbilitySpecial"
 		{
 		}
-		
-		"OnSpellStart"
-		{
-			"RunScript"
-			{
-				"ScriptFile"	"lancelot_ability"
-				"Function"		"OnKnightImproved"
-			}
-		}
 	}
 
 	//=======================================
@@ -1472,7 +894,8 @@
 	"lancelot_attribute_eternal_flame"
 	{
 		// General		//------------------------------------------------------------------------------------------------------------
-		"BaseClass"						"ability_datadriven"
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/lancelot/lancelot_attributes"
 		"MaxLevel"						"1"
 		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
 		"AbilityTextureName"			"custom/lancelot_attribute_eternal_flame"
@@ -1480,7 +903,7 @@
 		
 		"AbilityCastPoint"				"0.0"
 		"AbilityCooldown"				"9999"
-		"AbilityManaCost"				"10"
+		"AbilityManaCost"				"15"
 
 		"precache"
 		{
@@ -1491,7 +914,7 @@
 			"01"
 			{
 				"var_type"				"FIELD_FLOAT"
-				"flame_damage"				"100"
+				"armor_shred"			"10"
 			}
 			"02"
 			{
@@ -1499,13 +922,40 @@
 				"mana_cost"				"30"
 			}
 		}
+	}
+
+	//=======================================
+	// Lancelot Attribute : Knight of the Lake
+	//=======================================
+	"lancelot_attribute_kotl"
+	{
+		// General		//------------------------------------------------------------------------------------------------------------
+		"BaseClass"						"ability_lua"
+		"ScriptFile"					"abilities/lancelot/lancelot_attributes"
+		"MaxLevel"						"1"
+		"AbilityBehavior"				"DOTA_ABILITY_BEHAVIOR_NO_TARGET | DOTA_ABILITY_BEHAVIOR_IMMEDIATE | DOTA_ABILITY_BEHAVIOR_IGNORE_PSEUDO_QUEUE | DOTA_ABILITY_BEHAVIOR_IGNORE_CHANNEL"
+		"AbilityTextureName"			"custom/lancelot_knight_of_the_lake"
 		
-		"OnSpellStart"
+		
+		"AbilityCastPoint"				"0.0"
+		"AbilityCooldown"				"9999"
+		"AbilityManaCost"				"18"
+
+		"precache"
 		{
-			"RunScript"
+		}
+
+		"AbilitySpecial"
+		{
+			"01"
 			{
-				"ScriptFile"	"lancelot_ability"
-				"Function"		"OnEFAcquired"
+				"var_type"				"FIELD_FLOAT"
+				"flame_damage"			"100"
+			}
+			"02"
+			{
+				"var_type"				"FIELD_FLOAT"
+				"mana_cost"				"30"
 			}
 		}
 	}

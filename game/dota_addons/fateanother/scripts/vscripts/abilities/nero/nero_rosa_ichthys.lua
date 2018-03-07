@@ -3,6 +3,16 @@ nero_rosa_ichthys = class({})
 LinkLuaModifier("modifier_rosa_slow", "abilities/nero/modifiers/modifier_rosa_slow", LUA_MODIFIER_MOTION_NONE)
 LinkLuaModifier("modifier_rosa_buffer", "abilities/nero/modifiers/modifier_rosa_buffer", LUA_MODIFIER_MOTION_NONE)
 
+function nero_rosa_ichthys:GetCastRange(vLocation, hTarget)
+	local caster = self:GetCaster()
+
+	if caster:HasModifier("modifier_aestus_domus_aurea_nero") then
+		return self:GetSpecialValueFor("aestus_range")
+	else
+		return self:GetSpecialValueFor("range")
+	end
+end
+
 function nero_rosa_ichthys:CastFilterResultTarget(hTarget)
 	local filter = UnitFilter(hTarget, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, self:GetCaster():GetTeamNumber())
 
@@ -60,6 +70,8 @@ function nero_rosa_ichthys:OnSpellStart()
 	FindClearSpaceForUnit(caster, caster:GetAbsOrigin(), true)
 	StartAnimation(caster, {duration = 0.4, activity = ACT_DOTA_ATTACK_EVENT, rate = 3})	
 	caster:MoveToTargetToAttack(target)
+
+	if IsSpellBlocked(target) then return end
 
 	DoDamage(caster, target, damage, DAMAGE_TYPE_MAGICAL, 0, self, false)
 	if not target:HasModifier("modifier_rosa_buffer") then

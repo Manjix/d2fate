@@ -23,18 +23,7 @@ end
 function diarmuid_attribute_minds_eye:OnSpellStart()
 	local caster = self:GetCaster()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()	
-
-	hero:SwapAbilities("diarmuid_minds_eye", "fate_empty1", true, false)
-	
-	Timers:CreateTimer(function()
-		if hero:IsAlive() then 
-	    	hero:AddNewModifier(hero, self, "modifier_minds_eye_attribute", { Radius = self:GetSpecialValueFor("radius"),
-	    																	  VisionDuration = self:GetSpecialValueFor("duration")})
-			return nil
-		else
-			return 1
-		end
-	end)
+	hero:FindAbilityByName("diarmuid_minds_eye"):SetLevel(1)
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit

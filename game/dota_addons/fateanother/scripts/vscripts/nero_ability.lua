@@ -1,3 +1,5 @@
+LinkLuaModifier("modifier_eagle_eye", "abilities/emiya/modifiers/modifier_eagle_eye", LUA_MODIFIER_MOTION_NONE)
+
 function OnIPStart(keys)
 	local caster = keys.caster
 
@@ -135,14 +137,14 @@ function OnClairvoyanceAcquired(keys)
 			caster:RemoveModifierByName(PassiveModifiers[i])
 		end
 	end
-	caster:AddAbility("archer_5th_clairvoyance")
+	caster:AddAbility("emiya_clairvoyance")
 	if caster.IsPrivilegeImproved then
 		caster.IsEagleEyeAcquired = true
-		caster:FindAbilityByName("archer_5th_clairvoyance"):SetLevel(2)
+		caster:FindAbilityByName("emiya_clairvoyance"):SetLevel(2)
 	else
-		caster:FindAbilityByName("archer_5th_clairvoyance"):SetLevel(1)
+		caster:FindAbilityByName("emiya_clairvoyance"):SetLevel(1)
 	end
-	caster:SwapAbilities("archer_5th_clairvoyance", "fate_empty1", true, false)
+	caster:SwapAbilities("emiya_clairvoyance", "fate_empty1", true, false)
 	caster:FindAbilityByName("nero_imperial_privilege"):StartCooldown(9999)
 	OnIPClose(keys)
 end
@@ -800,6 +802,17 @@ function OnPrivilegeImproved(keys)
     local ply = caster:GetPlayerOwner()
     local hero = caster:GetPlayerOwner():GetAssignedHero()
     hero.IsPrivilegeImproved = true
+
+    Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+			hero:AddNewModifier(hero, self, "modifier_eagle_eye", {})
+			return nil
+		else
+			return 1
+		end
+	end)
+
+
     -- Set master 1's mana 
     local master = hero.MasterUnit
     master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))

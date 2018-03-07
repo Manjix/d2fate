@@ -1,15 +1,21 @@
 emiya_clairvoyance = class({})
 
+LinkLuaModifier("modifier_hrunting_window", "abilities/emiya/modifiers/modifier_hrunting_window", LUA_MODIFIER_MOTION_NONE)
+
+function emiya_clairvoyance:GetAOERadius()
+	return self:GetSpecialValueFor("radius")
+end
+
 function emiya_clairvoyance:OnSpellStart()
 	local caster = self:GetCaster()
 	local radius = self:GetSpecialValueFor("radius")
 	local targetLoc = self:GetCursorPosition()
 
-	local visiondummy = SpawnVisionDummy(caster, targetLoc, radius, self:GetSpecialValueFor("duration"), caster.IsEagleEyeAcquired)
+	local visiondummy = SpawnVisionDummy(caster, targetLoc, radius, self:GetSpecialValueFor("duration"), caster:HasModifier("modifier_eagle_eye"))
 
-	if caster.IsHruntingAcquired then
-		caster:SwapAbilities("emiya_clairvoyance", "emiya_hrunting", false, true) 
-		caster:AddNewModifier(caster, self, "modifier_hrunting_window", { Duration = 8 })
+	if caster:HasModifier("modifier_hrunting_attribute") then
+		--caster:SwapAbilities("emiya_clairvoyance", "emiya_hrunting", false, true) 
+		caster:AddNewModifier(caster, self, "modifier_hrunting_window", { Duration = self:GetSpecialValueFor("duration") })
 	end
 	
 	local circleFxIndex = ParticleManager:CreateParticle( "particles/custom/archer/archer_clairvoyance_circle.vpcf", PATTACH_CUSTOMORIGIN, visiondummy )
@@ -33,8 +39,7 @@ function emiya_clairvoyance:OnSpellStart()
 		ParticleManager:ReleaseParticleIndex( circleFxIndex )
 		ParticleManager:ReleaseParticleIndex( dustFxIndex )
 		return nil
-	end
-	)
+	end)
 
 	EmitSoundOnLocationWithCaster(targetLoc, "Hero_KeeperOfTheLight.BlindingLight", visiondummy)
 end

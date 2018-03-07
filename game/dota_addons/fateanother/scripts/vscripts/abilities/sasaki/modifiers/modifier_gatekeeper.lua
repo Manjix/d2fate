@@ -1,19 +1,31 @@
 modifier_gatekeeper = class({})
 
 function modifier_gatekeeper:OnCreated(keys)
-	self.Anchor = self:GetParent():GetAbsOrigin()
-	self.LeashDistance = keys.LeashDistance
-	self.BonusAttack = keys.BonusAttack
-	--self.CircleDummy = keys.CircleDummy
-	--self.CircleFx = keys.CircleFx
-
 	if IsServer() then
+		local caster = self:GetParent()
+		self.Anchor = self:GetParent():GetAbsOrigin()
+		self.LeashDistance = keys.LeashDistance
+		self.BonusAttack = keys.BonusAttack
+
+		self.CircleDummy = CreateUnitByName("dummy_unit", caster:GetAbsOrigin(), false, caster, caster, caster:GetTeamNumber())
+		local gkdummypassive = self.CircleDummy:FindAbilityByName("dummy_unit_passive")
+		gkdummypassive:SetLevel(1)
+
+		self.CircleFx = ParticleManager:CreateParticle( "particles/custom/archer/archer_clairvoyance_circle.vpcf", PATTACH_CUSTOMORIGIN, self.CircleDummy )
+		ParticleManager:SetParticleControl( self.CircleFx, 0, self.CircleDummy:GetAbsOrigin() )
+		ParticleManager:SetParticleControl( self.CircleFx, 1, Vector( self.LeashDistance, self.LeashDistance, self.LeashDistance ) )
+		ParticleManager:SetParticleControl( self.CircleFx, 2, Vector( self:GetDuration(), 0, 0 ) )
+		ParticleManager:SetParticleControl( self.CircleFx, 3, Vector( 255, 1, 255 ) )
+	
 		CustomNetTables:SetTableValue("sync","gatekeeper", { bonus_damage = self.BonusAttack })
 	end
 end
 
 function modifier_gatekeeper:OnRefresh(args)
-	self:OnCreated(args)
+	if IsServer() then
+		self:RemoveParticlesAndDummy()
+		self:OnCreated(args)
+	end
 end
 
 function modifier_gatekeeper:GetModifierMoveSpeed_Absolute()
@@ -56,21 +68,32 @@ function modifier_gatekeeper:OnAttackLanded(args)
 
 		caster:Heal(self.BonusAttack, caster)
 
-		if caster.IsMindsEyeAcquired then
+		if caster:HasModifier("modifier_minds_eye_attribute") and (not caster:HasModifier("modifier_exhausted")) then
 			caster:GiveMana(10)
 		end
 	end
 end
 
---[[function modifier_gatekeeper:OnDestroy()
+function modifier_gatekeeper:OnDestroy()
 	if IsServer() then
-		if IsValidEntity(self.CircleDummy) then
-			ParticleManager:DestroyParticle( self.CircleFx, false )
-            ParticleManager:ReleaseParticleIndex( self.CircleFx )
-			self.CircleDummy:RemoveSelf()
+		self:RemoveParticlesAndDummy()
+	end
+end
+
+function modifier_gatekeeper:RemoveParticlesAndDummy()
+	if IsServer() then
+		local caster = self:GetParent()
+
+		ParticleManager:DestroyParticle(self.CircleFx, false)
+	    ParticleManager:ReleaseParticleIndex(self.CircleFx)
+		self.CircleDummy:RemoveSelf()
+		caster.IsEyeOfSerenityActive = false
+
+		if math.abs((caster:GetAbsOrigin() - self.Anchor):Length2D()) > self.LeashDistance then
+			caster:EmitSound("Sasaki_Gatekeeper_1")
 		end
 	end
-end]]
+end
 
 ------------------------------------------------------------------------------------
 

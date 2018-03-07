@@ -1,3 +1,5 @@
+LinkLuaModifier("modifier_eternal_arms_attribute", "abilities/lancelot/modifiers/modifier_eternal_arms_attribute", LUA_MODIFIER_MOTION_NONE)
+
 function OnEternalStart(keys)
     local caster = keys.caster
     local ability = keys.ability
@@ -244,7 +246,7 @@ function OnKnightClosed(keys)
         elseif caster:HasAbility("lancelot_blessing_of_fairy") then 
             caster:SwapAbilities(a4:GetName(), "lancelot_blessing_of_fairy", false, true) 
         else 
-            caster:SwapAbilities(a4:GetName(), "rubick_empty1", false, true) 
+            caster:SwapAbilities(a4:GetName(), "fate_empty1", false, true) 
         end
         caster:SwapAbilities(a5:GetName(), "lancelot_arms_mastership", false, true) 
         caster:SwapAbilities(a6:GetName(), "lancelot_arondite", false, true )       
@@ -596,6 +598,16 @@ function OnEternalImproved(keys)
     local ply = caster:GetPlayerOwner()
     local hero = caster:GetPlayerOwner():GetAssignedHero()
     hero.IsEternalImproved = true
+
+    Timers:CreateTimer(function()
+        if hero:IsAlive() then 
+            hero:AddNewModifier(hero, keys.ability, "modifier_eternal_arms_attribute", {})
+            return nil
+        else
+            return 1
+        end
+    end)
+
     -- Set master 1's mana 
     local master = hero.MasterUnit
     master:SetMana(master:GetMana() - keys.ability:GetManaCost(keys.ability:GetLevel()))
@@ -607,8 +619,8 @@ function OnBlessingAcquired(keys)
     local hero = caster:GetPlayerOwner():GetAssignedHero()
     hero:AddAbility("lancelot_blessing_of_fairy") 
     hero:FindAbilityByName("lancelot_blessing_of_fairy"):SetLevel(1) 
-    hero:SwapAbilities("rubick_empty1", "lancelot_blessing_of_fairy", false, true) 
-    hero:RemoveAbility("rubick_empty1") 
+    hero:SwapAbilities("fate_empty1", "lancelot_blessing_of_fairy", false, true) 
+    hero:RemoveAbility("fate_empty1") 
     hero.IsFairyReady = true
     -- Set master 1's mana 
     local master = hero.MasterUnit
@@ -619,8 +631,14 @@ function OnKnightImproved(keys)
     local caster = keys.caster
     local ply = caster:GetPlayerOwner()
     local hero = caster:GetPlayerOwner():GetAssignedHero()
-    if hero.KnightLevel == nil then
-            --hero.MasterUnit2:FindAbilityByName("lancelot_attribute_improve_koh_arsenal"):StartCooldown(9999)
+
+    --[[if hero.HasModifier("modifier_eternal_arms_attribute") then
+
+    else
+
+    end]]
+
+    if hero.KnightLevel == nil then            
             hero.KnightLevel = 1
             keys.ability:EndCooldown()
     else
@@ -669,7 +687,7 @@ function LancelotCheckCombo(caster, ability)
             })
         elseif ability == caster:FindAbilityByName("lancelot_smg_barrage") and caster:FindAbilityByName("lancelot_nuke"):IsCooldownReady()  then
             if WUsed == true then 
-                local abilname = "rubick_empty1"
+                local abilname = "fate_empty1"
                 if caster:FindAbilityByName("lancelot_blessing_of_fairy") then abilname = "lancelot_blessing_of_fairy" end
 
                 caster:SwapAbilities("lancelot_nuke", abilname, true, false)

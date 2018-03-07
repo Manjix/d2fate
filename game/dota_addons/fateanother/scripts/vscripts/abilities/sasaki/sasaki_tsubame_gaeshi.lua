@@ -1,6 +1,7 @@
 sasaki_tsubame_gaeshi = class({})
 
 LinkLuaModifier("modifier_exhausted", "abilities/sasaki/modifiers/modifier_exhausted", LUA_MODIFIER_MOTION_NONE)
+LinkLuaModifier("modifier_ganryu_armor_shred", "abilities/sasaki/modifiers/modifier_ganryu_armor_shred", LUA_MODIFIER_MOTION_NONE)
 
 function sasaki_tsubame_gaeshi:CastFilterResultTarget(hTarget)
 	local caster = self:GetCaster()
@@ -57,9 +58,9 @@ function sasaki_tsubame_gaeshi:OnSpellStart()
 
 		if not enhanced then
 			split_damage = split_damage + caster:GetAverageTrueAttackDamage(caster)
-			final_damage = final_damage + caster:GetAverageTrueAttackDamage(caster) * 1.5
+			final_damage = final_damage + caster:GetAverageTrueAttackDamage(caster)
 		else
-			combined_damage = combined_damage + caster:GetAverageTrueAttackDamage(caster) * 3.5
+			combined_damage = combined_damage + caster:GetAverageTrueAttackDamage(caster) * 3.0
 		end
 	end
 
@@ -116,6 +117,7 @@ function sasaki_tsubame_gaeshi:OnSpellStart()
 			ParticleManager:DestroyParticle(particle, true)
 		end
 
+		target:RemoveModifierByName("modifier_ganryu_armor_shred")
 		return 
 	end)
 end
@@ -140,7 +142,9 @@ function sasaki_tsubame_gaeshi:PerformSlash(caster, target, damage, soundQueue)
 
 	if IsSpellBlocked(target) then return end
 
-	if caster.IsGanryuAcquired then 
+	if caster.IsGanryuAcquired then
+		target:AddNewModifier(caster, self, "modifier_ganryu_armor_shred", { Duration = 1})
+		--print(target:GetPhysicalArmorValue())
 		DoDamage(caster, target, damage, DAMAGE_TYPE_PHYSICAL, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, self, false)
 	else 
 		DoDamage(caster, target, damage, DAMAGE_TYPE_PURE, DOTA_UNIT_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES, self, false)

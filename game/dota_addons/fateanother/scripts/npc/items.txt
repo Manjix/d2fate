@@ -16,4 +16,5 @@
 	"item_a_scroll"		"1"
 	"item_s_scroll"		"1"
 	"item_ex_scroll"		"1"
+	"item_a_plus_recipe"		"1"
 }

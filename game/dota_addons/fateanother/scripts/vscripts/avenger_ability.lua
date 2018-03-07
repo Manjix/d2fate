@@ -1,3 +1,5 @@
+LinkLuaModifier("modifier_overdrive_attribute", "abilities/angra_mainyu/modifiers/modifier_overdrive_attribute", LUA_MODIFIER_MOTION_NONE)
+
 function OnDPStart(keys)
 	local caster = keys.caster
 	local casterPos = caster:GetAbsOrigin()
@@ -276,7 +278,14 @@ function OnTZStart(keys)
 			ParticleManager:ReleaseParticleIndex( particle )
 		end)
 		DoDamage(caster, target, keys.Damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
+
 		TZCount = TZCount + 1
+		
+		if TZCount % 2 == 0 and caster:HasModifier("modifier_overdrive_attribute") then
+			caster:PerformAttack( target, true, true, true, true, false, false, false )
+		end
+
+		
 		return 0.10
 	end)
 
@@ -570,6 +579,9 @@ function OnOverdriveAcquired(keys)
     local ply = caster:GetPlayerOwner()
     local hero = caster:GetPlayerOwner():GetAssignedHero()
     hero:FindAbilityByName("avenger_overdrive"):SetLevel(1)
+    hero:AddNewModifier(caster, keys.ability, "modifier_overdrive_attribute", {})
+
+
     -- enable overdrive passive
     -- Set master 1's mana 
     local master = hero.MasterUnit

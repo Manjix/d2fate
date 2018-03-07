@@ -656,14 +656,14 @@ function APlusScroll(keys)
 
 	hero.ServStat:useA()
 
-	hero:Heal(500, hero)
+	hero:Heal(300, hero)
 	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_a_scroll", {})
 	if caster:HasModifier("modifier_a_scroll_sated") then
 		mres = 25
 	end
 
 	caster:AddNewModifier(caster, ability, "modifier_a_scroll", { MagicResistance = mres,
-																  Armor = 25,
+																  Armor = 35,
 																  Duration = 10 })
 	caster:AddNewModifier(caster, ability, "modifier_a_scroll_sated", { Duration = satedCooldown})
 

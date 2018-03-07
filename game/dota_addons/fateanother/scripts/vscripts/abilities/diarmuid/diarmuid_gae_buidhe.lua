@@ -139,11 +139,16 @@ end
 function diarmuid_gae_buidhe:DoubleSpearRefresh()
 	local current_cooldown = self:GetCooldownTimeRemaining()
 	local caster = self:GetCaster()
+	local window = self:GetSpecialValueFor("doublespear_window")
 
 	self:EndCooldown()
 
-	caster:AddNewModifier(caster, self, "modifier_doublespear_buidhe", { Duration = self:GetSpecialValueFor("doublespear_window"),
-																		 RemainingCooldown = current_cooldown - self:GetSpecialValueFor("doublespear_window")})
+	if caster:HasModifier("modifier_doublespear_attribute") then
+		window = window + self:GetSpecialValueFor("attribute_window")
+	end
+
+	caster:AddNewModifier(caster, self, "modifier_doublespear_buidhe", { Duration = window,
+																		 RemainingCooldown = current_cooldown - window})
 end
 
 function diarmuid_gae_buidhe:StartRemainingCooldown(flCooldown)

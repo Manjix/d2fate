@@ -1,5 +1,15 @@
 lancelot_arms_mastership = class({})
 
+local revokes = {
+    "modifier_enkidu_hold",
+    "jump_pause",
+    "pause_sealdisabled",
+    "rb_sealdisabled",
+    "revoked",
+    "round_pause",
+    "modifier_nss_shock"
+}
+
 function lancelot_arms_mastership:OnSpellStart()
 	local caster = self:GetCaster()
     local ability = self
@@ -18,15 +28,17 @@ end
 function lancelot_arms_mastership:CastFilterResult()
 	local caster = self:GetCaster()
 
-	if IsServer() then
-		if not caster.IsEternalImproved then
-			return UF_FAIL_CUSTOM
-		elseif IsRevoked(caster) then
-			return UF_FAIL_CUSTOM
-		else
-			return UF_SUCCESS
+	if not caster:HasModifier("modifier_eternal_arms_attribute") then
+		return UF_FAIL_CUSTOM
+	else
+		for i = 1, #revokes do
+			if caster:HasModifier(revokes[i]) then
+				return UF_FAIL_CUSTOM
+			end
 		end
 	end
+
+	return UF_SUCCESS
 end
 
 function lancelot_arms_mastership:GetCustomCastError()

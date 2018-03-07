@@ -121,9 +121,9 @@ function true_assassin_zabaniya:OnProjectileHit_ExtraData(hTarget, vLocation, ta
 	
 	DoDamage(caster, hTarget, damage, damage_type, 0, self, false)
 	hTarget:AddNewModifier(caster, self, "modifier_zabaniya_curse", { Duration = curseDuration })
-	local cursedHealth = hTarget:GetHealth()
+	--local cursedHealth = hTarget:GetHealth()
 
-	Timers:CreateTimer(function()
+	--[[Timers:CreateTimer(function()
 		if not hTarget:HasModifier("modifier_zabaniya_curse") or not caster:IsAlive() then return end
 			
   		if hTarget:GetHealth() <= 0 then
@@ -135,5 +135,5 @@ function true_assassin_zabaniya:OnProjectileHit_ExtraData(hTarget, vLocation, ta
 		cursedHealth = hTarget:GetHealth()
 
 		return 0.033
-	end)
+	end)]]
 end

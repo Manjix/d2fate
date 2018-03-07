@@ -1,3 +1,5 @@
+LinkLuaModifier("modifier_heracles_berserk", "abilities/heracles/modifiers/modifier_heracles_berserk", LUA_MODIFIER_MOTION_NONE)
+
 function OnFissureStart(keys)
 	local caster = keys.caster
 	local frontward = caster:GetForwardVector()
@@ -163,8 +165,8 @@ function OnRoarStart(keys)
 	caster:SetHealth(caster:GetMaxHealth())]]
 
 	--Reset berserk buff with double health lock
-	if caster:HasModifier("modifier_berserk_self_buff") == false then
-		caster:RemoveModifierByName("modifier_berserk_self_buff")
+	if caster:HasModifier("modifier_heracles_berserk") == false then
+		caster:RemoveModifierByName("modifier_heracles_berserk")
 		local newKeys = keys
 		newKeys.ability = caster:FindAbilityByName("berserker_5th_berserk")
 		newKeys.Duration = newKeys.ability:GetSpecialValueFor("duration")
@@ -180,11 +182,12 @@ function OnRoarStart(keys)
 
 	--newKeys.PlaySound = true
 
-	if soundQueue < 25 then		
+	if soundQueue <= 25 then		
 		EmitGlobalSound("Heracles_Combo_Easter_" .. math.random (2,3))
-		--newKeys.PlaySound = false
+		keys.Damage1 = keys.Damage1 * 1.25
+		keys.Damage2 = keys.Damage2 * 1.25
+		keys.Damage3 = keys.Damage3 * 1.25
 	end
-
 
 	local casterloc = caster:GetAbsOrigin()
 	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, 3000
@@ -230,11 +233,13 @@ function OnBerserkStart(keys)
 	local berserkCounter = 0
 	caster.BerserkDamageTaken = 0
 
-	ability:ApplyDataDrivenModifier(caster, caster, "modifier_berserk_self_buff", {})
+	--ability:ApplyDataDrivenModifier(caster, caster, "modifier_berserk_self_buff", {})
+	caster:AddNewModifier(caster, ability, "modifier_heracles_berserk", { LockedHealth = hplock,
+																		  Duration = duration })
 
 	local casterHealth = caster:GetHealth()
 	if casterHealth - hplock > 0 then
-		local berserkDamage = math.min((casterHealth - hplock), hplock * 0.5)  
+		local berserkDamage = math.min((casterHealth - hplock), hplock * 0.6)  
 		caster:EmitSound("Hero_Centaur.HoofStomp")
 
 		local berserkExp = ParticleManager:CreateParticle("particles/custom/berserker/berserk/eternal_rage_shockwave.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
@@ -246,7 +251,7 @@ function OnBerserkStart(keys)
 		end
 	end
 
-	Timers:CreateTimer(function()
+	--[[Timers:CreateTimer(function()
 		if caster:HasModifier("modifier_berserk_self_buff") == false then return end
 		if berserkCounter > duration then return end
 		-- local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_ogre_magi/ogre_magi_bloodlust_buff_symbol.vpcf", PATTACH_ABSORIGIN_FOLLOW, caster)
@@ -260,14 +265,14 @@ function OnBerserkStart(keys)
 		berserkCounter = berserkCounter + 0.033
 		return 0.033
 		end
-	)
+	)]]
 
 	if caster.IsEternalRageAcquired then 
 		local explosionCounter = 0
 		local manaregenCounter = 0
 
 		Timers:CreateTimer(function()
-			if caster:HasModifier("modifier_berserk_self_buff") == false then return end
+			if caster:HasModifier("modifier_heracles_berserk") == false then return end
 			if explosionCounter == duration then return end
 			
 			HardCleanse(caster)
@@ -294,7 +299,7 @@ function OnBerserkStart(keys)
 	end
 
 	-- hi i'm definitely not a hacky replacement for not being able to get status effect particles to work
-	caster:SetRenderColor(255, 127, 127)
+	--caster:SetRenderColor(255, 127, 127)
 end
 
 function OnBerserkDamageTaken(keys)
@@ -472,11 +477,20 @@ function OnNineLanded(caster, ability)
 	local stun = ability:GetSpecialValueFor("stun_duration")
 	local nineCounter = 0
 	local casterInitOrigin = caster:GetAbsOrigin() 
+	local ilya = false
 
 	-- swap animation
 	if caster:GetName() == "npc_dota_hero_doom_bringer" then 
 		if caster:IsAlive() then
-			StartAnimation(caster, {duration=3.5, activity=ACT_DOTA_CAST_ABILITY_6, rate=1.0})			
+			StartAnimation(caster, {duration=3.5, activity=ACT_DOTA_CAST_ABILITY_6, rate=1.0})
+
+			local ilya_chance = math.random(1,100)
+
+			if ilya_chance <= 5 then				
+				ilya = true
+				tickdmg = tickdmg * 1.1
+				lasthitdmg = lasthitdmg * 1.1
+			end
 		end
 	end
 
@@ -561,8 +575,10 @@ function OnNineLanded(caster, ability)
 					DeductCourageDamageStack(caster)
 				end 
 
-				if nineCounter == 4 and caster:GetName() == "npc_dota_hero_doom_bringer" then
+				if nineCounter == 4 and caster:GetName() == "npc_dota_hero_doom_bringer" and not ilya then
 					EmitGlobalSound("Heracles_NineLives_" .. math.random(1,3))
+				elseif ilya and nineCounter == 3 then
+					EmitGlobalSound("Heracles_Combo_Easter_1")
 				end
 
 				local targets = FindUnitsInRadius(caster:GetTeamNumber(), caster:GetAbsOrigin(), caster, radius, DOTA_UNIT_TARGET_TEAM_ENEMY, DOTA_UNIT_TARGET_ALL, 0, 1, false)
@@ -694,7 +710,7 @@ function OnReincarnationDamageTaken(keys)
 
 	if caster.IsGodHandAcquired ~= true then return end -- To prevent reincanationdamagetaken from incrementing when GH is not taken.
 
-	if caster:HasModifier("modifier_berserk_self_buff") then 
+	if caster:HasModifier("modifier_heracles_berserk") then 
 		caster.ReincarnationDamageTaken = caster.ReincarnationDamageTaken+damageTaken*3
 	else
 		caster.ReincarnationDamageTaken = caster.ReincarnationDamageTaken+damageTaken

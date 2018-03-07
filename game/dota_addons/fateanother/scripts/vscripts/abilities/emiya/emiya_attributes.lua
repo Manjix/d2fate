@@ -44,7 +44,6 @@ function emiya_attribute_hrunting:OnSpellStart()
 		end
 	end)
 
-
 	-- Set master 1's mana 
 	local master = hero.MasterUnit
 	master:SetMana(master:GetMana() - self:GetManaCost(self:GetLevel()))

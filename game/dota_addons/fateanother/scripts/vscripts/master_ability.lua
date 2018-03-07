@@ -101,11 +101,11 @@ CasterAttribute = {
 LancelotAttribute = {
 	"lancelot_attribute_blessing_of_fairy",
 	"lancelot_attribute_improve_eternal",
-	"lancelot_attribute_improve_knight_of_honor",
-	--"lancelot_attribute_improve_koh_arsenal",
+	"lancelot_attribute_improve_knight_of_honor",	
 	"lancelot_attribute_eternal_flame",
+	"lancelot_attribute_kotl",
 	"lancelot_nuke",
-	attrCount = 4
+	attrCount = 5
 }
 
 AvengerAttribute = {

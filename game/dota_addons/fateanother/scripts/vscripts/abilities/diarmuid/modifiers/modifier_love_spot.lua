@@ -5,7 +5,7 @@ LinkLuaModifier("modifier_love_spot_charmed", "abilities/diarmuid/modifiers/modi
 function modifier_love_spot:OnCreated(args)
 	if IsServer() then
 		local caster = self:GetParent()
-		--caster:EmitSound("Hero_Warlock.ShadowWord")
+		caster:EmitSound("Hero_Warlock.ShadowWord")
 
 		self.Radius = args.Radius
 
@@ -13,20 +13,20 @@ function modifier_love_spot:OnCreated(args)
 	end
 end
 
---[[function modifier_love_spot:OnRefresh(args)
+function modifier_love_spot:OnRefresh(args)
 	if IsServer() then
 		self:OnDestroy()
 		self:OnCreated(args)
 	end
-end]]
+end
 
---[[function modifier_love_spot:OnDestroy()
+function modifier_love_spot:OnDestroy()
 	if IsServer() then
-		print("stopping sound")
+		--print("stopping sound")
 		local caster = self:GetCaster()
 		caster:StopSound("Hero_Warlock.ShadowWord")
 	end
-end]]
+end
 
 function modifier_love_spot:OnIntervalThink()
 	local caster = self:GetParent()

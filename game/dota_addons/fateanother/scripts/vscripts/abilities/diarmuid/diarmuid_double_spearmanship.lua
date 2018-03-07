@@ -37,15 +37,12 @@ function diarmuid_double_spearmanship:OnSpellStart()
 		caster:EmitSound("Diarmuid_Combo_" .. math.random(1,2))
 	else
 		local attack_speed = 0
-
 		if caster:HasModifier("modifier_doublespear_attribute") then
 			attack_speed = self:GetSpecialValueFor("attribute_attack_speed")
 		end
-
-
-
 		caster:AddNewModifier(caster, self, "modifier_double_spearmanship_active", { Duration = self:GetSpecialValueFor("duration"),
-																					 AttackSpeed = attack_speed })
+																					 AttackSpeed = attack_speed,
+																					 OnHit = self:GetSpecialValueFor("on_hit") })
 		caster:EmitSound("Diarmuid_Skill_1")
 	end	
 end

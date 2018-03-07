@@ -21,28 +21,29 @@ local tGobAbilities = {
 }
 
 local tStandardProxy = {
-    "lancelot_durandal",
-    "fate_empty1",
+    "lancelot_vortigern",    
     "fate_empty2",
     "fate_empty3",
-    "lancelot_knight_of_honor_close",
     "fate_empty4",
+    "lancelot_knight_of_honor_close",
+    "fate_empty5",
     "attribute_bonus_custom"
 }
 
 local tGobProxy = {
-    "lancelot_vortigern",
-    "fate_empty1",
+    "lancelot_durandal",
     "fate_empty2",
     "fate_empty3",
-    "lancelot_knight_of_honor_close",
     "fate_empty4",
+    "lancelot_knight_of_honor_close",
+    "fate_empty5",
     "attribute_bonus_custom"
 }
 
 function lancelot_knight_of_honor:OnUpgrade()
     local hCaster = self:GetCaster()
-    local hAbility = hCaster:FindAbilityByName("lancelot_knight_of_honor")
+    local hAbility = self
+    --hCaster:FindAbilityByName("lancelot_knight_of_honor")
     local abilityLevel = 1
     if hCaster.KnightLevel then
         abilityLevel = abilityLevel + hCaster.KnightLevel
@@ -54,7 +55,7 @@ function lancelot_knight_of_honor:OnUpgrade()
             abil:SetLevel(abilityLevel)
             abil:SetHidden(true)
 
-            if i > 1 then hCaster:RemoveAbility("fate_empty"..tostring(i - 1)) end
+            if i > 2 then hCaster:RemoveAbility("fate_empty"..tostring(i - 1)) end
         end
 
         --[[if not hCaster:HasAbility(tGobAbilities[i]) then
@@ -86,6 +87,7 @@ function lancelot_knight_of_honor:OnSpellStart()
     local tAbilities = {}
     local tProxy = {}
     local abilityLevel = 1
+
     if hCaster.KnightLevel then
         abilityLevel = abilityLevel + hCaster.KnightLevel
     end
@@ -105,6 +107,8 @@ function lancelot_knight_of_honor:OnSpellStart()
         else
             t[i] = tAbilities[i]
         end
+
+        --print(t[i])
 
         local abil = hCaster:FindAbilityByName(t[i])
         if abil:GetName() ~= "attribute_bonus_custom" then            
@@ -126,7 +130,8 @@ end
 ------------------------------------------------------------------------------
 
 function lancelot_knight_of_honor:CastFilterResult()
-    if self:GetCaster():HasModifier("modifier_arondite") then
+    local caster = self:GetCaster()
+    if caster:HasModifier("modifier_arondite") then
         return UF_FAIL_CUSTOM
     end
 
@@ -134,7 +139,7 @@ function lancelot_knight_of_honor:CastFilterResult()
 end
 
 function lancelot_knight_of_honor:GetCustomCastError()
-    return "#Cannot_Be_Cast_Now"
+    return "#Arondite_Active"
 end
 
 function lancelot_knight_of_honor:GetAbilityTextureName()

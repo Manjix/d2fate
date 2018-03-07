@@ -36,9 +36,10 @@ function modifier_rampant_warrior:OnAttackLanded(args)
 			DoDamage(caster, target, self.HitDamage, DAMAGE_TYPE_MAGICAL, 0, self:GetAbility(), false)
 			DoDamage(caster, target, self.HitDamage, DAMAGE_TYPE_PURE, 0, self:GetAbility(), false)
 
-			local chargeAbility = caster:FindAbilityByName("diarmuid_warrior_charge")
-			chargeAbility:ReduceCooldown()
-
+			if caster:HasModifier("modifier_doublespear_attribute") then
+				local chargeAbility = caster:FindAbilityByName("diarmuid_warrior_charge")
+				chargeAbility:ReduceCooldown()
+			end
 			
 			self:StartIntervalThink(0.1)
 		end

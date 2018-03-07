@@ -53,5 +53,5 @@ function modifier_gae_dearg:GetAttributes()
 end
 
 function modifier_gae_dearg:GetTexture()
-	return "custom/diarmuid_gae_dearg"
+	return "custom/diarmuid_attribute_crimson_rose"
 end

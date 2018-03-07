@@ -6,12 +6,11 @@ LinkLuaModifier("modifier_exhausted", "abilities/sasaki/modifiers/modifier_exhau
 --LinkLuaModifier("modifier_heart_of_harmony_invis", "abilities/sasaki/modifiers/modifier_heart_of_harmony_invis", LUA_MODIFIER_MOTION_NONE)
 
 function sasaki_heart_of_harmony:OnSpellStart()
-	local caster = self:GetCaster()
+	local caster = self:GetCaster()	
 
-	caster:SetMana(0)
-
-	if caster.IsVitrificationAcquired then
-		caster:RemoveModifierByName("modifier_exhausted")
+	if not caster.IsVitrificationAcquired then
+		caster:SetMana(0)
+		--caster:RemoveModifierByName("modifier_exhausted")
 	end
 
 	caster:EmitSound("Hero_Abaddon.AphoticShield.Cast")

@@ -31,14 +31,13 @@ function sasaki_quickdraw:OnSpellStart()
 
 	if caster:GetMana() > 99 then
 		caster:AddNewModifier(caster, self, "modifier_quickdraw_empowered_tracker", { Duration = 2 })
-	end
-
-	caster:EmitSound("Sasaki_Quickdraw_" .. math.random(1,2))
+		caster:EmitSound("Sasaki_Quickdraw_" .. math.random(1,2))
+	end	
 
 	caster:AddNewModifier(caster, self, "modifier_exhausted", { Duration = self:GetSpecialValueFor("exhausted_duration") })
 
 	local projectile = ProjectileManager:CreateLinearProjectile(qdProjectile)
-	giveUnitDataDrivenModifier(caster, caster, "pause_sealenabled", 0.4)
+	giveUnitDataDrivenModifier(caster, caster, "pause_sealdisabled", 0.5)
 	caster:EmitSound("Hero_PhantomLancer.Doppelwalk") 
 	local sin = Physics:Unit(caster)
 	caster:SetPhysicsFriction(0)
@@ -52,7 +51,7 @@ function sasaki_quickdraw:OnSpellStart()
 		caster:SetBounceMultiplier(0)
 		caster:PreventDI(false)
 		caster:SetPhysicsVelocity(Vector(0,0,0))
-		caster:RemoveModifierByName("pause_sealenabled")
+		caster:RemoveModifierByName("pause_sealdisabled")
 		FindClearSpaceForUnit(caster, caster:GetAbsOrigin(), true)
 	return end
 	})
@@ -63,7 +62,7 @@ function sasaki_quickdraw:OnSpellStart()
 		unit:SetBounceMultiplier(0)
 		unit:PreventDI(false)
 		unit:SetPhysicsVelocity(Vector(0,0,0))
-		caster:RemoveModifierByName("pause_sealenabled")
+		caster:RemoveModifierByName("pause_sealdisabled")
 		FindClearSpaceForUnit(unit, unit:GetAbsOrigin(), true)
 	end)
 end
@@ -73,6 +72,7 @@ function sasaki_quickdraw:OnProjectileHit_ExtraData(hTarget, vLocation, table)
 
 	local caster = self:GetCaster()
 	local damage = self:GetSpecialValueFor("base_damage") + (caster:GetAverageTrueAttackDamage(caster) * self:GetSpecialValueFor("atk_ratio") / 100)
+	print(damage)
 	DoDamage(caster, hTarget, damage, DAMAGE_TYPE_MAGICAL, 0, self, false)
 
 	if caster:HasModifier("modifier_quickdraw_empowered_tracker") then
@@ -81,7 +81,7 @@ function sasaki_quickdraw:OnProjectileHit_ExtraData(hTarget, vLocation, table)
 		Timers:CreateTimer(function()
 			if counter == slashcount or not caster:IsAlive() then return end 
 			caster:PerformAttack( hTarget, true, true, true, true, false, false, false )
-			CreateSlashFx(caster, hTarget:GetAbsOrigin() + RandomVector(500), hTarget:GetAbsOrigin() + RandomVector(500))
+			CreateSlashFx(caster, hTarget:GetAbsOrigin() + RandomVector(300), hTarget:GetAbsOrigin() + RandomVector(300))
 			counter = counter + 1
 			--target:EmitSound("soundname")
 			return 0.1

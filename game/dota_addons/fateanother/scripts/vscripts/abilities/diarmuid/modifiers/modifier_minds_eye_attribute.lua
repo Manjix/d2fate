@@ -5,8 +5,9 @@ LinkLuaModifier("modifier_minds_eye_vision", "abilities/diarmuid/modifiers/modif
 function modifier_minds_eye_attribute:OnCreated(args)
 	if IsServer() then
 		self.Radius = args.Radius
-		self.VisionDuration = args.VisionDuration
-		self:StartIntervalThink(1)
+		self.VisionDuration = args.VisionDuration	
+
+		self:StartIntervalThink(0.3)
 	end
 end
 
@@ -38,5 +39,5 @@ function modifier_minds_eye_attribute:RemoveOnDeath()
 end
 
 function modifier_minds_eye_attribute:GetAttributes()
-  return MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE
+	return MODIFIER_ATTRIBUTE_IGNORE_INVULNERABLE
 end

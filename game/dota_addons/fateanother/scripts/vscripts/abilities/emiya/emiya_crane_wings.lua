@@ -131,9 +131,7 @@ function emiya_crane_wings:FireExtraSwords(targetPoint, radius)
 	local kbAbility = caster:FindAbilityByName("emiya_kanshou_byakuya")
 
 	if #targetCandidates >= 1 then
-		local target = targetCandidates[1]
-
-		for k,v in pairs(targetCandidates[1]) do print(k,v) end
+		local target = targetCandidates[1]		
 
 		for i = 1, charge do
 			targetPoint = targetPoint + RandomVector(500)

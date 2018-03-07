@@ -6,29 +6,28 @@ function modifier_breaker_gorgon:DeclareFunctions()
 	return { MODIFIER_PROPERTY_MOVESPEED_BONUS_PERCENTAGE,
 			 MODIFIER_PROPERTY_TURN_RATE_PERCENTAGE }
 end
-
-function modifier_breaker_gorgon:OnCreated(args)
-	if IsServer() then
+if IsServer() then
+	function modifier_breaker_gorgon:OnCreated(args)	
 		self:SetStackCount(1)
 		self.SlowPerc = args.SlowPerc
 		self.TurnRateSlow = args.TurnRateSlow
 		self.ExtraSlow = args.ExtraSlow
 		self:StartIntervalThink(0.1)
 	end
-end
 
-function modifier_breaker_gorgon:OnIntervalThink()
-	local hero = self:GetParent()
-	local caster = self:GetCaster()
+	function modifier_breaker_gorgon:OnIntervalThink()
+		local hero = self:GetParent()
+		local caster = self:GetCaster()
 
-	if IsFacingUnit(hero, caster, 60) or IsFacingUnit(caster, hero, 60) then
-		self:SetStackCount(math.min(20, self:GetStackCount() + 1))
-		self.SlowPerc = self.SlowPerc + self.ExtraSlow
-	end
+		if IsFacingUnit(hero, caster, 60) or IsFacingUnit(caster, hero, 60) then
+			self:SetStackCount(math.min(20, self:GetStackCount() + 1))
+			self.SlowPerc = self.SlowPerc + self.ExtraSlow
+		end
 
-	if self:GetStackCount() >= 20 then
-		hero:AddNewModifier(caster, self:GetAbility(), "modifier_breaker_gorgon_frozen", { Duration = 2})
-		self:Destroy()
+		if self:GetStackCount() >= 20 then
+			hero:AddNewModifier(caster, self:GetAbility(), "modifier_breaker_gorgon_frozen", { Duration = 2})
+			self:Destroy()
+		end
 	end
 end
 

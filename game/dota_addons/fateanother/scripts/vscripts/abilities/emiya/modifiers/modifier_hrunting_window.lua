@@ -1,9 +1,14 @@
 modifier_hrunting_window = class({})
 
-function modifier_hrunting_window:OnDestroy()
-	if IsServer() then
+if IsServer() then
+	function modifier_hrunting_window:OnCreated(args)
 		local hero = self:GetParent()
-		hero:FindAbilityByName("emiya_unlimited_bladeworks"):SwitchAbilities(false)
+		hero:SwapAbilities("emiya_clairvoyance", "emiya_hrunting", false, true) 
+	end
+
+	function modifier_hrunting_window:OnDestroy()	
+		local hero = self:GetParent()
+		hero:SwapAbilities("emiya_hrunting", "emiya_clairvoyance", false, true)
 	end
 end
 

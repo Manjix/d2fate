@@ -102,7 +102,7 @@ function OnVenomHit(keys)
 	local target = keys.target 
 	local ability = keys.ability
 
-	if caster:GetMana() > 50 then
+	--[[if caster:GetMana() > 50 then
 		local stacks = 0
 		if target:HasModifier("modifier_weakening_venom") then 
 			stacks = target:GetModifierStackCount("modifier_weakening_venom", ability)
@@ -126,7 +126,7 @@ function OnVenomHit(keys)
 		caster:SetMana(caster:GetMana() - 50)
 	end
 
-	--[[if target:HasModifier("modifier_weakening_venom") then 
+	if target:HasModifier("modifier_weakening_venom") then 
 		currentStack = target:GetModifierStackCount("modifier_weakening_venom", keys.ability)
 	end
 

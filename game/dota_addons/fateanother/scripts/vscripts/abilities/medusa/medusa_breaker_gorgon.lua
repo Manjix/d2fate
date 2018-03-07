@@ -13,14 +13,14 @@ function medusa_breaker_gorgon:OnSpellStart()
 	caster:EmitSound("Medusa_Skill1")
 	for _,v in pairs(targets) do            
         if not v:IsMagicImmune() then
-            v:AddNewModifier(caster, self, "modifier_breaker_gorgon", { duration = self:GetSpecialValueFor("slow_duration"),
+            v:AddNewModifier(caster, self, "modifier_breaker_gorgon", { Duration = self:GetSpecialValueFor("slow_duration"),
             															SlowPerc = self:GetSpecialValueFor("slow_perc"),
             															TurnRateSlow = self:GetSpecialValueFor("turn_slow"),
             															ExtraSlow = self:GetSpecialValueFor("stack_slow") })
         end
     end
 
-    caster:AddNewModifier(caster, self, "modifier_breaker_gorgon_self", { duration = self:GetSpecialValueFor("slow_duration"),
+    caster:AddNewModifier(caster, self, "modifier_breaker_gorgon_self", { Duration = self:GetSpecialValueFor("slow_duration"),
 	            														  SlowPerc = self:GetSpecialValueFor("slow_perc"),
 	            														  TurnRateSlow = self:GetSpecialValueFor("turn_slow"),
 	            														  ExtraSlow = self:GetSpecialValueFor("stack_slow") })

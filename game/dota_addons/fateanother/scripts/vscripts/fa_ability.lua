@@ -1,5 +1,7 @@
 IWActive = false
 
+LinkLuaModifier("modifier_minds_eye_attribute", "abilities/sasaki/modifiers/modifier_minds_eye_attribute", LUA_MODIFIER_MOTION_NONE)
+
 function OnFACrit(keys)
 	local caster = keys.caster
 	local ability = keys.ability
@@ -20,7 +22,9 @@ function OnMindsEyeAttacked(keys)
 		end
 	end
 
-	caster:GiveMana(10)
+	if not caster:HasModifier("modifier_exhausted") then
+		caster:GiveMana(10)
+	end
 
 	if IsRevoked(target) then
 		DoDamage(caster, target, caster:GetAgility() * revokedRatio , DAMAGE_TYPE_PURE, 0, keys.ability, false)
@@ -755,7 +759,16 @@ function OnMindsEyeImproved(keys)
 	local ply = caster:GetPlayerOwner()
 	local hero = caster:GetPlayerOwner():GetAssignedHero()
 	hero.IsMindsEyeAcquired = true
-	hero:FindAbilityByName("false_assassin_minds_eye"):SetLevel(2) 
+	hero:FindAbilityByName("false_assassin_minds_eye"):SetLevel(2) 	
+
+	Timers:CreateTimer(function()
+		if hero:IsAlive() then 
+			hero:AddNewModifier(hero, keys.ability, "modifier_minds_eye_attribute", {})
+			return nil
+		else
+			return 1
+		end
+	end)
 
 	-- Set master 1's mana 
 	local master = hero.MasterUnit

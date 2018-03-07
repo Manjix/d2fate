@@ -185,7 +185,7 @@ function PhalanxPull(caster, soldier, targetPoint, damage, ability)
 				Timers:CreateTimer(0.5, function()
 					v.PhalanxSoldiersHit = false
 				end)
-			if not v:HasModifier("modifier_wind_protection_passive") then
+			if not IsKnockbackImmune(v) then
 				local pullTarget = Physics:Unit(v)
 				local pullVector = (caster:GetAbsOrigin() - targetPoint):Normalized() * 500
 				v:PreventDI()

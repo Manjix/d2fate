@@ -1547,12 +1547,17 @@
 			"02"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"bonus_armor"			"25"
+				"bonus_armor"			"35"
 			}
 			"03"
 			{
 				"var_type"				"FIELD_INTEGER"
-				"duration"					"10"
+				"duration"				"10"
+			}
+			"04"
+			{
+				"var_type"				"FIELD_INTEGER"
+				"healing"				"300"
 			}
 		}
 	    "OnSpellStart"

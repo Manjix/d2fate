@@ -6,8 +6,8 @@ end
 
 function modifier_prot_wind_resist:OnCreated(args)
 	if IsServer() then
-		self.MagicResist = 1
-		self:StartIntervalThink(0.5)
+		self.MagicResist = 0
+		self:StartIntervalThink(0.25)
 	end
 end
 
@@ -25,11 +25,11 @@ function modifier_prot_wind_resist:OnIntervalThink()
 	end)
 
 	if bIsVisibleToEnemy then
-		print("revealed")
-		self.MagicResist = -30
+		--print("revealed")
+		self.MagicResist = math.max(self.MagicResist - 5, -30)
 	else
-		print("hidden")
-		self.MagicResist = 50
+		--print("hidden")
+		self.MagicResist = math.min(self.MagicResist + 5, 35)
 	end
 	
 	CustomNetTables:SetTableValue("sync","prot_wind_resist", { mresist = self.MagicResist })

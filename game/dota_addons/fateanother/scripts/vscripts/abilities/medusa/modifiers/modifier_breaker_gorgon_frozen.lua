@@ -1,7 +1,8 @@
 modifier_breaker_gorgon_frozen = class({})
 
 function modifier_breaker_gorgon_frozen:CheckState()
-	return { [MODIFIER_STATE_FROZEN] = true }
+	return { [MODIFIER_STATE_FROZEN] = true,
+			 [MODIFIER_STATE_STUNNED] = true }
 end
 
 function modifier_breaker_gorgon_frozen:DeclareFunctions()
@@ -26,14 +27,6 @@ function modifier_breaker_gorgon_frozen:OnAttackLanded(args)
 		end
 	end
 end
-
---[[function modifier_breaker_gorgon_frozen:GetEffectName()
-	return "particles/units/heroes/hero_spectre/spectre_ambient.vpcf"
-end
-
-function modifier_breaker_gorgon_frozen:GetEffectAttachType()
-	return PATTACH_ABSORIGIN_FOLLOW
-end]]
 
 function modifier_breaker_gorgon_frozen:IsHidden()
 	return false

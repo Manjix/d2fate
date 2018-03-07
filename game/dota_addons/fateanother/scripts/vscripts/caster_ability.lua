@@ -966,7 +966,7 @@ function OnFirewallStart(keys)
     for k,v in pairs(targets) do
     	if v:GetName() ~= "npc_dota_ward_base" then
 	    	DoDamage(caster, v, keys.Damage, DAMAGE_TYPE_MAGICAL, 0, keys.ability, false)
-	    	if not v:HasModifier("modifier_wind_protection_passive") then
+	    	if not IsKnockbackImmune(v) then
 				giveUnitDataDrivenModifier(caster, v, "drag_pause", 0.5)
 				local pushback = Physics:Unit(v)
 				v:PreventDI()
@@ -979,7 +979,8 @@ function OnFirewallStart(keys)
 					v:PreventDI(false)
 					v:SetPhysicsVelocity(Vector(0,0,0))
 					v:OnPhysicsFrame(nil)
-				return end)
+					return 
+				end)
 			end
 		end
 	end

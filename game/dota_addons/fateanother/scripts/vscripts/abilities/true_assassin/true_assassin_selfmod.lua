@@ -25,35 +25,56 @@ function true_assassin_selfmod:OnSpellStart()
 	end)
 
 	if caster.ShaytanArmAcquired then
-		local casterStr = math.ceil(caster:GetStrength()) 
-		local casterAgi = math.ceil(caster:GetAgility())
-		local casterInt = math.ceil(caster:GetIntellect())
+		local casterStr = math.floor(caster:GetStrength() + 0.5) 
+		local casterAgi = math.floor(caster:GetAgility() + 0.5)
+		local casterInt = math.floor(caster:GetIntellect() + 0.5)
 
-		if casterStr == casterAgi and casterStr == casterInt then
-			--print("Tied Mod")
+		if casterStr == casterAgi and casterStr == casterInt and casterAgi == casterInt then
 			self:ReduceZabaniyaCooldown(true)
 			if not caster.IsWeakeningVenomAcquired then
 				caster:AddNewModifier(caster, ability, "modifier_selfmod_agility", { Duration = self:GetSpecialValueFor("duration"),
 																					 AttackBonus = casterAgi
 																					})
 			end
-			caster:Heal(casterInt * 6.5, caster)
-			caster:GiveMana(casterInt * 6.5)
+			self:IntelligenceHeal(true)
 		elseif casterStr >= casterAgi and casterStr >= casterInt then
-			--print("Strength Highest Mod")
 			self:ReduceZabaniyaCooldown(false)
 		elseif casterAgi > casterStr and casterAgi >= casterInt then
-			--print("Agi Highest Mod")
 			if not caster.IsWeakeningVenomAcquired then
 				caster:AddNewModifier(caster, ability, "modifier_selfmod_agility", { Duration = self:GetSpecialValueFor("duration"),
 																					 AttackBonus = casterAgi * 2
 																					 })
 			end
 		elseif casterInt > casterStr and casterInt > casterAgi then
-			--print("Int Highest Mod")
-			caster:Heal(casterInt * 13, caster)
-			caster:GiveMana(casterInt * 13)		
+			self:IntelligenceHeal(false)
 		end
+	end
+end
+
+function true_assassin_selfmod:IntelligenceHeal(halfEfficiency)
+	local caster = self:GetCaster()
+	local area = 350
+	local amount = 15 * math.ceil(caster:GetIntellect())
+
+	if halfEfficiency then amount = amount * 0.5 end
+
+	local targets = FindUnitsInRadius(caster:GetTeam(), caster:GetAbsOrigin(), nil, area, DOTA_UNIT_TARGET_TEAM_FRIENDLY, DOTA_UNIT_TARGET_ALL, DOTA_UNIT_TARGET_FLAG_NONE, FIND_ANY_ORDER, false)
+
+	for i = 1, #targets do
+		targets[i]:Heal(amount, caster)
+
+		if not IsManaLess(targets[i]) then
+			targets[i]:GiveMana(amount)
+		end
+
+		local particle = ParticleManager:CreateParticle("particles/units/heroes/hero_bane/bane_fiendsgrip_ground_rubble.vpcf", PATTACH_ABSORIGIN_FOLLOW, targets[i])
+		ParticleManager:SetParticleControl(particle, 1, caster:GetAbsOrigin())
+		-- Destroy particle after delay
+		Timers:CreateTimer( 2.0, function()
+			ParticleManager:DestroyParticle( particle, false )
+			ParticleManager:ReleaseParticleIndex( particle )
+			return nil
+		end)
 	end
 end
 
